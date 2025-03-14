@@ -18,7 +18,7 @@
 </div>
 </div>
 </div>
-<img class="logo-icon" alt="" src="Logo.png">
+<img class="logo-icon" alt="" src="~/assets/images/Logo.png">
 <div class="nav-list">
 <div class="link">
 <div class="master-link">
@@ -37,10 +37,10 @@
 </div>
 <div class="link">
 <div class="master-link">
-<div class="incio">Cupons</div>
+<div class="incio"><NuxtLink to="/Cupons">Cupons</NuxtLink></div>
 </div>
 </div>
-<img class="user-icon" alt="" src="User.svg">
+<img class="user-icon" alt="" src="~/assets/icons/User.svg">
 </div>
 </div>
 </div>
