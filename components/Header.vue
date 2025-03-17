@@ -32,16 +32,16 @@ export default {
         <img class="logo-icon" alt="" src="~/assets/images/Logo.png" />
         <div class="nav-list">
           <div class="link">
-            <div class="search">Início</div>
+            <NuxtLink to="/" class="search">início</NuxtLink>
           </div>
           <div class="link">
-            <div class="search">Cupons</div>
+            <NuxtLink to="/Cupons" class="search">Cupons</NuxtLink>
           </div>
           <div class="link">
-            <div class="search">Categorias</div>
+            <NuxtLink to="/Categorias" class="search">Categorias</NuxtLink>
           </div>
           <div class="link">
-            <div class="search">Lojas</div>
+            <NuxtLink to="/Lojas" class="search">Lojas</NuxtLink>
           </div>
           <div class="link">
             <img class="vector-icon1" alt="" src="~/assets/icons/User.svg" />
