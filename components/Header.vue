@@ -1,10 +1,3 @@
-<script setup>
-  import { useWindowSize } from '@vueuse/core'
-
-  const { width } = useWindowSize()
-  
-</script>
-
 <template>
   <body>
     <div class="header">
