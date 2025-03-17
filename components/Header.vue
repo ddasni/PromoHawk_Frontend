@@ -1,4 +1,9 @@
-<script setup></script>
+<script setup>
+  import { useWindowSize } from '@vueuse/core'
+
+  const { width } = useWindowSize()
+  
+</script>
 
 <template>
   <body>
@@ -96,7 +101,7 @@
 .logo-icon {
   width: 106px;
   position: relative;
-  height: 106px;
+  height: 120px;
   overflow: hidden;
   flex-shrink: 0;
   object-fit: cover;
