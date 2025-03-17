@@ -2,5 +2,5 @@
   <Header />
     <NuxtPage/>
   <Footer />
-  <Responsa/>
+  
 </template>
