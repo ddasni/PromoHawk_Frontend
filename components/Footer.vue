@@ -1,252 +1,332 @@
 <template>
   <body>
-    <div class="footer">
-      <div class="footer1">
-        <div class="primary-footer">
-          <img class="logo-icon" alt="" src="~/assets/images/Logo.png" />
+    <body>
+  <div class="footer">
+    <div class="footer1">
+      <div class="primary-footer">
+        <img class="logo-icon" alt="Logo" src="~/assets/images/Logo.png" />
 
-          <div class="grupo">
-            <div class="informaes">
-              <div class="sobre">
-                <div class="texto-e-emoji">
-                  <img
-                    class="vector-icon"
-                    alt=""
-                    src="/assets/icons/interrogacao.svg"
-                  />
-
-                  <div class="sobre1">Sobre</div>
-                </div>
-              </div>
-              <div class="contato">
-                <div class="icon-mail">
-                  <img
-                    class="vector-icon1"
-                    alt=""
-                    src="/assets/icons/email.svg"
-                  />
-
-                  <div class="contato1">Contato</div>
-                </div>
+        <div class="grupo">
+          <div class="informaes">
+            <div class="sobre">
+              <div class="texto-e-emoji">
+                <img
+                  class="vector-icon"
+                  alt="Ícone sobre"
+                  src="/assets/icons/interrogacao.svg"
+                />
+                <div class="sobre1">Sobre</div>
               </div>
             </div>
-          </div>
-        </div>
-        <div class="second-footer">
-          <!--linha do footer--> 
 
-          <div class="informaes-finais">
-            <div class="icone"></div>
-            <div class="promohawk-todos-os">
-              © 2025 PROMOHAWK. TODOS OS DIREITOS RESERVADOS
-            </div>
-            <div class="social">
-              <img class="\assets/icons/🦆 icon _github_.svg" />
+            <div class="contato">
+              <div class="icon-mail">
+                <img
+                  class="vector-icon1"
+                  alt="Ícone de contato"
+                  src="/assets/icons/email.svg"
+                />
+                <div class="contato1">Contato</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="second-footer">
+        <!-- Linha do footer -->
+        <div class="informaes-finais">
+          <div class="social">
+            <img class="social-icon" src="/assets/icons/icon _github.svg" alt="GitHub" />
+          </div>
+          <div class="promohawk-todos-os">
+            © 2025 PromoHawk. Todos os direitos reservados
+          </div>
+        </div>
+      </div>
     </div>
-  </body>
+  </div>
+</body>
+
+</body>
+
 </template>
 
 <style>
-.logo-icon {
-  width: 660px;
-  height: 190px;
-  object-fit: cover;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-.vector-icon {
-  width: 15px;
+
+html, body {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Garante que a altura mínima da página ocupe 100% da altura da tela */
+}
+
+.header {
+  width: 100%;
   position: relative;
-  height: 15px;
-}
-.sobre1 {
-  position: relative;
-  font-weight: 600;
-}
-.texto-e-emoji {
-  width: 80px;
-  height: 23px;
+  background-color: #fff;
+  height: 115px;
+  overflow: hidden;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-}
-.sobre {
-  width: 115px;
-  border-radius: 20px;
-  background-color: #fff;
-  height: 30px;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 6px 20px;
+  padding: 10px 0px;
   box-sizing: border-box;
+  text-align: left;
+  font-size: 23px;
+  color: #abb7c2;
 }
-.vector-icon1 {
-  width: 16px;
-  position: relative;
-  height: 16px;
-  z-index: 0;
-}
-.contato1 {
-  width: 58.7px;
-  position: relative;
-  font-weight: 600;
-  display: inline-block;
-  height: 16px;
-  flex-shrink: 0;
-  z-index: 1;
-}
-.vector-icon2 {
-  width: 16.64%;
-  position: absolute;
-  margin: 0 !important;
-  height: 66.52%;
-  top: 16.67%;
-  right: 81.7%;
-  bottom: 16.81%;
-  left: 1.67%;
-  max-width: 100%;
-  overflow: hidden;
-  max-height: 100%;
-  z-index: 2;
-}
-.icon-mail {
-  width: 110px;
-  height: 23px;
+
+.estrutura-do-header {
+  width: 1440px;
+  height: 115px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  gap: 5px;
-}
-.contato {
-  width: 155px;
-  border-radius: 20px;
-  background-color: #fff;
-  height: 30px;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 6px 20px;
+  justify-content: center;
+  padding: 0px 116px;
   box-sizing: border-box;
-  text-align: center;
+  gap: 130px;
 }
-.informaes {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 253px;
-  height: 30px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 10px;
+
+.content {
+  flex: 1; /* Faz o conteúdo ocupar o restante da altura da página */
 }
-.grupo {
-  width: 253px;
-  position: relative;
-  height: 30px;
-}
-.primary-footer {
-  height: 230px;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-.diviso-icon {
-  width: 1074px;
-  position: relative;
-  height: 2px;
-  object-fit: contain;
-  opacity: 0.1;
-}
-.icone {
-  width: 110px;
-  height: 30px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.promohawk-todos-os {
-  width: 371px;
-  position: relative;
-  line-height: 14px;
-  display: inline-block;
-  height: 14px;
-  flex-shrink: 0;
-}
-.icon-github {
-  width: 25px;
-  position: relative;
-  max-height: 100%;
-}
-.social {
-  width: 110px;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-.informaes-finais {
-  width: 1074px;
-  height: 30px;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 240px;
-}
-.second-footer {
-  width: 1074px;
-  height: 55px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 10px;
-  text-align: center;
-  font-family: "DM Sans";
-}
-.footer1 {
-  position: absolute;
-  top: 0px;
-  left: 183px;
-  width: 1074px;
-  height: 300px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 15px;
-}
+
 .footer {
   width: 100%;
-  position: relative;
-  background-color: #fff;
-  height: 300px;
-  overflow: hidden;
-  text-align: left;
+  background-color: transparent; /* Fundo transparente */
+  padding: 20px 0;
+  text-align: center;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* Alinha o conteúdo em coluna */
+}
+
+.footer-links {
+  display: flex;
+  justify-content: space-between; /* Espaça as seções de "Sobre" e "Contato" */
+  width: 80%; /* Controla a largura do container */
+  gap: 50px; /* Espaço entre os itens */
+}
+
+.footer-item {
+  flex: 1; /* Cada item ocupa o mesmo espaço */
+  text-align: center; /* Centraliza o texto */
+}
+
+.footer-item h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333; /* Cor do título */
+}
+
+.footer-item p {
+  color: #666; /* Cor do texto */
   font-size: 14px;
-  color: #737373;
-  font-family: Inter;
+}
+
+/* Estilo para o ícone ao lado do título */
+.footer-item .icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px; /* Espaço entre o ícone e o título */
+}
+
+.footer-item .icon img {
+  width: 24px;
+  height: 24px;
+}
+
+.search {
+  position: relative;
+  line-height: 24px;
+}
+
+.item {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0px 10px;
+}
+
+.search-icon {
+  width: 24px;
+  position: relative;
+  height: 24px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.icon {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.sample {
+  width: 450px;
+  border-radius: 32px;
+  background-color: #eaeaea;
+  height: 60px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0px 8px;
+  box-sizing: border-box;
+  gap: 16px;
+}
+
+.pesquisar {
+  width: 460px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon {
+  width: 106px;
+  position: relative;
+  height: 106px;
+  overflow: hidden;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.incio {
+  position: relative;
+  line-height: 23.8px;
+}
+
+.master-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.link {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.user-icon {
+  width: 30px;
+  position: relative;
+  max-height: 100%;
+}
+
+.nav-list {
+  width: 400px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  text-align: center;
+  font-size: 17px;
+  color: #170f49;
+}
+.footer1 {
+  background-color: transparent; /* Fundo transparente */
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* Ajustando para que os itens do rodapé fiquem empilhados */
+}
+
+.primary-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.grupo {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 50px; /* Espaçamento entre "Sobre" e "Contato" */
+  align-items: center;
+}
+
+.informaes {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px; /* Espaçamento entre as seções */
+}
+
+.sobre, .contato {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.texto-e-emoji, .icon-mail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vector-icon, .vector-icon1 {
+  width: 24px;
+  height: 24px;
+}
+
+.sobre1, .contato1 {
+  font-size: 16px;
+  color: #333;
+}
+
+.second-footer {
+  text-align: center;
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.informaes-finais {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px; /* Margem para separar o texto de direitos reservados */
+}
+
+.social img {
+  width: 30px;
+  height: 30px;
+}
+
+.promohawk-todos-os {
+  color: #888;
+  font-size: 14px;
 }
 </style>
