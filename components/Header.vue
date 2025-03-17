@@ -44,119 +44,116 @@
 
 <style>
 .search {
-  position: relative;
-  line-height: 24px;
+  	position: relative;
+  	line-height: 23.8px;
 }
-.item {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0px 10px;
+.vector-icon {
+  	width: 30px;
+  	position: relative;
+  	max-height: 100%;
 }
-.search-icon {
-  width: 24px;
-  position: relative;
-  height: 24px;
-  overflow: hidden;
-  flex-shrink: 0;
+.search1 {
+  	width: 30px;
+  	height: 30px;
+  	overflow: hidden;
+  	flex-shrink: 0;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: center;
 }
-.icon {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 10px;
-}
-.sample {
-  width: 450px;
-  border-radius: 32px;
-  background-color: #eaeaea;
-  height: 60px;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0px 8px;
-  box-sizing: border-box;
-  gap: 16px;
+.estrutura {
+  	width: 400px;
+  	border-radius: 30px;
+  	background-color: #c8c8c8;
+  	height: 50px;
+  	overflow: hidden;
+  	flex-shrink: 0;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: flex-start;
+  	padding: 10px;
+  	box-sizing: border-box;
+  	gap: 280px;
 }
 .pesquisar {
-  width: 460px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  	width: 400px;
+  	height: 100px;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: center;
 }
 .logo-icon {
-  width: 106px;
-  position: relative;
-  height: 120px;
-  overflow: hidden;
-  flex-shrink: 0;
-  object-fit: cover;
+  	width: 100px;
+  	position: relative;
+  	height: 100px;
+  	overflow: hidden;
+  	flex-shrink: 0;
+  	object-fit: cover;
 }
-.incio {
-  position: relative;
-  line-height: 23.8px;
-}
-.master-link {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
+.line-roundedpassword-icon {
+  	width: 20px;
+  	position: relative;
+  	height: 20px;
+  	overflow: hidden;
+  	flex-shrink: 0;
+  	display: none;
 }
 .link {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: center;
 }
-.user-icon {
-  width: 30px;
-  position: relative;
-  max-height: 100%;
+.line-roundedchevron-down2 {
+  	width: 20px;
+  	position: relative;
+  	height: 20px;
+  	overflow: hidden;
+  	flex-shrink: 0;
+}
+.vector-icon1 {
+  	width: 30px;
+  	position: relative;
+  	height: 30px;
 }
 .nav-list {
-  width: 400px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 32px;
-  text-align: center;
-  font-size: 17px;
-  color: #170f49;
+  	width: 400px;
+  	height: 100px;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: center;
+  	gap: 20px;
 }
 .estrutura-do-header {
-  width: 1440px;
-  height: 115px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: 0px 116px;
-  box-sizing: border-box;
-  gap: 130px;
+  	width: 1440px;
+  	height: 100px;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: center;
+  	padding: 0px 116px;
+  	box-sizing: border-box;
+  	gap: 130px;
 }
-.header {
-  width: 100%;
-  position: relative;
-  background-color: #fff;
-  height: 115px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 0px;
-  box-sizing: border-box;
-  text-align: left;
-  font-size: 23px;
-  color: #abb7c2;
-  font-family: Roboto;
+.property-1desktop {
+  	width: 100%;
+  	position: relative;
+  	background-color: #fff;
+  	height: 100px;
+  	overflow: hidden;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: center;
+  	padding: 10px 0px;
+  	box-sizing: border-box;
+  	text-align: center;
+  	font-size: 17px;
+  	color: #000;
+  	font-family: Roboto;
 }
 </style>
