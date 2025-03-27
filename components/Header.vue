@@ -1,21 +1,4 @@
-<script>
-export default {
-  data() {
-    return {
-      searchQuery: "", // Variável para armazenar o valor da pesquisa
-    };
-  },
-  methods: {
-    handleSearchClick() {
-      if (this.searchQuery) {
-        alert("Você pesquisou por: " + this.searchQuery);
-      } else {
-        alert("Por favor, insira um termo de pesquisa!");
-      }
-    },
-  },
-};
-</script>
+
 
 <template>
   <div class="header">
@@ -40,13 +23,60 @@ export default {
         <NuxtLink to="/Lojas" class="txt_link">Lojas</NuxtLink>
       </div>
       <div class="link">
-        <img class="user-icon" alt="" src="~/assets/icons/User.svg" />
+      
+        <!-- Ícone de usuário que, ao ser clicado, abre o menu -->
+        <a href="javascript:void(0);" @click="toggleMenu" ref="userIcon">
+      <img class="user-icon" alt="User Icon" src="~/assets/icons/User.svg" />
+    </a>
+
+    <!-- Menu de opções que aparece quando isMenuVisible é true -->
+    <ul v-if="isMenuVisible" class="menu-opcoes" :style="menuStyles" v-click-outside="closeMenu">
+      <li @click="navigateTo('pagina1.html')">Página 1</li>
+      <li @click="navigateTo('pagina2.html')">Página 2</li>
+      <li @click="navigateTo('pagina3.html')">Página 3</li>
+    </ul>
+  
+  </div>
+
       </div>
     </div>
-  </div>
+  
+
+  
 </template>
 
 <style>
+/* Estilos do ícone de usuário */
+.user-icon {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+}
+
+/* Estilos do menu suspenso */
+.menu-opcoes {
+  display: block;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  list-style: none;
+  margin: 0;
+  width: 150px;
+}
+
+.menu-opcoes li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.menu-opcoes li:hover {
+  background-color: #f0f0f0;
+}
+
+
+
 .header {
   	width: 100%;
   	position: relative;
@@ -150,3 +180,51 @@ export default {
   	height: 30px;
 }
 </style>
+
+<script>
+// Importando a diretiva v-click-outside
+import vClickOutside from "v-click-outside";
+
+export default {
+  directives: {
+    clickOutside: vClickOutside, // Registrando a diretiva
+  },
+  data() {
+    return {
+      isMenuVisible: false, // Controle da visibilidade do menu
+      menuStyles: {
+        top: "0px", // A posição vertical inicial
+        left: "0px", // A posição horizontal inicial
+      },
+    };
+  },
+  methods: {
+    // Função para alternar a visibilidade do menu
+    toggleMenu() {
+      // Se o menu for visível, então calcular a posição
+      this.isMenuVisible = !this.isMenuVisible;
+      if (this.isMenuVisible) {
+        this.calculateMenuPosition();
+      }
+    },
+    // Função para calcular a posição do menu em relação ao ícone
+    calculateMenuPosition() {
+      const iconElement = this.$refs.userIcon; // Pega o ícone do usuário
+      const rect = iconElement.getBoundingClientRect(); // Obtém as coordenadas do ícone
+
+      // Calcula a posição do menu para aparecer abaixo do ícone
+      this.menuStyles.top = `${rect.bottom + window.scrollY}px`; // O menu aparece logo abaixo
+      this.menuStyles.left = `${rect.left + window.scrollX}px`; // Alinha o menu à esquerda do ícone
+    },
+    // Função para navegar para a URL
+    navigateTo(url) {
+      window.location.href = url; // Redireciona para a página especificada
+      this.isMenuVisible = false; // Oculta o menu após a navegação
+    },
+    // Função para fechar o menu
+    closeMenu() {
+      this.isMenuVisible = false;
+    },
+  },
+};
+</script>
