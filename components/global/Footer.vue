@@ -2,69 +2,59 @@
   import { useWindowSize } from '@vueuse/core'
 
   const { width } = useWindowSize()
-
 </script>
 
 <template>
   <body>
-    <body>
-  <div class="footer">
-    <div class="footer1">
-      <div class="primary-footer">
-        <img class="logo-icon" alt="Logo" src="~/assets/images/Logo.png" />
+    <div class="footer">
+      <div class="footer1">
+        <div class="primary-footer">
+          <img class="logo-icon" alt="Logo" src="~/assets/images/Logo.png" />
 
-        <div class="grupo">
-          <div class="informaes">
-            <div class="sobre">
-              <div class="texto-e-emoji">
-                <img
-                  class="vector-icon"
-                  alt="Ícone sobre"
-                  src="/assets/icons/interrogacao.svg"
-                />
-                <div class="sobre1">Sobre</div>
+          <div class="grupo">
+            <div class="informaes">
+              <div class="sobre">
+                <div class="texto-e-emoji">
+                  <img
+                    class="vector-icon"
+                    alt="Ícone sobre"
+                    src="/assets/icons/interrogacao.svg"
+                  />
+                  <div class="sobre1">Sobre</div>
+                </div>
               </div>
-            </div>
 
-            <div class="contato">
-              <div class="icon-mail">
-                <img
-                  class="vector-icon1"
-                  alt="Ícone de contato"
-                  src="/assets/icons/email.svg"
-                />
-                <div class="contato1">Contato</div>
+              <div class="contato">
+                <div class="icon-mail">
+                  <img
+                    class="vector-icon1"
+                    alt="Ícone de contato"
+                    src="/assets/icons/email.svg"
+                  />
+                  <div class="contato1">Contato</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="second-footer">
-        <!-- Linha do footer -->
-        <div class="informaes-finais">
-          <div class="social">
-            <img class="social-icon" src="/assets/icons/icon _github.svg" alt="GitHub" />
-          </div>
-          <div class="promohawk-todos-os">
-            © 2025 PromoHawk. Todos os direitos reservados
+        <div class="second-footer">
+          <!-- Linha do footer -->
+          <div class="informaes-finais">
+            <div class="social">
+              <img class="social-icon" src="/assets/icons/icon _github.svg" alt="GitHub" />
+            </div>
+            <div class="promohawk-todos-os">
+              © 2025 PromoHawk. Todos os direitos reservados
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</body>
-
-</body>
-
+  </body>
 </template>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
 html, body {
   height: 100%;

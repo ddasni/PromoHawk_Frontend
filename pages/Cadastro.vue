@@ -1,4 +1,4 @@
-<script>
+<script setup>
 // Usando o layout 'basic', onde não tem Header e Footer
 definePageMeta({
     layout: 'basic'
@@ -6,31 +6,27 @@ definePageMeta({
 </script>
 
 <template>
- <div>
-<body>
-    <div class="cadastro-container">
-        <h2>Cadastro</h2>
-        <form action="#" method="post">
-            <div class="input-group">
-                <label for="nome">Nome</label>
-                <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
-            </div>
-            <div class="input-group">
-                <label for="nome-usuario">Usuário</label>
-                <input type="text" id="nome-usuario" name="nome-usuario" required placeholder="Digite o seu nome de usuário">
-            </div>
-            <div class="input-group">
-                <label for="telefone">Telefone</label>
-                <input type="tel" name="telefone" placeholder="(XX) XXXXX-XXXX" required>
+    <body>
+        <div class="cadastro-container">
+            <h2>Cadastro</h2>
+            <form action="#" method="post">
+                <div class="input-group">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
+                </div>
+                <div class="input-group">
+                    <label for="nome-usuario">Usuário</label>
+                    <input type="text" id="nome-usuario" name="nome-usuario" required placeholder="Digite o seu nome de usuário">
+                </div>
+                <div class="input-group">
+                    <label for="telefone">Telefone</label>
+                    <input type="tel" name="telefone" placeholder="(XX) XXXXX-XXXX" required>
 
-            </div>
-            <button type="submit" class="btn-cadastro">Próximo</button>
-        </form>
-    </div>
-</body>
-
-
-  </div>
+                </div>
+                <button type="submit" class="btn-cadastro">Próximo</button>
+            </form>
+        </div>
+    </body>
 </template>
 
 <style>

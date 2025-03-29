@@ -1,5 +1,3 @@
-
-
 <template>
   <div class="header">
     <div class="pesquisa">
@@ -26,23 +24,18 @@
       
         <!-- Ícone de usuário que, ao ser clicado, abre o menu -->
         <a href="javascript:void(0);" @click="toggleMenu" ref="userIcon">
-      <img class="user-icon" alt="User Icon" src="~/assets/icons/User.svg" />
-    </a>
+        <img class="user-icon" alt="User Icon" src="~/assets/icons/User.svg" />
+        </a>
 
-    <!-- Menu de opções que aparece quando isMenuVisible é true -->
-    <ul v-if="isMenuVisible" class="menu-opcoes" :style="menuStyles" v-click-outside="closeMenu">
-      <li @click="navigateTo('pagina1.html')">Página 1</li>
-      <li @click="navigateTo('pagina2.html')">Página 2</li>
-      <li @click="navigateTo('pagina3.html')">Página 3</li>
-    </ul>
-  
-  </div>
-
+        <!-- Menu de opções que aparece quando isMenuVisible é true -->
+        <ul v-if="isMenuVisible" class="menu-opcoes" :style="menuStyles" v-click-outside="closeMenu">
+          <li @click="navigateTo('pagina1.html')">Página 1</li>
+          <li @click="navigateTo('pagina2.html')">Página 2</li>
+          <li @click="navigateTo('pagina3.html')">Página 3</li>
+        </ul>
       </div>
     </div>
-  
-
-  
+  </div> 
 </template>
 
 <style>
@@ -74,8 +67,6 @@
 .menu-opcoes li:hover {
   background-color: #f0f0f0;
 }
-
-
 
 .header {
   	width: 100%;
