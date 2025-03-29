@@ -1,5 +1,8 @@
 <script>
-
+// Usando o layout 'basic', onde não tem Header e Footer
+definePageMeta({
+    layout: 'basic'
+})
 </script>
 
 <template>
