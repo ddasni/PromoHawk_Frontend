@@ -1,3 +1,52 @@
+<script> // tem que colcoar script setup, se não tiver vai ter que exportar o js
+// Importando a diretiva v-click-outside
+import vClickOutside from "v-click-outside";
+
+export default {
+  directives: {
+    clickOutside: vClickOutside, // Registrando a diretiva
+  },
+  data() {
+    return {
+      isMenuVisible: false, // Controle da visibilidade do menu
+      menuStyles: {
+        top: "0px", // A posição vertical inicial
+        left: "0px", // A posição horizontal inicial
+      },
+    };
+  },
+  methods: {
+    // Função para alternar a visibilidade do menu
+    toggleMenu() {
+      // Se o menu for visível, então calcular a posição
+      this.isMenuVisible = !this.isMenuVisible;
+      if (this.isMenuVisible) {
+        this.calculateMenuPosition();
+      }
+    },
+    // Função para calcular a posição do menu em relação ao ícone
+    calculateMenuPosition() {
+      const iconElement = this.$refs.userIcon; // Pega o ícone do usuário
+      const rect = iconElement.getBoundingClientRect(); // Obtém as coordenadas do ícone
+
+      // Calcula a posição do menu para aparecer abaixo do ícone
+      this.menuStyles.top = `${rect.bottom + window.scrollY}px`; // O menu aparece logo abaixo
+      this.menuStyles.left = `${rect.left + window.scrollX}px`; // Alinha o menu à esquerda do ícone
+    },
+    // Função para navegar para a URL
+    navigateTo(url) {
+      window.location.href = url; // Redireciona para a página especificada
+      this.isMenuVisible = false; // Oculta o menu após a navegação
+    },
+    // Função para fechar o menu
+    closeMenu() {
+      this.isMenuVisible = false;
+    },
+  },
+};
+</script>
+
+
 <template>
   <div class="header">
     <div class="pesquisa">
@@ -37,6 +86,7 @@
     </div>
   </div> 
 </template>
+
 
 <style scoped>
 /* Estilos do ícone de usuário */
@@ -171,51 +221,3 @@
   	height: 30px;
 }
 </style>
-
-<script>
-// Importando a diretiva v-click-outside
-import vClickOutside from "v-click-outside";
-
-export default {
-  directives: {
-    clickOutside: vClickOutside, // Registrando a diretiva
-  },
-  data() {
-    return {
-      isMenuVisible: false, // Controle da visibilidade do menu
-      menuStyles: {
-        top: "0px", // A posição vertical inicial
-        left: "0px", // A posição horizontal inicial
-      },
-    };
-  },
-  methods: {
-    // Função para alternar a visibilidade do menu
-    toggleMenu() {
-      // Se o menu for visível, então calcular a posição
-      this.isMenuVisible = !this.isMenuVisible;
-      if (this.isMenuVisible) {
-        this.calculateMenuPosition();
-      }
-    },
-    // Função para calcular a posição do menu em relação ao ícone
-    calculateMenuPosition() {
-      const iconElement = this.$refs.userIcon; // Pega o ícone do usuário
-      const rect = iconElement.getBoundingClientRect(); // Obtém as coordenadas do ícone
-
-      // Calcula a posição do menu para aparecer abaixo do ícone
-      this.menuStyles.top = `${rect.bottom + window.scrollY}px`; // O menu aparece logo abaixo
-      this.menuStyles.left = `${rect.left + window.scrollX}px`; // Alinha o menu à esquerda do ícone
-    },
-    // Função para navegar para a URL
-    navigateTo(url) {
-      window.location.href = url; // Redireciona para a página especificada
-      this.isMenuVisible = false; // Oculta o menu após a navegação
-    },
-    // Função para fechar o menu
-    closeMenu() {
-      this.isMenuVisible = false;
-    },
-  },
-};
-</script>
