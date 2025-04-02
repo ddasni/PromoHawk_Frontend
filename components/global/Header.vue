@@ -38,7 +38,7 @@
   </div> 
 </template>
 
-<style>
+<style scoped>
 /* Estilos do ícone de usuário */
 .user-icon {
   cursor: pointer;
