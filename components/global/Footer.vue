@@ -4,6 +4,7 @@
   const { width } = useWindowSize()
 </script>
 
+
 <template>
   <body>
     <div class="footer">
@@ -53,6 +54,7 @@
     </div>
   </body>
 </template>
+
 
 <style scoped>
 
