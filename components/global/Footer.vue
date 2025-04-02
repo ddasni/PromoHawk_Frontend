@@ -6,7 +6,7 @@
 
 
 <template>
-  <body>
+  <body class="html_body">
     <div class="footer">
       <div class="footer1">
         <div class="primary-footer">
@@ -58,7 +58,7 @@
 
 <style scoped>
 
-html, body {
+.html_body {
   height: 100%;
   font-family: 'Roboto', sans-serif;
 }
