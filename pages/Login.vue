@@ -21,8 +21,8 @@ definePageMeta({
           </div>
           <button type="submit" class="btn-login">Entrar</button>
           <div class="links">
-            <a href="#">Esqueceu a senha?</a> |
-            <a href="#">Cadastrar-se</a>
+            <NuxtLink to="#">Esqueceu a senha?</NuxtLink>
+            <NuxtLink to="/Cadastro">Cadastrar-se</NuxtLink>
           </div>
         </form>
       </div>
