@@ -44,15 +44,16 @@ export default {
     },
   },
 };
+
 </script>
 
 
 <template>
   <div class="header">
     <div class="pesquisa">
-      <input type="text" class="search-input" placeholder="Pesquisar..." />
+      <input type="text" class="search-input" id="searchInput" placeholder="Pesquisar..." />
       <div class="search_icon">
-        <img class="search_icon1" src="~/assets/icons/icon_search.svg" />
+    <img class="search_icon1" src="~/assets/icons/icon_search.svg" alt="Ícone de Busca" />
       </div>
     </div>
     <img class="logo-icon" alt="" src="~/assets/images/Logo.png" />
@@ -221,3 +222,23 @@ export default {
   	height: 30px;
 }
 </style>
+
+//implementar esse código depois
+ 
+// Obtém os elementos
+const searchIcon = document.querySelector('.search_icon1');  // Seleciona o ícone de busca
+const searchInput = document.getElementById('searchInput');  // Seleciona o campo de entrada
+
+// Função para realizar a busca
+function performSearch() {
+    const query = searchInput.value.trim();  // Captura o valor do input e remove espaços extras
+    if (query) {
+        alert(`Buscando por: ${query}`);
+        // Aqui você pode substituir o alert por alguma lógica para realizar a busca (exemplo: API ou filtragem).
+    } else {
+        alert('Por favor, insira um termo de busca!');
+    }
+}
+
+// Adiciona o evento de clique no ícone de busca
+searchIcon.addEventListener('click', performSearch);

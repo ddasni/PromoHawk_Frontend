@@ -12,7 +12,6 @@
             <img class="imagem" alt="" src="~/assets/images/Produtos/samsung/001.jpg">
             <img class="imagem" alt="" src="~/assets/images/Produtos/samsung/004.jpg">
             <img class="imagem" alt="" src="~/assets/images/Produtos/samsung/005.jpg">
-            <img class="imagem" alt="" src="~/assets/images/Produtos/samsung/002.jpg">
         </div>  
     </div>
 </template>
