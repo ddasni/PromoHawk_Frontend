@@ -6,6 +6,8 @@
 
 </script>
 
-<style>
-
+<style scoped>
+body{
+    background-color: white;
+}
 </style>
