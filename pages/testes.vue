@@ -18,12 +18,12 @@ import User from '~/components/Header/user_icon.vue'
 
 <style scoped>
 .container {
-width: 90vw;
-height: 90vh;
+width: 100vw;
+height: 100vh;
 display: flex;
 flex-direction: row;
 justify-content: center;
 align-items: center;
-gap: 30px;
+gap: 50px;
 }
 </style>
