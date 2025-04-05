@@ -43,7 +43,7 @@
           <!-- Linha do footer -->
           <div class="informaes-finais">
             <div class="social">
-              <img class="social-icon" src="/assets/icons/icon _github.svg" alt="GitHub" />
+              <img class="social-icon" src="/assets/icons/github-icon.svg" alt="GitHub" />
             </div>
             <div class="promohawk-todos-os">
               © 2025 PromoHawk. Todos os direitos reservados
