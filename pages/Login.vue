@@ -6,8 +6,6 @@ definePageMeta({
 </script>
 
 <template>
-  <div>
-    <body>
       <div class="login-container">
         <h2>Login</h2>
         <form action="#" method="post">
@@ -26,8 +24,6 @@ definePageMeta({
           </div>
         </form>
       </div>
-    </body>
-  </div>
 </template>
 
 <style scoped>
