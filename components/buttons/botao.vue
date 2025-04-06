@@ -15,28 +15,37 @@ const props = withDefaults(
   defineProps<{
     nome?: string
     size?: 'sm' | 'md' | 'lg'
-    cor?: 'primary' | 'dois' | 'tres'
+    cor?: 'primary' | 'secondary' | 'tertiary'
     type?: 'button' | 'submit' | 'reset'
   }>(),
   {
-    nome: 'Button',
-    size: 'md',
-    cor: 'primary',
-    type: 'button',
+    // Definições padrão do botao
+    nome: 'Button', // nome padrão
+    size: 'md', // Tamanho padrão
+    cor: 'primary', // cor padrão
+    type: 'button', // tipo padrão
   }
 )
 
-// Emitir evento de clique
-const emit = defineEmits<{
-  (e: 'click', event: MouseEvent): void
-}>()
-
 const { nome, size, cor, type } = toRefs(props)
 
-// Classe base com estilos gerais
+// Classe base com estilos gerais do botao
 const baseClass = 'rounded-md font-semibold transition duration-200 hover:opacity-90 shadow-md'
 
-// Tamanhos
+// classe das Cores do botao
+const colorClass = computed(() => {
+  switch (cor.value) {
+    case 'tertiary':
+      return 'bg-(--ui-tertiary) text-white'
+    case 'secondary':
+      return 'bg-(--ui-secondary) text-white'
+    case 'primary':
+    default:
+      return 'bg-(--ui-primary) text-white'
+  }
+})
+
+// classe dos Tamanhos do botao
 const sizeClass = computed(() => {
   switch (size.value) {
     case 'sm':
@@ -49,18 +58,13 @@ const sizeClass = computed(() => {
   }
 })
 
-// Cores
-const colorClass = computed(() => {
-  switch (cor.value) {
-    case 'dois':
-      return 'bg-red-500 text-white'
-    case 'tres':
-      return 'bg-green-500 text-white'
-    case 'primary':
-    default:
-      return 'bg-blue-500 text-white'
-  }
-})
+// A codigo a baixo faz o seguinte:
+// botão personalizado que se comporta como um <button @click="...">
+
+// Evento de clique
+const emit = defineEmits<{
+  (e: 'click', event: MouseEvent): void
+}>()
 
 // Clique
 const handleClick = (event: MouseEvent) => {

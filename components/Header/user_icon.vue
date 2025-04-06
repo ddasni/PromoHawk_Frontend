@@ -1,5 +1,6 @@
 <template>
   <UDropdownMenu size="xl" arrow :items="items" :ui="{ content: 'w-50' }">
+
     <!-- esse é o icone onde deve clicar para exibir o dropdown menu-->
     <UButton
       class="font-bold rounded-full"
@@ -8,20 +9,15 @@
       color="primary"
       variant="solid"
     />
-    <!--
-  label -> texto que vai ser exibido
-
-  icon -> icone que vai ser exibido. o nuxt usa a bibliota de icones do iconify
-  -->
 
     <template #button>
       <!-- Esse é um slot -->
       <div class="flex gap-3">
         <NuxtLink to="/Login" class="link">
-          <Botao nome="Login" size="sm" cor="dois" />
+          <Botao nome="Login" size="sm" cor="tertiary" />
         </NuxtLink>
         <NuxtLink to="/Cadastro" class="link">
-          <Botao nome="Cadastro" size="sm" cor="dois" />
+          <Botao nome="Cadastro" size="sm" cor="tertiary" />
         </NuxtLink>
       </div>
     </template>
@@ -74,4 +70,6 @@ const items = ref<DropdownMenuItem[]>([
 ]);
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

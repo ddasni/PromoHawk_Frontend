@@ -7,7 +7,7 @@ export default defineAppConfig({
     },
     dropdownMenu: {
       slots: {
-        content: 'bg-(--ui-secondary)', // cor do dropdown
+        content: 'bg-(--ui-secondary)', // cor de fundo do dropdown
       },
     },
   },
