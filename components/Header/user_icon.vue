@@ -1,12 +1,11 @@
 <template>
-  <UDropdownMenu size="xl" arrow :items="items" :ui="{ content: 'w-55' }">
+  <UDropdownMenu size="xl" arrow :items="items" :ui="{ content: 'w-50' }">
     <!-- esse é o icone onde deve clicar para exibir o dropdown menu-->
     <UButton
-      :avatar="{
-        src: 'https://github.com/nuxt.png'
-      }"
+      class="font-bold rounded-full"
+      icon="icon:user"
       size="xl"
-      color="secondary"
+      color="primary"
       variant="solid"
     />
     <!--
@@ -59,7 +58,7 @@ const items = ref<DropdownMenuItem[]>([
     },
     {
       label: "Notificações",
-      icon: "heroicons-outline:heart",
+      icon: "heroicons:bell",
     },
     {
       label: "Settings",

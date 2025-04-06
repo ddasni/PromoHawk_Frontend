@@ -4,3 +4,41 @@
 body {
     background-color: white;
 }
+
+:root {
+
+    /*======= Paleta de cores ==========*/
+
+    /* === Neutros === */
+    --color-neutral-50:  #ffffff;
+    --color-neutral-100: #f5f5f5;
+    --color-neutral-200: #e3e2e4;
+    --color-neutral-300: #c9c8cb;
+    --color-neutral-400: #a0a0a0;
+    --color-neutral-500: #666666;
+    --color-neutral-600: #474649;
+    --color-neutral-700: #333333;
+    --color-neutral-800: #171617;
+    --color-neutral-900: #000000;
+    --color-neutral-950: #000000;
+    
+    /* === Cores de status === */
+    --color-success-500: #22c55e;   /* Verde suave */
+    --color-info-500:    #3b82f6;   /* Azul padrão */
+    --color-warning-500: #facc15;   /* Amarelo vibrante */
+    --color-error-500:   #ef4444;   /* Vermelho vibrante */
+    
+    /* === Terciária === */
+    --color-tertiary-500: #16f0a7;  /* Ciano / Jade (verde-azulado) */
+      
+
+
+    /* onde vai usa-las */
+    --ui-primary: var(--color-neutral-950);
+    --ui-secondary: var(--color-neutral-800);
+    --ui-tertiary: var(var(--color-tertiary-500))
+    --ui-success: var(--color-success-500);
+    --ui-info: var(--color-info-500);
+    --ui-warning: var(--color-warning-500);
+    --ui-error: var(--color-error-500);
+}
