@@ -36,7 +36,7 @@ body {
     /* onde vai usa-las */
     --ui-primary: var(--color-neutral-950);
     --ui-secondary: var(--color-neutral-800);
-    --ui-tertiary: var(var(--color-tertiary-500))
+    --ui-tertiary: var(--color-tertiary-500);
     --ui-success: var(--color-success-500);
     --ui-info: var(--color-info-500);
     --ui-warning: var(--color-warning-500);
