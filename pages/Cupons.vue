@@ -4,7 +4,7 @@
 </template>
 
 <script  setup>
-import Cupom from '~/components/Cupom_card.vue';
+import Cupom from '~/components/cards/card_produto.vue';
 </script>
 
 <style scoped>
