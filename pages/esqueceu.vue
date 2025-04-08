@@ -1,3 +1,22 @@
+<template>
+      <div class="esqueceu-container">
+        <h2>Esqueceu a senha</h2>
+        <form action="#" method="post">
+          <div class="input-group">
+            <label for="email">E-mail/Telefone</label>
+            <input type="text" id="esqueceu" required placeholder="Digite seu e-mail ou telefone"/>
+          </div>
+        
+          <button type="submit" class="btn-esqueceu">Enviar</button>
+          <div class="links">
+            
+          </div>
+        </form>
+      </div>
+  
+  
+</template>
+
 <script setup>
 // Usando o layout 'basic', onde não tem Header e Footer
 definePageMeta({
@@ -5,28 +24,7 @@ definePageMeta({
 });
 </script>
 
-<template>
-      <div class="login-container">
-        <h2>Login</h2>
-        <form action="#" method="post">
-          <div class="input-group">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" name="email" required placeholder="Digite seu e-mail"/>
-          </div>
-          <div class="input-group">
-            <label for="senha">Senha</label>
-            <input type="password" id="senha" name="senha" required placeholder="Digite sua senha"/>
-          </div>
-          <button type="submit" class="btn-login">Entrar</button>
-          <div class="links">
-            <NuxtLink to="/esqueceu">Esqueceu a senha?</NuxtLink>
-            <NuxtLink to="/Cadastro">Cadastrar-se</NuxtLink>
-          </div>
-        </form>
-      </div>
-</template>
-
-<style scoped>
+<style>
 * {
   margin: 0;
   padding: 0;
@@ -43,7 +41,7 @@ body {
   margin: 0; /* Remove margens do body */
 }
 
-.login-container {
+.esqueceu-container {
   background-color: #fff;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -76,7 +74,7 @@ h2 {
   font-size: 14px;
 }
 
-.btn-login {
+.btn-esqueceu {
   width: 100%;
   padding: 10px;
   background-color: seagreen;
@@ -87,7 +85,7 @@ h2 {
   cursor: pointer;
 }
 
-.btn-login:hover {
+.btn-esqueceu:hover {
   background-color: darkgreen;
 }
 
