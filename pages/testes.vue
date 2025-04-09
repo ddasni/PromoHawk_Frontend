@@ -1,5 +1,7 @@
 <template>
   <div class="container">
+    <Nav />
+    <br><br>
     <Botao nome="teste" size="sm" color="tres"/>
     <br><br>
     <User />
@@ -11,6 +13,7 @@ definePageMeta({
     layout: 'basic'
 })
 
+import Nav from '~/components/Header/NavigationMenu.vue';
 import Botao from '~/components/buttons/botao.vue';
 import User from '~/components/Header/user_icon.vue'
 
