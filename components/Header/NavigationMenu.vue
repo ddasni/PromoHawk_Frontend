@@ -25,7 +25,6 @@ const items = ref<NavigationMenuItem[]>([
   {
     label: 'Lojas',
     icon: 'weui:shop-filled',
-    to: '/composables',
     active: false,
     children: [
       {
@@ -48,7 +47,6 @@ const items = ref<NavigationMenuItem[]>([
   {
     label: 'Categorias',
     icon: 'heroicons-outline:menu',
-    to: '/components',
     active: false,
     children: [
       {
