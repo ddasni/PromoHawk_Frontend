@@ -1,5 +1,5 @@
 <template>
-  <UNavigationMenu arrow content-orientation="vertical" :items="items" class="justify-center" />
+  <UNavigationMenu arrow color="primary" content-orientation="vertical" :items="items" class="justify-center" />
 </template>
 
 <style scoped>

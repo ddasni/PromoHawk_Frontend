@@ -17,7 +17,7 @@ body {
     --color-neutral-500: #666666;
     --color-neutral-600: #474649;
     --color-neutral-700: #030712; /* 333333 */
-    --color-neutral-800: #171717; /* 171717 */
+    --color-neutral-800: #171717; /*  #1f2124*/
     --color-neutral-900: #000000;
     --color-neutral-950: #000000;
     
@@ -29,10 +29,10 @@ body {
     
     /* === Terciária === */
     --color-tertiary-500: #0db37b;  /* Ciano / Jade (verde-azulado) */
-
+    /* #005954 */
     /* onde vai usa-las */
     --ui-primary: var(--color-neutral-950);
-    --ui-secondary: var(--color-neutral-700);
+    --ui-secondary: var(--color-neutral-800);
     --ui-tertiary: var(--color-tertiary-500);
     --ui-success: var(--color-success-500);
     --ui-info: var(--color-info-500);
