@@ -18,6 +18,26 @@
 </div>
 </div>
 
+<br><br>
+
+<div class="cupom">
+	<img class="imgLoja" src="~/assets/images/Produtos/samsung/004.jpg" alt="">
+
+	<USeparator type="dashed" orientation="vertical" class="h-35" />
+
+	<div class="textos">
+		<h1> {{ titulo }} </h1>
+		<p> {{ paragrafo  }} </p>
+
+		<div class="codigo">
+			<p> Promo codigo: </p>
+
+			<!-- componente para revelar o codigo -->
+		</div>
+	</div>
+
+</div>
+
 </template>
 
 <script  setup>
@@ -26,29 +46,15 @@
 
 <style scoped>
 
-loja-icon {
+.imgLoja {
   	width: 140px;
-  	border-radius: 40px;
+  	border-radius: 50%;
   	max-height: 100%;
   	overflow: hidden;
   	flex-shrink: 0;
   	object-fit: cover;
 }
-.divisao-child {
-  	width: 1px;
-  	position: relative;
-  	border-right: 1px dashed #000;
-  	box-sizing: border-box;
-  	height: 141px;
-}
-.divisao {
-  	overflow: hidden;
-  	display: flex;
-  	flex-direction: row;
-  	align-items: center;
-  	justify-content: center;
-  	padding: 1px 7px;
-}
+
 .off {
   	position: relative;
   	line-height: 49.2px;
@@ -109,7 +115,7 @@ loja-icon {
   	gap: 5px;
 }
 .cupom {
-  	width: 100%;
+  	width: 25%;
   	position: relative;
   	box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   	border-radius: 10px;
