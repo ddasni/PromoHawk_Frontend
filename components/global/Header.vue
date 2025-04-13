@@ -84,7 +84,7 @@ export default {
           <img
             class="user-icon"
             alt="User Icon"
-            src="~/assets/icons/user.svg"
+            src="~/assets/icons/User.svg"
           />
         </a>
 
