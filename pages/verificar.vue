@@ -1,14 +1,14 @@
 <template>
-  <div class="esqueceu-container">
-    <h2>Esqueceu a senha</h2>
-    <form @submit.prevent="handleSubmit">
+  <div class="verificar-codigo-container">
+    <h2>Verifique seu Código</h2>
+    <form @submit.prevent="handleVerify">
       <div class="input-group">
-        <label for="email">E-mail</label>
-        <input v-model="email" type="email" id="email" required placeholder="Digite seu e-mail" />
+        <label for="code">Código de verificação</label>
+        <input v-model="code" type="text" id="code" required placeholder="Digite o código enviado por e-mail" />
       </div>
 
-      <button type="submit" class="btn-esqueceu" :disabled="loading">
-        {{ loading ? 'Enviando...' : 'Enviar Código' }}
+      <button type="submit" class="btn-verificar" :disabled="loading">
+        {{ loading ? 'Verificando...' : 'Verificar Código' }}
       </button>
 
       <div v-if="message" :style="messageStyle">{{ message }}</div>
@@ -16,38 +16,44 @@
   </div>
 </template>
 
+
 <script setup>
 // Usando o layout 'basic', onde não tem Header e Footer
 definePageMeta({
   layout: 'basic',
 })
 
+
 import { ref } from 'vue'
 
-const email = ref('')
+const code = ref('')
 const loading = ref(false)
 const message = ref('')
 const messageStyle = ref({})
 
-const handleSubmit = async () => {
+const handleVerify = async () => {
   loading.value = true
   message.value = ''
   messageStyle.value = {}
 
+  const codeId = localStorage.getItem('codeId')
+
   try {
-    const response = await $fetch('/api/sendCode', {
+    const response = await $fetch('/api/verifyCode', {
       method: 'POST',
-      body: { email: email.value }
+      body: { code: code.value, codeId }
     })
 
     if (response.success) {
-      message.value = 'Código enviado! Verifique seu e-mail.'
+      message.value = 'Código verificado com sucesso! Você pode agora alterar sua senha.'
       messageStyle.value = { color: 'green' }
-      // Armazene o codeId para usar na verificação
-      localStorage.setItem('codeId', response.codeId)
+      // Redirecionar para a página de alterar senha
+      setTimeout(() => {
+        useRouter().push('/alterar-senha')
+      }, 2000)
     }
   } catch (error) {
-    message.value = 'Erro ao enviar o código.'
+    message.value = 'Código inválido.'
     messageStyle.value = { color: 'red' }
   } finally {
     loading.value = false
@@ -56,7 +62,7 @@ const handleSubmit = async () => {
 
 </script>
 
-<style>
+<style scoped>
 * {
   margin: 0;
   padding: 0;
@@ -67,19 +73,18 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
   display: flex;
-  justify-content: center; /* Alinha horizontalmente */
-  align-items: center; /* Alinha verticalmente */
-  height: 100vh; /* Altura da tela toda */
-  margin: 0; /* Remove margens do body */
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-.esqueceu-container {
+.container {
   background-color: #fff;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   width: 100%;
-  max-width: 400px; /* Limita a largura do formulário */
+  max-width: 400px;
   text-align: center;
 }
 
@@ -106,7 +111,7 @@ h2 {
   font-size: 14px;
 }
 
-.btn-esqueceu {
+.btn {
   width: 100%;
   padding: 10px;
   background-color: seagreen;
@@ -117,20 +122,7 @@ h2 {
   cursor: pointer;
 }
 
-.btn-esqueceu:hover {
+.btn:hover {
   background-color: darkgreen;
-}
-
-.links {
-  margin-top: 10px;
-}
-
-.links a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.links a:hover {
-  text-decoration: underline;
 }
 </style>
