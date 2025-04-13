@@ -1,5 +1,7 @@
 <template>
   <div class="container">
+    <Nav />
+    <br><br>
     <Botao nome="teste" size="sm" color="tres"/>
     <br><br>
     <User />

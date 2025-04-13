@@ -5,7 +5,7 @@
     <UButton
       class="font-bold rounded-full"
       icon="icon:user"
-      size="xl"
+      size="lg"
       color="primary"
       variant="solid"
     />
