@@ -101,7 +101,7 @@
 .content {
   flex: 1; /* Faz o conteúdo ocupar o restante da altura da página */
 }
-
+a
 .footer {
   width: 100%;
   background-color: transparent; /* Fundo transparente */
