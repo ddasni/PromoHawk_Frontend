@@ -1,6 +1,8 @@
 <template>
     <Header />
-        <NuxtPage />
+        <main class="conteudo">
+            <NuxtPage />
+        </main>
     <Footer />
 </template>
 
@@ -10,7 +12,8 @@
 </script>
 
 <style scoped>
-body{
+.conteudo{
     background-color: white;
+    margin: 0px 160px;
 }
 </style>
