@@ -7,6 +7,8 @@
     <User />
     <br><br>
     <Categoria nome="testando" src="~/assets/images/Produtos/samsung/003.jpg"/>
+    <br><br>
+    <Divisor titulo="Destaques" actionTexto="ver mais >" link=""/> 
   </div>
 </template>
 
@@ -18,6 +20,7 @@ definePageMeta({
 import Categoria from '~/components/cards/Categoria.vue'
 import Botao from '~/components/buttons/botao.vue';
 import User from '~/components/Header/user_icon.vue'
+import Divisor from '~/components/Divisor.vue';
 
 </script>
 
