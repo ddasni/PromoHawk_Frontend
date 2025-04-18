@@ -1,46 +1,47 @@
-<script setup>
-// Usando o layout 'basic', onde não tem Header e Footer
-definePageMeta({
-  layout: "basic",
-});
-</script>
-
 <template>
-      <div class="login-container">
-        <h2>Login</h2>
-        <form action="#" method="post">
-          <div class="input-group">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" name="email" required placeholder="Digite seu e-mail"/>
-          </div>
-          <div class="input-group">
-            <label for="senha">Senha</label>
-            <input type="password" id="senha" name="senha" required placeholder="Digite sua senha"/>
-          </div>
-          <button type="submit" class="btn-login">Entrar</button>
-          <div class="links">
-            <NuxtLink to="/esqueceu">Esqueceu a senha?</NuxtLink>
-            <NuxtLink to="/Cadastro">Cadastrar-se</NuxtLink>
-          </div>
-        </form>
-      </div>
+  <div class="page-center">
+    <div class="login-container">
+      <h2>Login</h2>
+      <form action="#" method="post">
+        <div class="input-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" required placeholder="Digite seu e-mail"/>
+        </div>
+        <div class="input-group">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" name="senha" required placeholder="Digite sua senha"/>
+        </div>
+        <button type="submit" class="btn-login">Entrar</button>
+        <div class="links">
+          <NuxtLink to="/esqueceu">Esqueceu a senha?</NuxtLink>
+          <NuxtLink to="/Cadastro">Cadastrar-se</NuxtLink>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
+<script>
+// Usando o layout 'basic', onde não tem Header e Footer
+definePageMeta({
+  layout: 'basic',
+})
+</script>
 <style scoped>
+
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
+.page-center {
   display: flex;
-  justify-content: center; /* Alinha horizontalmente */
-  align-items: center; /* Alinha verticalmente */
-  height: 100vh; /* Altura da tela toda */
-  margin: 0; /* Remove margens do body */
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Altura da viewport inteira */
+  background-color: #f4f4f9;
 }
 
 .login-container {
@@ -49,7 +50,7 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   width: 100%;
-  max-width: 400px; /* Limita a largura do formulário */
+  max-width: 400px;
   text-align: center;
 }
 
@@ -104,3 +105,4 @@ h2 {
   text-decoration: underline;
 }
 </style>
+
