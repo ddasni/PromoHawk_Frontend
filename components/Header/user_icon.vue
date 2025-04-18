@@ -52,6 +52,7 @@ const items = ref<DropdownMenuItem[]>([
     {
       label: "Lista de Desejos",
       icon: "heroicons-outline:heart",
+      to:'listadesejo'
     },
     {
       label: "Notificações",
