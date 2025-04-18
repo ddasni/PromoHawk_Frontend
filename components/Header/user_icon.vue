@@ -59,8 +59,9 @@ const items = ref<DropdownMenuItem[]>([
       icon: "heroicons:bell",
     },
     {
-      label: "Settings",
+      label: "Configurações",
       icon: "i-lucide-cog",
+      to:'config'
     },
   ],
   [
