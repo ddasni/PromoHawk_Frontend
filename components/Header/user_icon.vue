@@ -47,6 +47,7 @@ const items = ref<DropdownMenuItem[]>([
     {
       label: "Perfil",
       icon: "i-lucide-user",
+      to: 'perfil'
     },
     {
       label: "Lista de Desejos",
