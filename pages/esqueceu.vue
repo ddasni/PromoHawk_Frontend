@@ -1,18 +1,20 @@
 <template>
-  <div class="esqueceu-container">
-    <h2>Esqueceu a senha</h2>
-    <form @submit.prevent="handleSubmit">
-      <div class="input-group">
-        <label for="email">E-mail</label>
-        <input v-model="email" type="email" id="email" required placeholder="Digite seu e-mail" />
-      </div>
+  <div class="page-center">
+    <div class="esqueceu-container">
+      <h2>Esqueceu a senha</h2>
+      <form @submit.prevent="handleSubmit">
+        <div class="input-group">
+          <label for="email">E-mail</label>
+          <input v-model="email" type="email" id="email" required placeholder="Digite seu e-mail" />
+        </div>
 
-      <button type="submit" class="btn-esqueceu" :disabled="loading">
-        {{ loading ? 'Enviando...' : 'Enviar Código' }}
-      </button>
+        <button type="submit" class="btn-esqueceu" :disabled="loading">
+          {{ loading ? 'Enviando...' : 'Enviar Código' }}
+        </button>
 
-      <div v-if="message" :style="messageStyle">{{ message }}</div>
-    </form>
+        <div v-if="message" :style="messageStyle">{{ message }}</div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -43,7 +45,6 @@ const handleSubmit = async () => {
     if (response.success) {
       message.value = 'Código enviado! Verifique seu e-mail.'
       messageStyle.value = { color: 'green' }
-      // Armazene o codeId para usar na verificação
       localStorage.setItem('codeId', response.codeId)
     }
   } catch (error) {
@@ -53,42 +54,41 @@ const handleSubmit = async () => {
     loading.value = false
   }
 }
-
 </script>
 
-<style>
+<style scoped>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
+.page-center {
   display: flex;
-  justify-content: center; /* Alinha horizontalmente */
-  align-items: center; /* Alinha verticalmente */
-  height: 100vh; /* Altura da tela toda */
-  margin: 0; /* Remove margens do body */
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f9;
+  padding: 20px;
 }
 
 .esqueceu-container {
   background-color: #fff;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  padding: 30px 25px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
   width: 100%;
-  max-width: 400px; /* Limita a largura do formulário */
+  max-width: 400px;
   text-align: center;
 }
 
 h2 {
   margin-bottom: 20px;
+  color: #333;
 }
 
 .input-group {
-  margin-bottom: 15px;
+  margin-bottom: 18px;
   text-align: left;
 }
 
@@ -102,16 +102,16 @@ h2 {
   padding: 10px;
   margin-top: 5px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 14px;
 }
 
 .btn-esqueceu {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background-color: seagreen;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   color: white;
   font-size: 16px;
   cursor: pointer;
@@ -121,16 +121,8 @@ h2 {
   background-color: darkgreen;
 }
 
-.links {
+.message {
   margin-top: 10px;
-}
-
-.links a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.links a:hover {
-  text-decoration: underline;
+  font-size: 14px;
 }
 </style>
