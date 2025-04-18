@@ -19,7 +19,7 @@ const items = ref<NavigationMenuItem[]>([
   {
     label: 'Cupons',
     icon: 'iconamoon:discount-fill',
-    to: '',
+    to: 'Cupons',
     active: false,
   },
   {
