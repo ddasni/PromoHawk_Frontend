@@ -28,19 +28,28 @@ const items = ref<NavigationMenuItem[]>([
     active: false,
     children: [
       {
-        label: 'defineShortcuts',
-        icon: 'i-lucide-file-text',
-        to: ''
+        label: 'Amazon',
+        to: 'Loja'
       },
       {
-        label: 'useOverlay',
-        icon: 'i-lucide-file-text',
-        to: ''
+        label: 'Magazineluiza',
+        to: 'Loja'
       },
       {
-        label: 'useToast',
-        icon: 'i-lucide-file-text',
-        to: ''
+        label: 'Centauro',
+        to: 'Loja'
+      },
+      {
+        label: 'Mercado Livre',
+        to: 'Loja'
+      },
+      {
+        label: 'Kabum',
+        to: 'Loja'
+      },
+      {
+        label: 'Pichau',
+        to: 'Loja'
       }
     ]
   },
@@ -51,33 +60,27 @@ const items = ref<NavigationMenuItem[]>([
     children: [
       {
         label: 'Eletrônico',
-        icon: 'i-lucide-file-text',
-        to: ''
+        to: 'Categoria'
       },
       {
         label: 'Informática',
-        icon: 'i-lucide-file-text',
-        to: ''
+        to: 'Categoria'
       },
       {
         label: 'Moda e Beleza',
-        icon: 'i-lucide-file-text',
-        to: ''
+        to: 'Categoria'
       },
       {
         label: 'Casa e Eletrodomésticos',
-        icon: 'i-lucide-file-text',
-        to: ''
+        to: 'Categoria'
       },
       {
         label: 'Saúde',
-        icon: 'i-lucide-file-text',
-        to: ''
+        to: 'Categoria'
       },
       {
         label: 'Games',
-        icon: 'i-lucide-file-text',
-        to: ''
+        to: 'Categoria'
       }
     ]
   }

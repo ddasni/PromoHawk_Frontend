@@ -20,8 +20,8 @@ import User from '~/components/Header/user_icon.vue';
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0px 160px;
-  background-color: blueviolet;
+  padding: 0px 300px;
+  background-color: rgb(245.245.245);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
