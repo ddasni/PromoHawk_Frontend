@@ -14,6 +14,6 @@
 <style scoped>
 .conteudo{
     background-color: white;
-    margin: 0px 160px;
+    margin: 0px 300px;
 }
 </style>
