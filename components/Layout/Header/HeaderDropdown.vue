@@ -1,11 +1,11 @@
 <template>
-  <UDropdownMenu size="xl" arrow :items="items" :ui="{ content: 'w-50' }">
+  <UDropdownMenu size="xl" arrow :items="items" :ui="{ content: 'w-48' }">
 
     <!-- esse é o icone onde deve clicar para exibir o dropdown menu-->
     <UButton
       class="font-bold rounded-full"
       icon="icon:user"
-      size="lg"
+      size="xl"
       color="primary"
       variant="solid"
     />
