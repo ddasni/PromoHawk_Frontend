@@ -1,40 +1,25 @@
 <template>
   <div class="container">
-    <Nav />
-    <br><br>
-    <Botao nome="teste" size="sm" color="tres"/>
-    <br><br>
-    <User />
-    <br><br>
-    <Categoria nome="testando" src="~/assets/images/Produtos/samsung/003.jpg"/>
-    <br><br>
-    <Divisor titulo="Destaques" actionTexto="ver mais >" link=""/>
-    <br><br>
-    <Search/> 
+    
   </div>
 </template>
 
 <script setup>
 definePageMeta({
-    layout: 'basic'
-})
+  layout: "basic",
+});
 
-import Categoria from '~/components/cards/Categoria.vue'
-import Botao from '~/components/buttons/botao.vue';
-import User from '~/components/Header/user_icon.vue'
-import Divisor from '~/components/Divisor.vue';
-import Search from '~/components/Header/Search.vue';
 
 </script>
 
 <style scoped>
 .container {
-width: 100vw;
-height: 100vh;
-display: flex;
-flex-direction: row;
-justify-content: center;
-align-items: center;
-gap: 50px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
 }
 </style>

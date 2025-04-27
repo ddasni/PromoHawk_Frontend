@@ -10,9 +10,9 @@
 </template>
 
 <script setup>
-import Nav from '~/components/Header/NavigationMenu.vue';
-import Search from '../Header/Search.vue';
-import User from '~/components/Header/user_icon.vue';
+import Nav from '~/components/Layout/Header/HeaderNav.vue';
+import Search from '~/components/Layout/Header/HeaderSearch.vue';
+import User from '~/components/Layout/Header/HeaderDropdown.vue';
 </script>
 
 <style scoped>

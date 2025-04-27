@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import Botao from "~/components/buttons/botao.vue";
+import Botao from "~/components/Common/botao.vue";
 
 //=====================================================
 
