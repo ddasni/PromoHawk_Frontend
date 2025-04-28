@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    
+    <Botao/>
+    <br>
+    <Icon name="icon-local:search"/>
   </div>
 </template>
 
@@ -9,7 +11,7 @@ definePageMeta({
   layout: "basic",
 });
 
-
+import Botao from '~/components/Common/botao.vue'
 </script>
 
 <style scoped>
