@@ -4,8 +4,10 @@
 
     <img src="/assets/images/Logo.png" alt="Logo">
     
-    <Search/>
-    <User/>
+    <div class="direita">
+      <Search/>
+      <User/>
+    </div>
   </div>
 </template>
 
@@ -20,7 +22,7 @@ import User from '~/components/Layout/Header/HeaderDropdown.vue';
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0px 300px;
+  padding: 0px 200px;
   background-color: rgb(245.245.245);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -30,7 +32,10 @@ import User from '~/components/Layout/Header/HeaderDropdown.vue';
   object-fit: contain;
 }
 
-.estrutura {
- width: 100px;
+.direita {
+ width: 390px;
+ height: 40px;
+ gap: 20px;
+ display: flex;
 }
 </style>
