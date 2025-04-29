@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <Botao/>
+    <Botao
+      icone="material-symbols:search"
+      size="icon"
+      cor="secondary"
+      @click="Pesquisar"
+    />
     <br>
     <Icon name="icon-local:search"/>
   </div>

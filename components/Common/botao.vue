@@ -1,10 +1,10 @@
 <template>
     <button 
         :type="type"
-        :class="[baseClass, sizeClass, colorClass, icone ? 'pl-10' : 'pl-6', sizeClass]"
+        :class="[baseClass, sizeClass, colorClass, icone]"
         @click="handleClick"
     >
-        <Icon v-if="icone" :name="icone" :class="iconSizeClass"/>
+        <Icon v-if="icone" :name="icone"/>
         {{ nome }}
     </button>
 </template>
@@ -32,7 +32,7 @@ const props = withDefaults(
 const { icone, nome, size, cor, type } = toRefs(props)
 
 // Classe base com estilos gerais do botao
-const baseClass = 'rounded-md font-semibold transition duration-200 hover:opacity-90 shadow-md'
+const baseClass = 'font-semibold transition duration-200 hover:opacity-90 shadow-md'
 
 // classe das Cores do botao
 const colorClass = computed(() => {
@@ -50,27 +50,15 @@ const colorClass = computed(() => {
 // classe dos Tamanhos do botao
 const sizeClass = computed(() => {
   switch (size.value) {
-    case 'sm':
-      return 'px-4 py-2 text-sm'
-    case 'lg':
-      return 'px-8 py-4 text-lg'
-    case 'md':
-      return 'px-6 py-3 text-md'
     case 'icon':
-      default:
-        return 'px-1 py-2 text-icon'
-  }
-})
-
-// Classe do tamanho do icone
-const iconSizeClass = computed(() => {
-  switch (size.value) {
-    case 'md':
-      return 'w-6 h-6'; // ícone médio
+      return 'w-7 h-7 flex items-center justify-center rounded-full text-icon'
+    case 'sm':
+      return 'px-4 py-2 rounded-md text-sm'
     case 'lg':
-      return 'w-8 h-8'; // ícone grande
+      return 'px-8 py-4 rounded-md text-lg'
     default:
-      return 'w-4 h-4'; // ícone pequeno 
+      case 'md':
+        return 'px-6 py-3 rounded-md text-md'
   }
 })
 
