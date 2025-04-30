@@ -58,6 +58,6 @@ input {
 }
 
 input::placeholder {
-  color: rgb(114, 114, 114);
+  color: #727272;
 }
 </style>
