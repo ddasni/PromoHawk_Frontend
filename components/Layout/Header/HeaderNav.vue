@@ -1,5 +1,12 @@
 <template>
-  <UNavigationMenu arrow color="primary" content-orientation="vertical" :items="items" class="justify-center" />
+  <UNavigationMenu 
+      arrow 
+      highlight 
+      color="primary" 
+      content-orientation="vertical" 
+      class="justify-center"
+      :items="items" 
+  />
 </template>
 
 <style scoped>
@@ -14,18 +21,15 @@ const items = ref<NavigationMenuItem[]>([
     label: 'Início',
     icon: 'ic:baseline-home',
     to: '/',
-    active: true,
   },
   {
     label: 'Cupons',
     icon: 'iconamoon:discount-fill',
     to: 'Cupons',
-    active: false,
   },
   {
     label: 'Lojas',
     icon: 'weui:shop-filled',
-    active: false,
     children: [
       {
         label: 'Amazon',
@@ -56,7 +60,6 @@ const items = ref<NavigationMenuItem[]>([
   {
     label: 'Categorias',
     icon: 'heroicons-outline:menu',
-    active: false,
     children: [
       {
         label: 'Eletrônico',
