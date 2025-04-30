@@ -13,7 +13,7 @@ const items = ref<NavigationMenuItem[]>([
   {
     label: 'Início',
     icon: 'ic:baseline-home',
-    to: '',
+    to: '/',
     active: true,
   },
   {
