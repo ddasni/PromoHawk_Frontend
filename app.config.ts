@@ -12,8 +12,8 @@ export default defineAppConfig({
     },
     navigationMenu: {
       slots: {
-        viewport: 'bg-(--ui-primary) ring ring-(--ui-secondary)',
-        arrow: 'border border-(--ui-secondary) bg-(--ui-primary)'
+        viewport: 'bg-(--ui-primary) ring ring-(--ui-secondary)', // Cor de fundo e borda do dropdown das lojas e cupons da navbar 
+        arrow: 'border border-(--ui-secondary) bg-(--ui-primary)' // Cor da seta da navbar
       },
     },
   },
