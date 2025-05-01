@@ -2,7 +2,8 @@
   <UNavigationMenu 
       arrow 
       highlight 
-      color="primary" 
+      color="primary"
+      variant="link" 
       content-orientation="vertical" 
       class="justify-center"
       :items="items" 
