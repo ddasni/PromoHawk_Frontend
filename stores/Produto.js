@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { API_URL } from '@/utils/config'
 
 export const useProdutoStore = defineStore('produto', {
   state: () => ({
@@ -8,11 +9,32 @@ export const useProdutoStore = defineStore('produto', {
   }),
 
   actions: {
-    async getProdutos() {
+    async consultarProduto(id = null) {
       this.loading = true
       try {
-        const res = await fetch('https://seusite.com/api/produto')
-        this.produtos = await res.json()
+        const url = id
+          ? `${API_URL}/produto/consultar/${id}`
+          : `${API_URL}/produto/consultar`
+    
+        const res = await fetch(url)
+        if (!res.ok) throw new Error('Erro ao buscar cupom(s)')
+    
+        const data = await res.json()
+    
+        // Se buscou todos, atualiza o array completo
+        if (id === null) {
+          this.cupons = data
+        } 
+        else {
+          // Se buscou um só, substitui ou adiciona ao array
+          const index = this.cupons.findIndex(c => c.id === id)
+          if (index !== -1) {
+            this.cupons[index] = data
+          } 
+          else {
+            this.cupons.push(data)
+          }
+        }
       } catch (e) {
         this.erro = e.message
       } finally {
@@ -20,8 +42,8 @@ export const useProdutoStore = defineStore('produto', {
       }
     },
 
-    async createProduto(dados) {
-      const res = await fetch('https://seusite.com/api/produto', {
+    async cadastrarProduto(dados) {
+      const res = await fetch('${API_URL}/produto/cadastrar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
@@ -30,8 +52,8 @@ export const useProdutoStore = defineStore('produto', {
       await this.fetchProdutos()
     },
 
-    async updateProduto(id, dados) {
-      const res = await fetch(`https://seusite.com/api/produto/${id}`, {
+    async atualizarProduto(id, dados) {
+      const res = await fetch(`${API_URL}/produto/atualizar/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
@@ -40,8 +62,8 @@ export const useProdutoStore = defineStore('produto', {
       await this.fetchProdutos()
     },
 
-    async deleteProduto(id) {
-      const res = await fetch(`https://seusite.com/api/produto/${id}`, {
+    async deletarProduto(id) {
+      const res = await fetch(`${API_URL}/produto/deletar/${id}`, {
         method: 'DELETE'
       })
       if (!res.ok) throw new Error('Erro ao excluir produto')

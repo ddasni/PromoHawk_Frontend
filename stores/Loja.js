@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { API_URL } from '@/utils/config'
 
 export const useLojaStore = defineStore('loja', {
   state: () => ({
@@ -8,33 +9,41 @@ export const useLojaStore = defineStore('loja', {
   }),
 
   actions: {
-    async getLojas() {
+    async getLoja(id = null) {
       this.loading = true
       try {
-            const res = await fetch('https://seusite.com/api/loja')
-            this.lojas = await res.json()
+        const url = id
+          ? `${API_URL}/loja/consultar/${id}`
+          : `${API_URL}/loja/consultar`
+    
+        const res = await fetch(url)
+        if (!res.ok) throw new Error('Erro ao buscar cupom(s)')
+    
+        const data = await res.json()
+    
+        // Se buscou todos, atualiza o array completo
+        if (id === null) {
+          this.cupons = data
+        } 
+        else {
+          // Se buscou um só, substitui ou adiciona ao array
+          const index = this.cupons.findIndex(c => c.id === id)
+          if (index !== -1) {
+            this.cupons[index] = data
+          } 
+          else {
+            this.cupons.push(data)
+          }
+        }
       } catch (e) {
-            this.erro = e.message
+        this.erro = e.message
       } finally {
-            this.loading = false
+        this.loading = false
       }
     },
 
-    async getLojaID() {
-        this.loading = true
-        try {
-            const res = await fetch(`https://seusite.com/api/loja/${id}`)
-            if (!res.ok) throw new Error('Loja não encontrada')
-            this.lojaSelecionada = await res.json()
-        } catch (e) {
-            this.erro = e.message
-        } finally {
-            this.loading = false
-        }
-    },
-
     async postLoja(dados) {
-      const res = await fetch('https://seusite.com/api/loja', {
+      const res = await fetch('${API_URL}/loja/cadastrar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
@@ -44,7 +53,7 @@ export const useLojaStore = defineStore('loja', {
     },
 
     async updateLoja(id, dados) {
-      const res = await fetch(`https://seusite.com/api/loja/${id}`, {
+      const res = await fetch(`${API_URL}/loja/atualizar/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
@@ -54,7 +63,7 @@ export const useLojaStore = defineStore('loja', {
     },
 
     async deleteLoja(id) {
-      const res = await fetch(`https://seusite.com/api/loja/${id}`, {
+      const res = await fetch(`${API_URL}/loja/deletar/${id}`, {
         method: 'DELETE'
       })
       if (!res.ok) throw new Error('Erro ao excluir loja')
