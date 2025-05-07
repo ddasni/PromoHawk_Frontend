@@ -1,13 +1,14 @@
 <template>
+  <h1>Teste de requisição com Async Data</h1>
   <div class="container">
-    <Botao
-      icone="material-symbols:search"
-      size="icon"
-      cor="secondary"
-      @click="Pesquisar"
-    />
-    <br>
-    <Icon name="icon-local:search"/>
+    <button @click="refresh">Recarregar dados</button>
+
+    <div v-if="pending">Carregando...</div>
+    <div v-else-if="error">Erro: {{ error.message }}</div>
+
+    <pre v-else>
+      {{ produto }}
+    </pre>
   </div>
 </template>
 
@@ -16,7 +17,25 @@ definePageMeta({
   layout: "basic",
 });
 
-import Botao from '~/components/Common/botao.vue'
+const {
+  data: produto,
+  pending,
+  error,
+  refresh,
+} = await useAsyncData(
+  "produto-info",
+  async () => {
+    const [produtoData] = await Promise.all([
+      $fetch(`https://srv809082.hstgr.cloud/htdocs/PromoHawkDB_API/produto/consultar`)
+    ]);
+
+    return {
+      id: produtoData.idProduto,
+      name: produtoData.nomeProduto,
+      preco: produtoData.precoProduto
+    };
+  }
+);
 </script>
 
 <style scoped>
