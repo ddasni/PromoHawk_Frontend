@@ -23,16 +23,16 @@ export const useLojaStore = defineStore('loja', {
     
         // Se buscou todos, atualiza o array completo
         if (id === null) {
-          this.cupons = data
+          this.loja = data
         } 
         else {
           // Se buscou um só, substitui ou adiciona ao array
-          const index = this.cupons.findIndex(c => c.id === id)
+          const index = this.loja.findIndex(c => c.id === id)
           if (index !== -1) {
-            this.cupons[index] = data
+            this.loja[index] = data
           } 
           else {
-            this.cupons.push(data)
+            this.loja.push(data)
           }
         }
       } catch (e) {

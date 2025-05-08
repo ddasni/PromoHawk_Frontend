@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { API_URL } from '@/utils/config'
 
-export const useProdutoStore = defineStore('produto', {
+export const useUsuarioStore = defineStore('usuario', {
   state: () => ({
-    produtos: [],
+    usuarios: [],
     loading: false,
     erro: null
   }),
@@ -14,7 +14,7 @@ export const useProdutoStore = defineStore('produto', {
         try {
             const res = await fetch(`${API_URL}/usuario/${id}`)
             if (!res.ok) throw new Error('Loja não encontrada')
-            this.lojaSelecionada = await res.json()
+            this.usuarioSelecionado = await res.json()
         } catch (e) {
             this.erro = e.message
         } finally {
@@ -28,8 +28,8 @@ export const useProdutoStore = defineStore('produto', {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
       })
-      if (!res.ok) throw new Error('Erro ao criar produto')
-      await this.fetchProdutos()
+      if (!res.ok) throw new Error('Erro ao criar usuario')
+      await this.fetchusuario()
     },
 
     async atualizarUsuario(id, dados) {
@@ -38,16 +38,16 @@ export const useProdutoStore = defineStore('produto', {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
       })
-      if (!res.ok) throw new Error('Erro ao atualizar produto')
-      await this.fetchProdutos()
+      if (!res.ok) throw new Error('Erro ao atualizar usuario')
+      await this.fetchUsuario()
     },
 
     async deletarUsuario(id) {
       const res = await fetch(`${API_URL}/usuario/deletar/${id}`, {
         method: 'DELETE'
       })
-      if (!res.ok) throw new Error('Erro ao excluir produto')
-      await this.fetchProdutos()
+      if (!res.ok) throw new Error('Erro ao excluir usuario')
+      await this.fetchUsuario()
     }
   }
 })

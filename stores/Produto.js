@@ -23,16 +23,16 @@ export const useProdutoStore = defineStore('produto', {
     
         // Se buscou todos, atualiza o array completo
         if (id === null) {
-          this.cupons = data
+          this.produto = data
         } 
         else {
           // Se buscou um só, substitui ou adiciona ao array
-          const index = this.cupons.findIndex(c => c.id === id)
+          const index = this.produto.findIndex(c => c.id === id)
           if (index !== -1) {
-            this.cupons[index] = data
+            this.produto[index] = data
           } 
           else {
-            this.cupons.push(data)
+            this.produto.push(data)
           }
         }
       } catch (e) {
@@ -49,7 +49,7 @@ export const useProdutoStore = defineStore('produto', {
         body: JSON.stringify(dados)
       })
       if (!res.ok) throw new Error('Erro ao criar produto')
-      await this.fetchProdutos()
+      await this.fetchProduto()
     },
 
     async atualizarProduto(id, dados) {
@@ -59,7 +59,7 @@ export const useProdutoStore = defineStore('produto', {
         body: JSON.stringify(dados)
       })
       if (!res.ok) throw new Error('Erro ao atualizar produto')
-      await this.fetchProdutos()
+      await this.fetchProduto()
     },
 
     async deletarProduto(id) {
@@ -67,7 +67,7 @@ export const useProdutoStore = defineStore('produto', {
         method: 'DELETE'
       })
       if (!res.ok) throw new Error('Erro ao excluir produto')
-      await this.fetchProdutos()
+      await this.fetchProduto()
     }
   }
 })
