@@ -5,8 +5,8 @@
     <div class="produto-info">
       <h3>{{ nome }}</h3>
       <div class="precos">
-        <span class="preco-atual">R$ {{ precoAtual.toFixed(2) }}</span>
-        <span v-if="precoOriginal" class="preco-original">R$ {{ precoOriginal.toFixed(2) }}</span>
+        <span class="preco-atual">R$ </span>
+        <span v-if="precoOriginal" class="preco-original">R$ </span>
       </div>
     </div>
 
@@ -22,8 +22,6 @@
 defineProps({
   imagem: String,
   nome: String,
-  precoAtual: Number,
-  precoOriginal: Number
 })
 </script>
 

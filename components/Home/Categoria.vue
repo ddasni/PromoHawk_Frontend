@@ -23,7 +23,7 @@ const { nome, size, cor, imgSrc } = toRefs(props)
 <template>
   <div :class="['card-categoria-15', `size-${size}`, `cor-${cor}`]">
     <!-- Imagem agora usa a prop imgSrc -->
-    <img class="imagem" alt="Imagem do produto" :src="imgSrc" />
+    <img class="imagem" alt="" :src="imgSrc" />
     <p class="txt">{{ nome }}</p>
   </div>
 </template>
