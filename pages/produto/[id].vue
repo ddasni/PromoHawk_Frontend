@@ -34,9 +34,30 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Chart, LineElement, PointElement, LineController, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js'
+import {
+  Chart,
+  LineElement,
+  PointElement,
+  LineController,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+  Filler  // <-- IMPORTANTE
+} from 'chart.js'
 
-Chart.register(LineElement, PointElement, LineController, CategoryScale, LinearScale, Title, Tooltip, Legend)
+Chart.register(
+  LineElement,
+  PointElement,
+  LineController,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+  Filler // <-- REGISTRA AQUI
+)
 
 import s25UltraImage from '~/assets/images/Produtos/samsung/Samsung S25 ultra.png'
 
@@ -99,6 +120,9 @@ onMounted(() => {
       }
     })
   }
+})
+definePageMeta({
+  layout: 'default'
 })
 </script>
 

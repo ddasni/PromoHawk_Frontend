@@ -18,7 +18,7 @@
           </span>
         </div>
 
-        <button class="botao-compra">Ver produto</button>
+        
       </div>
 
       <button class="favoritar" @click.stop.prevent="toggleFavorito">
@@ -129,21 +129,6 @@ function formatarNumero(valor) {
 .preco-vista {
   font-weight: 600;
   color: #10b981;
-}
-
-.botao-compra {
-  background-color: #3b82f6;
-  color: white;
-  padding: 8px 14px;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.botao-compra:hover {
-  background-color: #2563eb;
 }
 
 .favoritar {
