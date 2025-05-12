@@ -7,7 +7,7 @@
       <div class="foto-perfil" @click="editarFoto">
         <img :src="fotoPerfil" />
         <div class="overlay">
-          <img src="/assets/icons/lapis.svg" alt="Editar" />
+          <img :src="lapisIcon" alt="Editar" />
         </div>
       </div>
       <input type="file" ref="inputFile" @change="alterarFoto" style="display: none" />
@@ -15,31 +15,76 @@
     </div>
 
     <div class="info-perfil">
-      <div class="info-item" v-for="(label, key) in campos" :key="key">
+      <div
+        class="info-item"
+        v-for="(label, key) in campos"
+        :key="key"
+      >
         <label :for="key">{{ label }}</label>
+
+        <div v-if="key === 'senha'" class="senha-wrapper">
+          <input
+            v-model="dados.senha"
+            :type="mostrarSenha ? 'text' : 'password'"
+            id="senha"
+            class="input"
+            placeholder="Senha"
+          />
+          <img
+            :src="mostrarSenha ? eyeOffIcon : eyeIcon"
+            class="icone-olho"
+            @click="mostrarSenha = !mostrarSenha"
+            alt="Ver senha"
+          />
+        </div>
+
+        <div v-else-if="key === 'confirmarSenha'" class="senha-wrapper">
+          <input
+            v-model="dados.confirmarSenha"
+            :type="mostrarSenha ? 'text' : 'password'"
+            id="confirmarSenha"
+            class="input"
+            placeholder="Confirmar Senha"
+          />
+          <img
+            :src="mostrarSenha ? eyeOffIcon : eyeIcon"
+            class="icone-olho"
+            @click="mostrarSenha = !mostrarSenha"
+            alt="Ver senha"
+          />
+        </div>
+
         <input
+          v-else
           v-model="dados[key]"
-          :type="key === 'senha' ? 'password' : 'text'"
+          :type="key === 'email' ? 'email' : 'text'"
           :id="key"
           class="input"
           :placeholder="label"
         />
       </div>
+
       <div class="info-actions">
         <button @click="salvarAlteracoes" class="btn-salvar">
-           Salvar Alterações
+          Salvar Alterações
         </button>
       </div>
     </div>
   </div>
 </template>
 
-
 <script setup>
 import { ref } from 'vue'
 
+// ✅ Importando ícones como módulos
+import lapisIcon from '@/assets/icons/lapis.svg'
+import eyeIcon from '@/assets/icons/eye.svg'
+import eyeOffIcon from '@/assets/icons/eye-off.svg'
+
 const fotoPerfil = ref('https://via.placeholder.com/150')
 const nomeUsuario = ref('Robim buxa')
+
+const mostrarSenha = ref(false)
 
 const dados = ref({
   username: 'joao_silva',
@@ -47,6 +92,7 @@ const dados = ref({
   telefone: '(11) 91234-5678',
   email: 'joao.silva@email.com',
   senha: 'senha123',
+  confirmarSenha: '',
 })
 
 const campos = {
@@ -55,6 +101,7 @@ const campos = {
   telefone: 'Telefone:',
   email: 'Email:',
   senha: 'Senha:',
+  confirmarSenha: 'Confirmar senha:',
 }
 
 function editarFoto() {
@@ -74,7 +121,15 @@ function alterarFoto(event) {
 }
 
 function salvarAlteracoes() {
-  console.log('Alterações salvas:', { nomeUsuario: nomeUsuario.value, ...dados.value })
+  if (dados.value.senha !== dados.value.confirmarSenha) {
+    alert('As senhas não coincidem.')
+    return
+  }
+
+  console.log('Alterações salvas:', {
+    nomeUsuario: nomeUsuario.value,
+    ...dados.value,
+  })
 }
 </script>
 
@@ -185,8 +240,8 @@ function salvarAlteracoes() {
   border: 1px solid #cbd5e1;
   border-radius: 10px;
   font-size: 15px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   background-color: #f8fafc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
@@ -194,6 +249,25 @@ function salvarAlteracoes() {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
   background-color: white;
+}
+
+.senha-wrapper {
+  position: relative;
+}
+
+.icone-olho {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.icone-olho:hover {
+  opacity: 1;
 }
 
 .info-actions {

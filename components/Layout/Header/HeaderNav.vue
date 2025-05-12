@@ -72,7 +72,7 @@ const items = ref<NavigationMenuItem[]>([
       },
       {
         label: 'Moda e Beleza',
-        to: 'Categoria'
+        to: 'modas'
       },
       {
         label: 'Casa e Eletrodomésticos',
