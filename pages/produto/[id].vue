@@ -1,25 +1,84 @@
 <template>
   <div v-if="produto" class="pagina-produto">
     <div class="topo">
-      <img :src="produto.imagem" :alt="produto.nome" class="imagem-produto" />
+      <div class="imagens-laterais">
+        <div class="miniaturas">
+  <img
+    v-for="(imagem, index) in produto.imagens"
+    :key="index"
+    :src="imagem"
+    class="miniatura"
+    @click="abrirModal(imagem)"
+    :alt="'Imagem ' + (index + 1)"
+  />
+</div>
+        <img v-for="n in 4" :key="n" :src="produto.imagem" class="miniatura" />
+      </div>
+
+      <img
+  :src="produto.imagem"
+  :alt="produto.nome"
+  class="imagem-produto-principal"
+  @click="abrirModal(produto.imagem)"
+/>
+
+      <!-- Imagem ampliada (modal) -->
+<div v-if="imagemModal" class="modal" @click="imagemModal = null">
+  <img :src="imagemModal" class="imagem-modal" />
+</div>
+
       <div class="info">
         <h1>{{ produto.nome }}</h1>
         <p class="avaliacao">⭐ {{ produto.avaliacao.toFixed(1) }} ({{ produto.totalAvaliacoes }} avaliações)</p>
+        <p class="menor-preco">menor preço via Amazon</p>
         <p class="preco-vista">R$ {{ formatarNumero(produto.precoVista) }} à vista</p>
-        <p class="preco-parcelado">{{ produto.parcelas }}x de R$ {{ formatarNumero(produto.precoVista / produto.parcelas) }} sem juros</p>
-        <button class="botao-compra">Comprar</button>
+        <p class="parcelamento">{{ produto.parcelas }}x de R$ {{ formatarNumero(produto.precoVista / produto.parcelas) }} sem juros</p>
+        <button class="botao-ver-opcoes">Ver opções de compra</button>
+        <button class="favoritar" @click.stop.prevent="toggleFavorito">
+        {{ favoritado ? '❤️' : '🤍' }}
+      </button>
       </div>
     </div>
 
     <div class="grafico-preco">
-      <h2>Histórico de Preço</h2>
-      <div class="grafico-avaliacoes">
-        <canvas ref="graficoCanvas" height="200"></canvas>
-</div>
+      <div class="cabecalho-grafico">
+        <h2>Histórico de Preços</h2>
+        <div class="periodo">
+          <button>3 Meses</button>
+          <button>6 Meses</button>
+          <button>1 Ano</button>
+        </div>
+      </div>
+      <canvas ref="graficoCanvas" height="200"></canvas>
+    </div>
+
+    <div class="preco-loja">
+      <h3>Melhor Preço</h3>
+      <div class="card-loja">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" />
+        <p><strong>R$ {{ formatarNumero(produto.precoVista) }}</strong> à vista</p>
+        <button class="botao-ir-loja">Ir à loja</button>
+      </div>
+    </div>
+
+    <div class="avaliacoes">
+      <h3>Avaliação dos usuários</h3>
+      <div class="nota-media">
+        <strong>{{ produto.avaliacao.toFixed(1) }}</strong>
+        <span>({{ produto.totalAvaliacoes }} reviews)</span>
+      </div>
+      <div class="barras">
+        <div v-for="estrela in 5" :key="estrela" class="barra-avaliacao">
+          <span>{{ estrela }} estrela</span>
+          <div class="barra">
+            <div class="preenchida" :style="{ width: `${(produto.totalAvaliacoes / 5) * estrela / produto.totalAvaliacoes * 100}%` }"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="comentarios">
-      <h2>O que dizem sobre este produto</h2>
+      <h3>O que dizem sobre este produto</h3>
       <div v-for="(comentario, index) in produto.comentarios" :key="index" class="comentario">
         <p><strong>{{ comentario.usuario }}</strong> — ⭐ {{ comentario.nota }}</p>
         <p>{{ comentario.texto }}</p>
@@ -31,6 +90,7 @@
     Carregando produto...
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -59,12 +119,22 @@ Chart.register(
   Filler // <-- REGISTRA AQUI
 )
 
+const imagemModal = ref(null)
+
+function abrirModal(src) {
+  imagemModal.value = src
+}
+
 import s25UltraImage from '~/assets/images/Produtos/samsung/Samsung S25 ultra.png'
 
 const produto = {
   id: '1',
   nome: 'Samsung Galaxy S25 Ultra 256GB',
   imagem: s25UltraImage,
+  imagens: [
+    s25UltraImage,
+   
+  ],
   precoVista: 4899.99,
   parcelas: 10,
   avaliacao: 4.8,
@@ -75,6 +145,7 @@ const produto = {
     { usuario: 'Carlos', nota: 5, texto: 'Desempenho top, roda tudo no máximo!' }
   ]
 }
+
 
 
 function formatarNumero(valor) {
@@ -124,116 +195,229 @@ onMounted(() => {
 definePageMeta({
   layout: 'default'
 })
+
+function toggleFavorito() {
+  favoritado.value = !favoritado.value
+  emit('update:favoritado', favoritado.value)
+}
 </script>
 
 
 
 <style scoped>
+
+
 .pagina-produto {
-  padding: 24px;
-  max-width: 900px;
-  margin: 0 auto;
+  padding: 40px;
   font-family: 'Segoe UI', sans-serif;
+  background-color: #fff;
 }
 
 .topo {
   display: flex;
   gap: 32px;
   align-items: flex-start;
+  margin-bottom: 40px;
 }
 
-.imagem-produto {
-  width: 350px;
+.imagens-laterais {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.miniatura {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.imagem-produto-principal {
+  width: 300px;
   height: auto;
-  border-radius: 16px;
+  border-radius: 20px;
   object-fit: cover;
   background-color: #f3f4f6;
 }
 
-.info h1 {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
+.info {
+  flex: 1;
 }
 
 .avaliacao {
-  color: #f59e0b;
   font-size: 1.1rem;
-  margin-bottom: 12px;
+  color: #f59e0b;
+}
+
+.menor-preco {
+  color: #10b981;
+  font-size: 0.9rem;
 }
 
 .preco-vista {
   font-size: 1.5rem;
   color: #10b981;
   font-weight: bold;
-  margin-bottom: 6px;
 }
 
-.preco-parcelado {
+.parcelamento {
   font-size: 1rem;
   color: #6b7280;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.botao-compra {
-  background-color: #3b82f6;
+.botao-ver-opcoes {
+  background-color: #10b981;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 1rem;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.botao-favorito {
+  background: transparent;
+  border: 2px solid #ccc;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-size: 1.4rem;
+  
 }
 
 .grafico-preco {
   margin-top: 40px;
 }
 
-.grafico-mock {
-  height: 200px;
-  background: #e5e7eb;
+.cabecalho-grafico {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  border-radius: 12px;
-  margin-top: 10px;
-  color: #4b5563;
-  font-size: 1.1rem;
 }
 
-.grafico-avaliacoes {
-  margin-top: 10px;
-  background: #f8fafc;
+.periodo button {
+  margin-left: 8px;
+  background-color: #e5e7eb;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.preco-loja {
+  margin-top: 40px;
+}
+
+.card-loja {
+  background: #f9fafb;
   padding: 20px;
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
+.card-loja img {
+  height: 40px;
+}
+
+.botao-ir-loja {
+  margin-left: auto;
+  background-color: #0f766e;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.avaliacoes {
+  margin-top: 40px;
+}
+
+.nota-media {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.barras {
+  margin-top: 10px;
+}
+
+.barra-avaliacao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.barra {
+  flex: 1;
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.preenchida {
+  background: #f59e0b;
+  height: 100%;
+}
 
 .comentarios {
   margin-top: 40px;
 }
 
 .comentario {
-  background: #f9fafb;
+  background: #f3f4f6;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 12px;
 }
 
-.carregando {
-  text-align: center;
-  padding: 80px;
-  font-size: 1.2rem;
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  cursor: zoom-out;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #f5f5f5;
+.imagem-modal {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 12px;
 }
 
-.pagina-produto {
-  margin-top: 100px;
-  background-color: transparent;
+.miniaturas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.miniatura {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border 0.2s;
+}
+
+.miniatura:hover {
+  border-color: #3b82f6;
 }
 
 </style>
