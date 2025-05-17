@@ -59,42 +59,74 @@
     </div>
   </template>
   
-  <script setup>
-  // Usando o layout 'basic', onde não tem Header e Footer
+<script setup>
 definePageMeta({
   layout: 'basic',
 })
 
-  import { ref } from 'vue';
-  
-  const etapa = ref(1);
-  
-  const nome = ref('');
-  const nomeUsuario = ref('');
-  const telefone = ref('');
-  const email = ref('');
-  const senha = ref('');
-  
-  function proximaEtapa() {
-    etapa.value = 2;
-  }
-  
-  function voltarEtapa() {
-    etapa.value = 1;
-  }
-  
-  function finalizarCadastro() {
-    console.log({
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+
+import { ref } from 'vue'
+import { useFetch } from '#app'
+
+const etapa = ref(1)
+
+const nome = ref('')
+const nomeUsuario = ref('')
+const telefone = ref('')
+const email = ref('')
+const senha = ref('')
+
+const loading = ref(false)
+const erro = ref(null)
+
+function proximaEtapa() {
+  etapa.value = 2
+}
+
+function voltarEtapa() {
+  etapa.value = 1
+}
+
+async function finalizarCadastro() {
+  loading.value = true
+  erro.value = null
+
+  const { data, error } = await useFetch('https://api.promohawk.com.br/api/users', {
+    method: 'POST',
+    body: {
       nome: nome.value,
-      nomeUsuario: nomeUsuario.value,
+      username: nomeUsuario.value,
       telefone: telefone.value,
       email: email.value,
-      senha: senha.value,
-    });
-    alert('Cadastro finalizado!');
-    etapa.value = 1;
+      password: senha.value,
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  loading.value = false
+
+  if (error.value) {
+    erro.value = 'Erro ao cadastrar usuário. Verifique os dados.'
+    console.error(error.value)
+    return
   }
-  </script>
+
+  alert('Cadastro realizado com sucesso!')
+  router.push('/')
+  etapa.value = 1
+  nome.value = ''
+  nomeUsuario.value = ''
+  telefone.value = ''
+  email.value = ''
+  senha.value = ''
+}
+</script>
+
   
   <style scoped>
   * {
