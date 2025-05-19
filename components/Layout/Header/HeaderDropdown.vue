@@ -1,7 +1,5 @@
 <template>
   <UDropdownMenu size="xl" arrow :items="items" :ui="{ content: 'w-48' }">
-
-    <!-- esse é o icone onde deve clicar para exibir o dropdown menu-->
     <UButton
       class="font-bold rounded-full"
       icon="icon:user"
@@ -9,69 +7,114 @@
       color="primary"
       variant="solid"
     />
-
-    <template #button>
-      <!-- Esse é um slot -->
-      <div class="flex gap-3">
-        <NuxtLink to="/Login" class="link">
-          <Botao nome="Login" size="sm" cor="tertiary" />
-        </NuxtLink>
-        <NuxtLink to="/Cadastro" class="link">
-          <Botao nome="Cadastro" size="sm" cor="tertiary" />
-        </NuxtLink>
-      </div>
-    </template>
   </UDropdownMenu>
 </template>
 
-<script lang="ts" setup>
-import Botao from "~/components/Common/botao.vue";
+<script setup lang="ts">
+import { ref, watch, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
-//=====================================================
+// Cookies
+const tokenCookie = useCookie('token')
+const userCookie = useCookie('user')
 
-// pegando o dropdown menu da biblioteca NuxtUI
-import type { DropdownMenuItem } from "@nuxt/ui";
+// Router
+const router = useRouter()
 
-// configuração/design desse dropdown menu
-const items = ref<DropdownMenuItem[]>([
-  [
-    {
-      label: "Zezinho",
-      avatar: {
-        src: "https://github.com/benjamincanac.png",
-      },
-      type: "label",
-    },
-  ],
-  [
-    {
-      label: "Perfil",
-      icon: "i-lucide-user",
-      to: 'perfil'
-    },
-    {
-      label: "Lista de Desejos",
-      icon: "heroicons-outline:heart",
-      to:'listadesejo'
-    },
-    {
-      label: "Notificações",
-      icon: "heroicons:bell",
-    },
-    {
-      label: "Configurações",
-      icon: "i-lucide-cog",
-      to:'config'
-    },
-  ],
-  [
-    {
-      slot: "button",
-      type: "label",
-    },
-  ],
-]);
+// Estado de login
+const isLoggedIn = ref(!!tokenCookie.value)
+
+watch(tokenCookie, (newVal) => {
+  isLoggedIn.value = !!newVal
+})
+
+// Função de logout
+function logout() {
+  tokenCookie.value = null
+  userCookie.value = null
+  isLoggedIn.value = false
+  router.push('/')
+}
+
+// Obter nome com segurança
+function getUserName() {
+  try {
+    const user = typeof userCookie.value === 'string'
+      ? JSON.parse(userCookie.value)
+      : userCookie.value
+
+    return user?.name || 'Usuário'
+  } catch (e) {
+    return 'Usuário'
+  }
+}
+
+// Menu dinâmico
+const items = computed(() => {
+  if (!isLoggedIn.value) {
+    return [
+      [
+        {
+          label: 'Visitante',
+          type: 'label',
+          avatar: { src: 'https://github.com/benjamincanac.png' },
+        },
+      ],
+      [
+        {
+          label: 'Login',
+          icon: 'icon:user',
+          onClick: () => router.push('/login'),
+        },
+        {
+          label: 'Cadastro',
+          icon: 'icon:user-plus',
+          onClick: () => router.push('/cadastro'),
+        },
+      ],
+    ]
+  } else {
+    return [
+      [
+        {
+          label: getUserName(),
+          type: 'label',
+          avatar: { src: '' },
+        },
+      ],
+      [
+        {
+          label: 'Perfil',
+          icon: 'i-lucide-user',
+          onClick: () => router.push('/perfil'),
+        },
+        {
+          label: 'Lista de Desejos',
+          icon: 'heroicons-outline:heart',
+          onClick: () => router.push('/listadesejo'),
+        },
+        {
+          label: 'Configurações',
+          icon: 'i-lucide-cog',
+          onClick: () => router.push('/config'),
+        },
+      ],
+      [
+        {
+          label: 'Logout',
+          icon: 'i-lucide-log-out',
+          onClick: logout,
+        },
+      ],
+    ]
+  }
+})
 </script>
+
+
+
+
+
 
 <style scoped>
 
