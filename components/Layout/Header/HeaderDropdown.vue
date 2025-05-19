@@ -13,43 +13,50 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useCookie } from '#app' // composable de cookies do Nuxt 3
 
-// Cookies
 const tokenCookie = useCookie('token')
 const userCookie = useCookie('user')
-
-// Router
 const router = useRouter()
-
-// Estado de login
 const isLoggedIn = ref(!!tokenCookie.value)
 
 watch(tokenCookie, (newVal) => {
   isLoggedIn.value = !!newVal
 })
 
-// Função de logout
-function logout() {
-  tokenCookie.value = null
-  userCookie.value = null
-  isLoggedIn.value = false
-  router.push('/')
+async function logout() {
+  try {
+    const response = await fetch('https://api.promohawk.com.br/api/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${tokenCookie.value}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) throw new Error('Erro no logout')
+
+    tokenCookie.value = null
+    userCookie.value = null
+
+    router.push('/')
+  } catch (error) {
+    console.error('Erro ao fazer logout:', error)
+    alert('Não foi possível sair no momento.')
+  }
 }
 
-// Obter nome com segurança
 function getUserName() {
   try {
     const user = typeof userCookie.value === 'string'
       ? JSON.parse(userCookie.value)
       : userCookie.value
-
-    return user?.name || 'Usuário'
+    return user?.name || 'Usuário' // corrigido aqui
   } catch (e) {
     return 'Usuário'
   }
 }
 
-// Menu dinâmico
 const items = computed(() => {
   if (!isLoggedIn.value) {
     return [
@@ -62,12 +69,12 @@ const items = computed(() => {
       ],
       [
         {
-          label: 'Login',
+          label: 'Entrar',
           icon: 'icon:user',
           onClick: () => router.push('/login'),
         },
         {
-          label: 'Cadastro',
+          label: 'Cadastrar',
           icon: 'icon:user-plus',
           onClick: () => router.push('/cadastro'),
         },
@@ -111,11 +118,5 @@ const items = computed(() => {
 })
 </script>
 
-
-
-
-
-
 <style scoped>
-
 </style>
