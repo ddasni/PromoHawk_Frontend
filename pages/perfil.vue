@@ -74,24 +74,23 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-// ✅ Importando ícones como módulos
+import { ref, onMounted } from 'vue'
 import lapisIcon from '@/assets/icons/lapis.svg'
 import eyeIcon from '@/assets/icons/eye.svg'
 import eyeOffIcon from '@/assets/icons/eye-off.svg'
 
+// Dados do usuário
 const fotoPerfil = ref('https://via.placeholder.com/150')
-const nomeUsuario = ref('Robim buxa')
-
+const nomeUsuario = ref('')
 const mostrarSenha = ref(false)
+const userCookie = useCookie('user') // Pega dados do cookie
 
 const dados = ref({
-  username: 'joao_silva',
-  nome: 'João Silva',
-  telefone: '(11) 91234-5678',
-  email: 'joao.silva@email.com',
-  senha: 'senha123',
+  username: '',
+  nome: '',
+  telefone: '',
+  email: '',
+  senha: '',
   confirmarSenha: '',
 })
 
@@ -104,6 +103,34 @@ const campos = {
   confirmarSenha: 'Confirmar senha:',
 }
 
+// Busca dados do usuário ao carregar a página
+onMounted(async () => {
+  const userId = userCookie.value?.id
+  if (!userId) return
+
+  try {
+    const res = await fetch(`/api/users/${userId}`)
+    const user = await res.json()
+
+    nomeUsuario.value = user.nome
+    dados.value = {
+      username: user.username,
+      nome: user.nome,
+      telefone: user.telefone,
+      email: user.email,
+      senha: '',
+      confirmarSenha: '',
+    }
+
+    if (user.foto) {
+      fotoPerfil.value = user.foto
+    }
+  } catch (err) {
+    console.error('Erro ao carregar dados do usuário', err)
+  }
+})
+
+// Troca de foto
 function editarFoto() {
   const input = document.querySelector('input[type="file"]')
   input?.click()
@@ -120,18 +147,42 @@ function alterarFoto(event) {
   }
 }
 
-function salvarAlteracoes() {
+// Salvar alterações no banco
+async function salvarAlteracoes() {
   if (dados.value.senha !== dados.value.confirmarSenha) {
     alert('As senhas não coincidem.')
     return
   }
 
-  console.log('Alterações salvas:', {
-    nomeUsuario: nomeUsuario.value,
-    ...dados.value,
-  })
+  try {
+    const userId = userCookie.value?.id
+    if (!userId) return
+
+    const payload = {
+      ...dados.value,
+      foto: fotoPerfil.value,
+    }
+
+    const res = await fetch(`/api/users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    if (!res.ok) {
+      throw new Error('Erro ao atualizar perfil.')
+    }
+
+    alert('Perfil atualizado com sucesso!')
+  } catch (err) {
+    console.error('Erro ao salvar:', err)
+    alert('Erro ao salvar alterações.')
+  }
 }
 </script>
+
 
 <style scoped>
 .perfil-container {
