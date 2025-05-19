@@ -11,7 +11,7 @@
         </div>
       </div>
       <input type="file" ref="inputFile" @change="alterarFoto" style="display: none" />
-      <h2 class="nome-usuario">{{ nomeUsuario }}</h2>
+      <h2 class="nome-usuario">{{ dados.nome || 'Usuário' }}</h2>
     </div>
 
     <div class="info-perfil">
@@ -75,15 +75,18 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import lapisIcon from '@/assets/icons/lapis.svg'
 import eyeIcon from '@/assets/icons/eye.svg'
 import eyeOffIcon from '@/assets/icons/eye-off.svg'
+import { useCookie } from '#app'
 
-// Dados do usuário
+const router = useRouter()
+const tokenCookie = useCookie('token')
+const userCookie = useCookie('user')
+
 const fotoPerfil = ref('https://via.placeholder.com/150')
-const nomeUsuario = ref('')
 const mostrarSenha = ref(false)
-const userCookie = useCookie('user') // Pega dados do cookie
 
 const dados = ref({
   username: '',
@@ -103,21 +106,31 @@ const campos = {
   confirmarSenha: 'Confirmar senha:',
 }
 
-// Busca dados do usuário ao carregar a página
 onMounted(async () => {
   const userId = userCookie.value?.id
-  if (!userId) return
+  const token = tokenCookie.value
+
+  if (!userId || !token) {
+    router.push('/login')
+    return
+  }
 
   try {
-    const res = await fetch(`/api/users/${userId}`)
+    const res = await fetch(`/api/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (!res.ok) throw new Error('Falha ao buscar dados do usuário.')
+
     const user = await res.json()
 
-    nomeUsuario.value = user.nome
     dados.value = {
-      username: user.username,
-      nome: user.nome,
-      telefone: user.telefone,
-      email: user.email,
+      username: user.username || '',
+      nome: user.nome || '',
+      telefone: user.telefone || '',
+      email: user.email || '',
       senha: '',
       confirmarSenha: '',
     }
@@ -126,11 +139,11 @@ onMounted(async () => {
       fotoPerfil.value = user.foto
     }
   } catch (err) {
-    console.error('Erro ao carregar dados do usuário', err)
+    console.error(err)
+    alert('Erro ao carregar dados do perfil.')
   }
 })
 
-// Troca de foto
 function editarFoto() {
   const input = document.querySelector('input[type="file"]')
   input?.click()
@@ -147,26 +160,35 @@ function alterarFoto(event) {
   }
 }
 
-// Salvar alterações no banco
 async function salvarAlteracoes() {
   if (dados.value.senha !== dados.value.confirmarSenha) {
     alert('As senhas não coincidem.')
     return
   }
 
-  try {
-    const userId = userCookie.value?.id
-    if (!userId) return
+  const userId = userCookie.value?.id
+  const token = tokenCookie.value
 
-    const payload = {
-      ...dados.value,
-      foto: fotoPerfil.value,
+  if (!userId || !token) {
+    alert('Você precisa estar logado para salvar.')
+    router.push('/login')
+    return
+  }
+
+  try {
+    // Prepara payload removendo confirmarSenha e senha vazia
+    const payload = { ...dados.value, foto: fotoPerfil.value }
+    delete payload.confirmarSenha
+
+    if (!payload.senha) {
+      delete payload.senha
     }
 
     const res = await fetch(`/api/users/${userId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(payload),
     })
@@ -175,7 +197,13 @@ async function salvarAlteracoes() {
       throw new Error('Erro ao atualizar perfil.')
     }
 
+    // Atualize cookie user se quiser, com dados novos
+    const updatedUser = await res.json()
+    userCookie.value = JSON.stringify(updatedUser)
+
     alert('Perfil atualizado com sucesso!')
+    dados.value.senha = ''
+    dados.value.confirmarSenha = ''
   } catch (err) {
     console.error('Erro ao salvar:', err)
     alert('Erro ao salvar alterações.')

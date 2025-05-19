@@ -43,6 +43,7 @@ definePageMeta({
 
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useCookie } from '#app'
 
 const router = useRouter()
 const email = ref('')
@@ -58,26 +59,38 @@ const handleLogin = async () => {
       email: email.value,
       password: senha.value,
     },
+    headers: {
+      'Content-Type': 'application/json',
+    }
   })
 
-  if (error.value || !data.value?.status) {
+  if (error.value) {
+    erro.value = 'Erro na requisição ao servidor.'
+    return
+  }
+
+  if (!data.value?.status) {
     erro.value = data.value?.message || 'E-mail ou senha inválidos.'
     return
   }
 
-  // Salvar o token JWT (ou qualquer token retornado) no cookie ou localStorage
-  // Exemplo:
-  if (data.value.token) {
-    useCookie('token').value = data.value.token
+  if (!data.value.token) {
+    erro.value = 'Token não recebido da API.'
+    return
   }
 
-  // Salvar dados do usuário se quiser
+  // Salvar token no cookie com validade de 30 dias
+  useCookie('token', { maxAge: 60 * 60 * 24 * 30 }).value = data.value.token
+
+  // Salvar dados do usuário no cookie
   useCookie('user').value = data.value.user
 
-  // Redirecionar para a página inicial
+  // Redirecionar para a home
   router.push('/')
 }
 </script>
+
+
 
 
 
