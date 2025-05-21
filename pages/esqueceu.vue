@@ -95,7 +95,7 @@ async function novaSenha() {
   message.value = ''
   messageStyle.value = {}
 
-  if (password.value !== password_confirmation.value) {
+  if (password.value != password_confirmation.value) {
     message.value = 'As senhas não coincidem.'
     messageStyle.value = { color: 'red' }
     loading.value = false
