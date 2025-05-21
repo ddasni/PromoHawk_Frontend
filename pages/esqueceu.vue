@@ -1,68 +1,130 @@
 <template>
   <div class="page-center">
     <div class="esqueceu-container">
-      <h2>Esqueceu a senha</h2>
-      <form @submit.prevent="handleSubmit">
+      <div class="step" :class="{ active: etapa >= 1, complete: etapa > 1 }">
+        <h2>Esqueceu a senha</h2>
+      </div>
+
+      <!-- Etapa 1 -->
+      <div v-if="etapa === 1">
         <div class="input-group">
           <label for="email">E-mail</label>
           <input v-model="email" type="email" id="email" required placeholder="Digite seu e-mail" />
         </div>
+        <div>
+          <Botao class="btn-esqueceu" :disabled="loading" 
+            @click="enviarEmail"
+            nome="Continuar"
+          />
+        </div>
+      </div>
 
-        <button type="submit" class="btn-esqueceu" :disabled="loading">
-          {{ loading ? 'Enviando...' : 'Enviar Código' }}
-        </button>
+      <!-- Etapa 2 -->
+      <div v-if="etapa === 2">
+        <div class="input-group">
+          <label for="password">Nova Senha</label>
+          <input v-model="password" type="password" id="password" required placeholder="Digite sua nova senha" />
+        </div>
+        <div class="input-group">
+          <label for="confirmar_password">Confirmar Senha</label>
+          <input v-model="confirmar_password" type="password" id="confirmar_password" required placeholder="Confirme sua senha" />
+        </div>
+        <div>
+          <Botao class="btn-esqueceu" :disabled="loading"
+            @click="novaSenha"
+            nome="Finalizar"
+          />
+        </div>
+      </div>
 
-        <div v-if="message" :style="messageStyle">{{ message }}</div>
-      </form>
+      <div v-if="message" :style="messageStyle">{{ message }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
-// Usando o layout 'basic', onde não tem Header e Footer
-definePageMeta({
-  layout: 'basic',
-})
+definePageMeta({ layout: 'basic' })
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import Botao from '~/components/Common/botao.vue'
+import { useAuthStore } from '~/stores/Auth'
 
+const etapa = ref(1)
 const email = ref('')
+const token = ref('')
+const password = ref('')
+const confirmar_password = ref('')
 const loading = ref(false)
 const message = ref('')
 const messageStyle = ref({})
+const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
 
-const handleSubmit = async () => {
+onMounted(() => {
+  const urlToken = route.query.token
+  const urlEmail = route.query.email
+
+  if (urlToken && urlEmail) {
+    token.value = urlToken
+    email.value = urlEmail
+    etapa.value = 2
+  }
+})
+
+async function enviarEmail() {
   loading.value = true
   message.value = ''
   messageStyle.value = {}
 
   try {
-    const response = await $fetch('/api/sendCode', {
-      method: 'POST',
-      body: { email: email.value }
-    })
-
-    if (response.success) {
-      message.value = 'Código enviado! Verifique seu e-mail.'
-      messageStyle.value = { color: 'green' }
-      localStorage.setItem('codeId', response.codeId)
-    }
+    await auth.forgotPassword(email.value)
+    message.value = 'E-mail de recuperação enviado!'
+    messageStyle.value = { color: 'green' }
   } catch (error) {
-    message.value = 'Erro ao enviar o código.'
+    message.value = 'Erro ao enviar o e-mail.'
     messageStyle.value = { color: 'red' }
-  } finally {
-    loading.value = false
   }
+
+  loading.value = false
+}
+
+async function novaSenha() {
+  loading.value = true
+  message.value = ''
+  messageStyle.value = {}
+
+  if (password.value !== confirmar_password.value) {
+    message.value = 'As senhas não coincidem.'
+    messageStyle.value = { color: 'red' }
+    loading.value = false
+    return
+  }
+
+  try {
+    await auth.resetPassword({
+      email: email.value,
+      password: password.value,
+      password_confirmation: confirmar_password.value,
+      token: token.value
+    })
+    message.value = 'Senha redefinida com sucesso!'
+    messageStyle.value = { color: 'green' }
+    setTimeout(() => {
+      router.push('/login')
+    }, 2000)
+  } catch (error) {
+    message.value = 'Erro ao redefinir a senha.'
+    messageStyle.value = { color: 'red' }
+  }
+
+  loading.value = false
 }
 </script>
 
-<style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
+<style scoped>
 .page-center {
   display: flex;
   justify-content: center;
