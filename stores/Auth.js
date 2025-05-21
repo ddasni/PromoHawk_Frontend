@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { API_URL } from '@/utils/config'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -14,7 +13,7 @@ export const useAuthStore = defineStore('auth', {
       this.carregando = true
       this.erro = null
       try {
-        const res = await $fetch(`${API_URL}/auth/login`, {
+        const res = await $fetch(`https://api.promohawk.com.br/api/auth/login`, {
           method: 'POST',
           body: dados,
           credentials: 'include',  // importante para Laravel Sanctum
