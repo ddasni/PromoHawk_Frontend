@@ -54,7 +54,7 @@ const etapa = ref(1)
 const email = ref('')
 const token = ref('')
 const password = ref('')
-const confirmar_password = ref('')
+const password_confirmation = ref('')
 const loading = ref(false)
 const message = ref('')
 const messageStyle = ref({})
@@ -95,7 +95,7 @@ async function novaSenha() {
   message.value = ''
   messageStyle.value = {}
 
-  if (password.value !== confirmar_password.value) {
+  if (password.value !== password_confirmation.value) {
     message.value = 'As senhas não coincidem.'
     messageStyle.value = { color: 'red' }
     loading.value = false
@@ -105,9 +105,9 @@ async function novaSenha() {
   try {
     await auth.resetPassword({
       email: email.value,
+      token: token.value,
       password: password.value,
-      password_confirmation: confirmar_password.value,
-      token: token.value
+      password_confirmation: password_confirmation.value
     })
     message.value = 'Senha redefinida com sucesso!'
     messageStyle.value = { color: 'green' }
@@ -119,6 +119,8 @@ async function novaSenha() {
     messageStyle.value = { color: 'red' }
   }
 
+  console.log('Token:', token.value)
+  console.log('Email:', email.value)
   loading.value = false
 }
 </script>
