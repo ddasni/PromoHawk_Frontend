@@ -4,50 +4,84 @@ import { API_URL } from '@/utils/config'
 export const useUsuarioStore = defineStore('usuario', {
   state: () => ({
     usuarios: [],
-    loading: false,
-    erro: null
+    usuario: null,
+    erro: null,
+    carregando: false,
   }),
 
+
   actions: {
-    async consultarUsuario(id) {
-        this.loading = true
-        try {
-            const res = await fetch(`${API_URL}/usuario/${id}`)
-            if (!res.ok) throw new Error('Loja não encontrada')
-            this.usuarioSelecionado = await res.json()
-        } catch (e) {
-            this.erro = e.message
-        } finally {
-            this.loading = false
-        }
+    async buscarTodos() {
+      this.carregando = true
+      try {
+        const { data } = await useFetch(`${API_URL}/users`, {
+          transform: (data) => data.usuarios,
+        })
+        this.usuarios = data.value || []
+      } catch (error) {
+        this.erro = error
+      } finally {
+        this.carregando = false
+      }
     },
 
-    async cadastrarUsuario(dados) {
-      const res = await fetch('${API_URL}/usuario/cadastrar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dados)
-      })
-      if (!res.ok) throw new Error('Erro ao criar usuario')
-      await this.fetchusuario()
+
+    async buscarPorId(id) {
+      this.carregando = true
+      try {
+        const { data } = await useAsyncData(`usuario-${id}`, () =>
+          $fetch(`${API_URL}/users/${id}`).then((res) => res.user)
+        )
+        this.usuario = data.value
+      } catch (error) {
+        this.erro = error
+      } finally {
+        this.carregando = false
+      }
     },
 
-    async atualizarUsuario(id, dados) {
-      const res = await fetch(`${API_URL}/usuario/atualizar/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dados)
-      })
-      if (!res.ok) throw new Error('Erro ao atualizar usuario')
-      await this.fetchUsuario()
+
+    async cadastrar(dados) {
+      try {
+        const res = await $fetch(`${API_URL}/users`, {
+          method: 'POST',
+          body: dados,
+        })
+        if (!res.status) throw new Error(res.message || 'Erro ao cadastrar usuário')
+        return res
+      } catch (error) {
+        this.erro = error
+        throw error
+      }
     },
 
-    async deletarUsuario(id) {
-      const res = await fetch(`${API_URL}/usuario/deletar/${id}`, {
-        method: 'DELETE'
-      })
-      if (!res.ok) throw new Error('Erro ao excluir usuario')
-      await this.fetchUsuario()
-    }
-  }
+
+    async atualizar(id, dados) {
+      try {
+        const res = await $fetch(`${API_URL}/users/${id}`, {
+          method: 'PUT',
+          body: dados,
+        })
+        if (!res.status) throw new Error(res.message || 'Erro ao atualizar usuário')
+        return res
+      } catch (error) {
+        this.erro = error
+        throw error
+      }
+    },
+
+    
+    async deletar(id) {
+      try {
+        const res = await $fetch(`${API_URL}/users/${id}`, {
+          method: 'DELETE',
+        })
+        if (!res.status) throw new Error(res.message || 'Erro ao deletar usuário')
+        return res
+      } catch (error) {
+        this.erro = error
+        throw error
+      }
+    },
+  },
 })
