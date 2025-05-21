@@ -53,7 +53,7 @@ const erro = ref('')
 const handleLogin = async () => {
   erro.value = ''
 
-  const { data, error } = await useFetch('https://api.promohawk.com.br/api/login', {
+  const { data, error } = await useFetch('https://api.promohawk.com.br/api/auth/login', {
     method: 'POST',
     body: {
       email: email.value,
