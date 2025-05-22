@@ -119,8 +119,15 @@ async function novaSenha() {
     messageStyle.value = { color: 'red' }
   }
 
+  // testes
+  console.log('password:', password.value)
+  console.log('password_confirmation:', password_confirmation.value )
   console.log('Token:', token.value)
   console.log('Email:', email.value)
+
+  token.value = decodeURIComponent(route.query.token)
+  email.value = decodeURIComponent(route.query.email)
+
   loading.value = false
 }
 </script>
