@@ -26,7 +26,7 @@
           <input v-model="password" type="password" id="password" required placeholder="Digite sua nova senha" />
         </div>
         <div class="input-group">
-          <label for="confirmar_password">Confirmar Senha</label>
+          <label for="password_confirmation">Confirmar Senha</label>
           <input v-model="password_confirmation" type="password" id="password_confirmation" required placeholder="Confirme sua senha" />
         </div>
         <div>
@@ -47,8 +47,8 @@ definePageMeta({ layout: 'basic' })
 
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Botao from '~/components/Common/botao.vue' // <-- importando o componente Botao
-import { useAuth } from '~/composables/Auth' // <-- importando o composable Auth.js
+import Botao from '~/components/Common/botao.vue'
+import { useAuthStore } from '~/stores/Auth'
 
 const etapa = ref(1)
 const email = ref('')
@@ -60,18 +60,15 @@ const message = ref('')
 const messageStyle = ref({})
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 
-// useAuth retorna tudo que precisamos
-const { forgotPassword, resetPassword } = useAuth()
-
-// Extrai o email e token da url da pagina carregada pelo link do email
 onMounted(() => {
   const urlToken = route.query.token
   const urlEmail = route.query.email
 
   if (urlToken && urlEmail) {
-    token.value = decodeURIComponent(urlToken)
-    email.value = decodeURIComponent(urlEmail)
+    token.value = urlToken
+    email.value = urlEmail
     etapa.value = 2
   }
 })
@@ -82,7 +79,7 @@ async function enviarEmail() {
   messageStyle.value = {}
 
   try {
-    await forgotPassword(email.value)
+    await auth.forgotPassword(email.value)
     message.value = 'E-mail de recuperação enviado!'
     messageStyle.value = { color: 'green' }
   } catch (error) {
@@ -98,7 +95,7 @@ async function novaSenha() {
   message.value = ''
   messageStyle.value = {}
 
-  if (password.value.trim() !== password_confirmation.value.trim()) {
+  if (password.value !== password_confirmation.value) {
     message.value = 'As senhas não coincidem.'
     messageStyle.value = { color: 'red' }
     loading.value = false
@@ -106,16 +103,14 @@ async function novaSenha() {
   }
 
   try {
-    await resetPassword({
+    await auth.resetPassword({
       email: email.value,
-      token: token.value,
       password: password.value,
-      password_confirmation: password_confirmation.value
+      password_confirmation: password_confirmation.value,
+      token: token.value
     })
-
     message.value = 'Senha redefinida com sucesso!'
     messageStyle.value = { color: 'green' }
-
     setTimeout(() => {
       router.push('/login')
     }, 2000)
@@ -125,6 +120,15 @@ async function novaSenha() {
   }
 
   loading.value = false
+
+  // testes
+  console.log('password:', password.value)
+  console.log('password_confirmation:', password_confirmation.value )
+  console.log('Token:', token.value)
+  console.log('Email:', email.value)
+
+  token.value = decodeURIComponent(route.query.token)
+  email.value = decodeURIComponent(route.query.email)
 }
 </script>
 
