@@ -47,8 +47,8 @@ definePageMeta({ layout: 'basic' })
 
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Botao from '~/components/Common/botao.vue'
-import { useAuthStore } from '~/stores/Auth'
+import Botao from '~/components/Common/botao.vue' // <-- importando o componente Botao
+import { useAuth } from '~/composables/useAuth' // <-- importando o composable Auth.js
 
 const etapa = ref(1)
 const email = ref('')
@@ -60,8 +60,11 @@ const message = ref('')
 const messageStyle = ref({})
 const route = useRoute()
 const router = useRouter()
-const auth = useAuthStore()
 
+// useAuth retorna tudo que precisamos
+const { forgotPassword, resetPassword } = useAuth()
+
+// Extrai o email e token da url da pagina carregada pelo link do email
 onMounted(() => {
   const urlToken = route.query.token
   const urlEmail = route.query.email
@@ -79,7 +82,7 @@ async function enviarEmail() {
   messageStyle.value = {}
 
   try {
-    await auth.forgotPassword(email.value)
+    await forgotPassword(email.value)
     message.value = 'E-mail de recuperação enviado!'
     messageStyle.value = { color: 'green' }
   } catch (error) {
@@ -103,14 +106,16 @@ async function novaSenha() {
   }
 
   try {
-    await auth.resetPassword({
+    await resetPassword({
       email: email.value,
       token: token.value,
       password: password.value,
       password_confirmation: password_confirmation.value
     })
+
     message.value = 'Senha redefinida com sucesso!'
     messageStyle.value = { color: 'green' }
+
     setTimeout(() => {
       router.push('/login')
     }, 2000)
@@ -119,18 +124,10 @@ async function novaSenha() {
     messageStyle.value = { color: 'red' }
   }
 
-  // testes
-  console.log('password:', password.value)
-  console.log('password_confirmation:', password_confirmation.value )
-  console.log('Token:', token.value)
-  console.log('Email:', email.value)
-
-  token.value = decodeURIComponent(route.query.token)
-  email.value = decodeURIComponent(route.query.email)
-
   loading.value = false
 }
 </script>
+
 
 
 <style scoped>
