@@ -27,7 +27,7 @@
         </div>
         <div class="input-group">
           <label for="confirmar_password">Confirmar Senha</label>
-          <input v-model="confirmar_password" type="password" id="confirmar_password" required placeholder="Confirme sua senha" />
+          <input v-model="password_confirmation" type="password" id="password_confirmation" required placeholder="Confirme sua senha" />
         </div>
         <div>
           <Botao class="btn-esqueceu" :disabled="loading"
@@ -95,7 +95,7 @@ async function novaSenha() {
   message.value = ''
   messageStyle.value = {}
 
-  if (password.value != password_confirmation.value) {
+  if (password.value.trim() !== password_confirmation.value.trim()) {
     message.value = 'As senhas não coincidem.'
     messageStyle.value = { color: 'red' }
     loading.value = false
