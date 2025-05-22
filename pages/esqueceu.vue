@@ -48,7 +48,7 @@ definePageMeta({ layout: 'basic' })
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Botao from '~/components/Common/botao.vue' // <-- importando o componente Botao
-import { useAuth } from '~/composables/useAuth' // <-- importando o composable Auth.js
+import { useAuth } from '~/composables/Auth' // <-- importando o composable Auth.js
 
 const etapa = ref(1)
 const email = ref('')
