@@ -48,7 +48,6 @@ definePageMeta({ layout: 'basic' })
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Botao from '~/components/Common/botao.vue'
-import { useAuthStore } from '~/stores/Auth'
 
 const etapa = ref(1)
 const email = ref('')
@@ -60,7 +59,8 @@ const message = ref('')
 const messageStyle = ref({})
 const route = useRoute()
 const router = useRouter()
-const auth = useAuthStore()
+
+const API_URL = 'https://api.promohawk.com.br/api/auth'
 
 onMounted(() => {
   const urlToken = route.query.token
@@ -78,13 +78,18 @@ async function enviarEmail() {
   message.value = ''
   messageStyle.value = {}
 
-  try {
-    await auth.forgotPassword(email.value)
-    message.value = 'E-mail de recuperação enviado!'
-    messageStyle.value = { color: 'green' }
-  } catch (error) {
+  const { error } = await useFetch(`${API_URL}/forgot-password`, {
+    method: 'POST',
+    body: { email: email.value },
+    immediate: false,
+  }).execute()
+
+  if (error.value) {
     message.value = 'Erro ao enviar o e-mail.'
     messageStyle.value = { color: 'red' }
+  } else {
+    message.value = 'E-mail de recuperação enviado!'
+    messageStyle.value = { color: 'green' }
   }
 
   loading.value = false
@@ -102,33 +107,34 @@ async function novaSenha() {
     return
   }
 
-  try {
-    await auth.resetPassword({
+  const { error } = await useFetch(`${API_URL}/reset-password`, {
+    method: 'POST',
+    body: {
       email: email.value,
       password: password.value,
       password_confirmation: password_confirmation.value,
       token: token.value
-    })
+    },
+    immediate: false,
+  }).execute()
+
+  if (error.value) {
+    message.value = 'Erro ao redefinir a senha.'
+    messageStyle.value = { color: 'red' }
+  } else {
     message.value = 'Senha redefinida com sucesso!'
     messageStyle.value = { color: 'green' }
     setTimeout(() => {
       router.push('/login')
     }, 2000)
-  } catch (error) {
-    message.value = 'Erro ao redefinir a senha.'
-    messageStyle.value = { color: 'red' }
   }
 
   loading.value = false
 
-  // testes
   console.log('password:', password.value)
-  console.log('password_confirmation:', password_confirmation.value )
+  console.log('password_confirmation:', password_confirmation.value)
   console.log('Token:', token.value)
   console.log('Email:', email.value)
-
-  token.value = decodeURIComponent(route.query.token)
-  email.value = decodeURIComponent(route.query.email)
 }
 </script>
 
