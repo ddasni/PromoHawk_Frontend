@@ -93,7 +93,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const res = await $fetch(`https://api.promohawk.com.br/api/auth/reset-password`, {
           method: 'POST',
-          body: dados, // { token, email, password, password_confirmation }
+          body: JSON.stringify(dados), // { token, email, password, password_confirmation }
           headers: {
                 'Content-Type': 'application/json',
             },
