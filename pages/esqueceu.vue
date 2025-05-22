@@ -67,8 +67,8 @@ onMounted(() => {
   const urlEmail = route.query.email
 
   if (urlToken && urlEmail) {
-    token.value = urlToken
-    email.value = urlEmail
+    token.value = decodeURIComponent(urlToken)
+    email.value = decodeURIComponent(urlEmail)
     etapa.value = 2
   }
 })
