@@ -37,7 +37,15 @@
         </div>
       </div>
 
-      <div v-if="message" :style="messageStyle">{{ message }}</div>
+      <UAlert
+        v-if="message"
+        :title="alertTitle"
+        :description="message"
+        :color="alertColor"
+        variant="subtle"
+        class="mt-4"
+      />
+
     </div>
   </div>
 </template>
@@ -59,6 +67,9 @@ const message = ref('')
 const messageStyle = ref({})
 const route = useRoute()
 const router = useRouter()
+const alertTitle = ref('')
+const alertColor = ref('primary') // Pode ser: primary, red, green, yellow, etc.
+
 
 const API_URL = 'https://api.promohawk.com.br/api/auth'
 
@@ -85,10 +96,12 @@ async function enviarEmail() {
   })
 
   message.value = 'E-mail de recuperação enviado!'
-  messageStyle.value = { color: 'green' }
+  alertTitle.value = 'Sucesso!'
+  alertColor.value = 'green'
   }catch(error) {
     message.value = 'Erro ao enviar o e-mail.'
-    messageStyle.value = { color: 'red' }
+    alertTitle.value = 'Erro'
+    alertColor.value = 'red'
   }
 
   loading.value = false
@@ -117,7 +130,8 @@ async function novaSenha() {
       }
     })
     message.value = 'Senha redefinida com sucesso!'
-    messageStyle.value = { color: 'green' }
+    alertTitle.value = 'Sucesso!'
+    alertColor.value = 'green'
 
     setTimeout(() => {
       router.push('/login').catch((error) => {
@@ -126,7 +140,8 @@ async function novaSenha() {
     }, 2000)
   } catch (error) {
     message.value = 'Erro ao redefinir a senha.'
-    messageStyle.value = { color: 'red' }
+    alertTitle.value = 'Erro'
+    alertColor.value = 'red'
   }
 
   loading.value = false
