@@ -9,7 +9,7 @@ export function useLogout() {
   async function logout() {
     try {
       // Chama sua API para logout
-      const response = await fetch('https://api.promohawk.com.br/api/logout', {
+      const response = await fetch('https://api.promohawk.com.br/api/auth/logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${tokenCookie.value}`,
