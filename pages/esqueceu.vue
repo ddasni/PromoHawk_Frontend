@@ -78,18 +78,17 @@ async function enviarEmail() {
   message.value = ''
   messageStyle.value = {}
 
-  const { error } = await useFetch(`${API_URL}/forgot-password`, {
+  try {
+  await $fetch(`${API_URL}/forgot-password`, {
     method: 'POST',
-    body: { email: email.value },
-    immediate: false,
-  }).execute()
+    body: { email: email.value }
+  })
 
-  if (error.value) {
+  message.value = 'E-mail de recuperação enviado!'
+  messageStyle.value = { color: 'green' }
+  }catch(error) {
     message.value = 'Erro ao enviar o e-mail.'
     messageStyle.value = { color: 'red' }
-  } else {
-    message.value = 'E-mail de recuperação enviado!'
-    messageStyle.value = { color: 'green' }
   }
 
   loading.value = false
@@ -107,26 +106,27 @@ async function novaSenha() {
     return
   }
 
-  const { error } = await useFetch(`${API_URL}/reset-password`, {
-    method: 'POST',
-    body: {
-      email: email.value,
-      password: password.value,
-      password_confirmation: password_confirmation.value,
-      token: token.value
-    },
-    immediate: false,
-  }).execute()
-
-  if (error.value) {
-    message.value = 'Erro ao redefinir a senha.'
-    messageStyle.value = { color: 'red' }
-  } else {
+   try {
+    await $fetch(`${API_URL}/reset-password`, {
+      method: 'POST',
+      body: {
+        email: email.value,
+        password: password.value,
+        password_confirmation: password_confirmation.value,
+        token: token.value
+      }
+    })
     message.value = 'Senha redefinida com sucesso!'
     messageStyle.value = { color: 'green' }
+
     setTimeout(() => {
-      router.push('/login')
+      router.push('/login').catch((error) => {
+        console.error('Erro ao redirecionar:', error)
+      })
     }, 2000)
+  } catch (error) {
+    message.value = 'Erro ao redefinir a senha.'
+    messageStyle.value = { color: 'red' }
   }
 
   loading.value = false
