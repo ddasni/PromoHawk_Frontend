@@ -2,7 +2,7 @@
   <UDropdownMenu size="xl" arrow :items="items" :ui="{ content: 'w-48' }">
     <UButton
       class="font-bold rounded-full"
-      icon="icon:user"
+      icon="mdi:user"
       size="xl"
       color="primary"
       variant="solid"
