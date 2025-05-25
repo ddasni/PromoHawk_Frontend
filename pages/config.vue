@@ -2,23 +2,13 @@
   <div class="config-container">
     <h1 class="titulo">Configurações</h1>
 
+    <!-- Notificações -->
     <div class="config-section">
       <h2 class="secao-titulo">Notificações</h2>
 
-      <div class="config-item">
-        <label class="label-switch">Receber notificações de queda de preço</label>
-        <input type="checkbox" v-model="notificacoesAtivadas" class="switch" />
-      </div>
+      <SwitchItem label="Receber notificações de queda de preço" v-model="notificacoesAtivadas" />
+      <SwitchItem label="Receber por Email" v-model="notificarPorEmail" />
 
-      <div class="config-item">
-        <label class="label-switch">Receber por Email</label>
-        <input type="checkbox" v-model="notificarPorEmail" class="switch" />
-      </div>
-
-      <div class="config-item">
-        <label class="label-switch">Receber por Push</label>
-        <input type="checkbox" v-model="notificarPorPush" class="switch" />
-      </div>
 
       <div class="config-item">
         <label>Frequência de notificação</label>
@@ -28,84 +18,98 @@
           <option value="semanal">Semanalmente</option>
         </select>
       </div>
-
-      <div class="config-item">
-        <label class="label-switch">Receber promoções e ofertas personalizadas</label>
-        <input type="checkbox" v-model="ofertasPersonalizadas" class="switch" />
-      </div>
     </div>
 
+    <!-- Preferências -->
     <div class="config-section">
-      <h2 class="secao-titulo">Preferências gerais</h2>
+      <h2 class="secao-titulo">Preferências</h2>
 
-      <div class="config-item">
-        <label>Idioma preferido</label>
-        <select v-model="idioma" class="select">
-          <option value="pt">Português</option>
-          <option value="en">Inglês</option>
-          <option value="es">Espanhol</option>
-        </select>
-      </div>
+      <SwitchItem label="Receber promoções e ofertas personalizadas" v-model="ofertasPersonalizadas" />
+      <SwitchItem label="Permitir recomendações personalizadas" v-model="recomendacoes" />
+      <SwitchItem label="Ativar histórico de buscas" v-model="historicoBuscas" />
     </div>
 
+
+    <!-- Ações -->
     <div class="config-actions">
       <button @click="salvarConfiguracoes" class="btn-salvar">Salvar Configurações</button>
+
+      <transition name="fade">
+        <p v-if="showSavedMessage" class="saved-message">
+           Configurações salvas com sucesso!
+        </p>
+      </transition>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
+import SwitchItem from '@/components/SwitchItem.vue'
 
-const notificacoesAtivadas = ref(true);
-const notificarPorEmail = ref(true);
-const notificarPorPush = ref(false);
-const frequenciaNotificacao = ref('imediato');
-const ofertasPersonalizadas = ref(true);
-const idioma = ref('pt');
 
+// Notificações
+const notificacoesAtivadas = ref(true)
+const notificarPorEmail = ref(true)
+const frequenciaNotificacao = ref('imediato')
+
+// Preferências
+const ofertasPersonalizadas = ref(true)
+const recomendacoes = ref(true)
+const historicoBuscas = ref(true)
+
+
+// Mensagem de sucesso
+const showSavedMessage = ref(false)
+
+// Função para salvar
 function salvarConfiguracoes() {
   console.log('Configurações salvas:', {
     notificacoesAtivadas: notificacoesAtivadas.value,
     notificarPorEmail: notificarPorEmail.value,
-    notificarPorPush: notificarPorPush.value,
     frequenciaNotificacao: frequenciaNotificacao.value,
     ofertasPersonalizadas: ofertasPersonalizadas.value,
-    idioma: idioma.value,
-  });
+    recomendacoes: recomendacoes.value,
+    historicoBuscas: historicoBuscas.value,
+  
+  })
 
-  // Aqui você pode enviar pro backend ou salvar no localStorage, se quiser.
+  showSavedMessage.value = true
+  setTimeout(() => (showSavedMessage.value = false), 3000)
 }
 </script>
 
 <style scoped>
+/* Layout Geral */
 .config-container {
-  max-width: 700px;
+  max-width: 750px;
   margin: 40px auto;
   background: #ffffff;
   padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   font-family: 'Segoe UI', sans-serif;
 }
 
+/* Títulos */
 .titulo {
   text-align: center;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
   color: #333;
   margin-bottom: 40px;
 }
 
-.config-section {
-  margin-bottom: 40px;
-}
-
 .secao-titulo {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
   color: #007bff;
   margin-bottom: 20px;
+}
+
+/* Itens */
+.config-section {
+  margin-bottom: 40px;
 }
 
 .config-item {
@@ -117,18 +121,6 @@ function salvarConfiguracoes() {
   border-bottom: 1px solid #f0f0f0;
 }
 
-.label-switch {
-  font-size: 16px;
-  color: #333;
-}
-
-.switch {
-  width: 20px;
-  height: 20px;
-  accent-color: #007bff;
-  cursor: pointer;
-}
-
 .select {
   padding: 8px 12px;
   font-size: 16px;
@@ -138,6 +130,7 @@ function salvarConfiguracoes() {
   color: #333;
 }
 
+/* Botões */
 .config-actions {
   text-align: center;
   margin-top: 30px;
@@ -149,7 +142,7 @@ function salvarConfiguracoes() {
   color: #fff;
   font-weight: 500;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
@@ -158,5 +151,21 @@ function salvarConfiguracoes() {
 .btn-salvar:hover {
   background-color: #0056b3;
 }
+
+/* Mensagem de salvo */
+.saved-message {
+  color: #28a745;
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+/* Animações */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.4s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 </style>
+
 
