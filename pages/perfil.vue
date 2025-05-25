@@ -106,8 +106,23 @@ const campos = {
   confirmarSenha: 'Confirmar senha:',
 }
 
+function parseUserCookie() {
+  try {
+    if (typeof userCookie.value === 'string') {
+      return JSON.parse(userCookie.value)
+    } else if (typeof userCookie.value === 'object') {
+      return userCookie.value
+    } else {
+      return {}
+    }
+  } catch {
+    return {}
+  }
+}
+
 onMounted(async () => {
-  const userId = userCookie.value?.id
+  const user = parseUserCookie()
+  const userId = user?.id
   const token = tokenCookie.value
 
   if (!userId || !token) {
@@ -115,8 +130,11 @@ onMounted(async () => {
     return
   }
 
+  console.log('Buscando dados do usuário:', userId)
+  console.log('Token:', token)
+
   try {
-    const res = await fetch(`/api/users/${userId}`, {
+    const res = await fetch(`https://api.promohawk.com.br/users/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -124,19 +142,19 @@ onMounted(async () => {
 
     if (!res.ok) throw new Error('Falha ao buscar dados do usuário.')
 
-    const user = await res.json()
+    const userData = await res.json()
 
     dados.value = {
-      username: user.username || '',
-      nome: user.nome || '',
-      telefone: user.telefone || '',
-      email: user.email || '',
+      username: userData.username || '',
+      nome: userData.nome || '',
+      telefone: userData.telefone || '',
+      email: userData.email || '',
       senha: '',
       confirmarSenha: '',
     }
 
-    if (user.foto) {
-      fotoPerfil.value = user.foto
+    if (userData.foto) {
+      fotoPerfil.value = userData.foto
     }
   } catch (err) {
     console.error(err)
@@ -149,12 +167,48 @@ function editarFoto() {
   input?.click()
 }
 
-function alterarFoto(event) {
+async function alterarFoto(event) {
   const file = event.target.files[0]
   if (file) {
     const reader = new FileReader()
-    reader.onload = () => {
+    reader.onload = async () => {
       fotoPerfil.value = reader.result
+
+      const user = parseUserCookie()
+      const userId = user?.id
+      const token = tokenCookie.value
+
+      if (!userId || !token) {
+        alert('Você precisa estar logado para alterar a foto.')
+        router.push('/login')
+        return
+      }
+
+      try {
+        // Enviar imagem para API
+        const formData = new FormData()
+        formData.append('image', file)
+
+        const res = await fetch(`https://api.promohawk.com.br/users/${userId}/editImage`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        })
+
+        if (!res.ok) {
+          throw new Error('Erro ao atualizar imagem.')
+        }
+
+        const updatedUser = await res.json()
+        userCookie.value = JSON.stringify(updatedUser)
+        alert('Foto atualizada com sucesso!')
+
+      } catch (err) {
+        console.error(err)
+        alert('Erro ao enviar imagem para o servidor.')
+      }
     }
     reader.readAsDataURL(file)
   }
@@ -166,7 +220,8 @@ async function salvarAlteracoes() {
     return
   }
 
-  const userId = userCookie.value?.id
+  const user = parseUserCookie()
+  const userId = user?.id
   const token = tokenCookie.value
 
   if (!userId || !token) {
@@ -177,14 +232,14 @@ async function salvarAlteracoes() {
 
   try {
     // Prepara payload removendo confirmarSenha e senha vazia
-    const payload = { ...dados.value, foto: fotoPerfil.value }
+    const payload = { ...dados.value }
     delete payload.confirmarSenha
 
     if (!payload.senha) {
       delete payload.senha
     }
 
-    const res = await fetch(`/api/users/${userId}`, {
+    const res = await fetch(`https://api.promohawk.com.br/users/${userId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -197,7 +252,6 @@ async function salvarAlteracoes() {
       throw new Error('Erro ao atualizar perfil.')
     }
 
-    // Atualize cookie user se quiser, com dados novos
     const updatedUser = await res.json()
     userCookie.value = JSON.stringify(updatedUser)
 
@@ -211,8 +265,8 @@ async function salvarAlteracoes() {
 }
 </script>
 
-
 <style scoped>
+/* Mantive seu estilo anterior */
 .perfil-container {
   max-width: 600px;
   margin: 60px auto;
@@ -342,7 +396,7 @@ async function salvarAlteracoes() {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
 .icone-olho:hover {
@@ -350,19 +404,19 @@ async function salvarAlteracoes() {
 }
 
 .info-actions {
-  text-align: center;
   margin-top: 30px;
+  text-align: center;
 }
 
 .btn-salvar {
-  padding: 14px 36px;
   background-color: #3b82f6;
-  color: #fff;
-  font-weight: 600;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
+  color: white;
+  padding: 12px 28px;
   font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
@@ -370,3 +424,4 @@ async function salvarAlteracoes() {
   background-color: #2563eb;
 }
 </style>
+
