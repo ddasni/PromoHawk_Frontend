@@ -7,10 +7,35 @@
     </div>
 
     <h1 class="nome-loja">{{ lojaAtual?.nome }}</h1>
+
+    <!-- 🔥 Seção de Cupons -->
+    <div class="secao">
+      <h2>Cupons Disponíveis</h2>
+      <div class="container-cards">
+        
+        <Card_cupom />
+      </div>
+    </div>
+
+    <hr class="divisor" />
+
+    <!-- 🔥 Seção de Produtos -->
+    <div class="secao">
+      <h2>Produtos em Destaque</h2>
+      <div class="container-cards">
+        
+        <Card_produto />
+        <Card_produto />
+        <Card_produto />
+      </div>
+    </div>
   </section>
 </template>
 
 <script setup>
+import Card_cupom from '~/components/Common/Cards/Card_cupom.vue'
+import Card_produto from '~/components/Common/Cards/Card_produto.vue'
+
 const route = useRoute()
 const nomeLoja = computed(() => route.params.nome?.toString().toLowerCase())
 
@@ -91,6 +116,34 @@ const lojaAtual = computed(() => lojas[nomeLoja.value] || {})
   font-weight: bold;
   text-align: center;
 }
+
+.secao {
+  width: 90%;
+  max-width: 1200px;
+  margin-top: 40px;
+}
+
+.secao h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.container-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.divisor {
+  width: 90%;
+  max-width: 1200px;
+  margin: 50px auto;
+  border: none;
+  border-top: 2px solid #e0e0e0;
+}
 </style>
+
 
 
