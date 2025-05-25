@@ -34,27 +34,27 @@ const items = ref<NavigationMenuItem[]>([
     children: [
       {
         label: 'Amazon',
-        to: 'Loja'
+        to: '/loja/amazon'
       },
       {
         label: 'Magazineluiza',
-        to: 'Loja'
+        to: '/loja/magazineluiza'
       },
       {
         label: 'Centauro',
-        to: 'Loja'
+        to: '/loja/centauro'
       },
       {
         label: 'Mercado Livre',
-        to: 'Loja'
+        to: '/loja/mercadolivre'
       },
       {
         label: 'Kabum',
-        to: 'Loja'
+        to: '/loja/kabum'
       },
       {
         label: 'Pichau',
-        to: 'Loja'
+        to: '/loja/pichau'
       }
     ]
   },
