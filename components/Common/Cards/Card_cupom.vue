@@ -11,6 +11,7 @@ const cupons = [
     loja: "Amazon",
     descricao: "Válido para todos os produtos vendidos e entregues pela Amazon.",
     codigo: "AMAZON10",
+    validade: "30/06/2025"
   },
   {
     id: 2,
@@ -18,6 +19,7 @@ const cupons = [
     loja: "Americanas",
     descricao: "Desconto em compras acima de R$100.",
     codigo: "AME20OFF",
+    validade: "15/07/2025"
   },
   {
     id: 3,
@@ -25,6 +27,7 @@ const cupons = [
     loja: "Submarino",
     descricao: "Frete grátis em produtos selecionados.",
     codigo: "FRETEGRATIS",
+    validade: "31/12/2025"
   }
 ]
 
@@ -36,14 +39,13 @@ function copiar(codigo: string) {
 
 <template>
   <section class="cupons-container">
-   
-
     <div class="cupons-list">
       <div v-for="cupom in cupons" :key="cupom.id" class="cupom-card">
         <div class="cupom-info">
           <h2>{{ cupom.titulo }}</h2>
           <span class="loja">Loja: <strong>{{ cupom.loja }}</strong></span>
           <p class="descricao">{{ cupom.descricao }}</p>
+          <p class="validade">Validade: <strong>{{ cupom.validade }}</strong></p>
         </div>
         <div class="cupom-footer">
           <span class="codigo">{{ cupom.codigo }}</span>
@@ -56,10 +58,9 @@ function copiar(codigo: string) {
 
 <style scoped>
 .cupons-container {
-  max-width: none; /* ou defina um valor maior, se quiser */
+  max-width: none;
   padding: 40px 20px;
 }
-
 
 h1 {
   font-size: 32px;
@@ -76,12 +77,11 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
-  justify-content: flex-start; /* Alinha à esquerda */
+  justify-content: flex-start;
 }
 
-
 .cupom-card {
-  width: 320px; /* Tamanho fixo */
+  width: 320px;
   background: linear-gradient(135deg, #ffffff, #f7faff);
   border: 1px solid #e0e7ff;
   border-radius: 12px;
@@ -92,7 +92,6 @@ h1 {
   justify-content: space-between;
   transition: all 0.3s ease;
 }
-
 
 .cupom-card:hover {
   transform: translateY(-5px);
@@ -115,6 +114,12 @@ h1 {
 .descricao {
   font-size: 14px;
   color: #666;
+  margin-bottom: 10px;
+}
+
+.validade {
+  font-size: 14px;
+  color: #ff0000;
   margin-bottom: 20px;
 }
 
@@ -149,3 +154,4 @@ button:hover {
   background: #1d4ed8;
 }
 </style>
+
