@@ -44,6 +44,11 @@
 </template>
 
 <script setup>
+// pagina protegida por meio do token de login
+definePageMeta({
+  middleware: 'auth'
+})
+
 import { ref } from 'vue'
 import SwitchItem from '@/components/SwitchItem.vue'
 

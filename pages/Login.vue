@@ -50,6 +50,12 @@ const email = ref('')
 const senha = ref('')
 const erro = ref('')
 
+
+// Cookies definidos fora da função para garantir consistência entre SSR/CSR
+const tokenCookie = useCookie('token', { maxAge: 60 * 60 * 24 * 30 }) // 30 dias
+const userCookie = useCookie('user')
+
+
 const handleLogin = async () => {
   erro.value = ''
 
@@ -79,11 +85,10 @@ const handleLogin = async () => {
     return
   }
 
-  // Salvar token no cookie com validade de 30 dias
-  useCookie('token', { maxAge: 60 * 60 * 24 * 30 }).value = data.value.token
+  // Armazena o token e os dados do usuário
+  tokenCookie.value = data.value.token
+  userCookie.value = data.value.user
 
-  // Salvar dados do usuário no cookie
-  useCookie('user').value = data.value.user
 
   // Redirecionar para a home
   router.push('/')

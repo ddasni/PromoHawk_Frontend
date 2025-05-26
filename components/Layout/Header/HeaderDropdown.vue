@@ -14,37 +14,18 @@
 import { ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCookie } from '#app' // composable de cookies do Nuxt 3
+import { useLogout } from '~/composables/useLogout'
 
 const tokenCookie = useCookie('token')
 const userCookie = useCookie('user')
 const router = useRouter()
 const isLoggedIn = ref(!!tokenCookie.value)
+const { logout } = useLogout()
+
 
 watch(tokenCookie, (newVal) => {
   isLoggedIn.value = !!newVal
 })
-
-async function logout() {
-  try {
-    const response = await fetch('https://api.promohawk.com.br/api/auth/logout', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${tokenCookie.value}`,
-        'Content-Type': 'application/json',
-      },
-    })
-
-    if (!response.ok) throw new Error('Erro no logout')
-
-    tokenCookie.value = null
-    userCookie.value = null
-
-    router.push('/')
-  } catch (error) {
-    console.error('Erro ao fazer logout:', error)
-    alert('Não foi possível sair no momento.')
-  }
-}
 
 function getUserName() {
   try {
@@ -117,6 +98,3 @@ const items = computed(() => {
   }
 })
 </script>
-
-<style scoped>
-</style>
