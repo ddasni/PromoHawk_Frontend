@@ -36,16 +36,6 @@
           />
         </div>
       </div>
-
-      <UAlert
-        v-if="message"
-        :title="alertTitle"
-        :description="message"
-        :color="alertColor"
-        variant="subtle"
-        class="mt-4"
-      />
-
     </div>
   </div>
 </template>
@@ -95,13 +85,18 @@ async function enviarEmail() {
     body: { email: email.value }
   })
 
-  message.value = 'E-mail de recuperação enviado!'
-  alertTitle.value = 'Sucesso!'
-  alertColor.value = 'green'
+    // alerta flutuante
+    toast.add({
+      title: 'Sucesso!',
+      description: 'E-mail de recuperação enviado!',
+      color: 'green'
+    })
   }catch(error) {
-    message.value = 'Erro ao enviar o e-mail.'
-    alertTitle.value = 'Erro'
-    alertColor.value = 'red'
+    toast.add({
+      title: 'Erro',
+      description: 'Erro ao enviar o e-mail.',
+      color: 'red'
+    })
   }
 
   loading.value = false
@@ -113,8 +108,11 @@ async function novaSenha() {
   messageStyle.value = {}
 
   if (password.value !== password_confirmation.value) {
-    message.value = 'As senhas não coincidem.'
-    messageStyle.value = { color: 'red' }
+    toast.add({
+      title: 'Erro',
+      description: 'As senhas não coincidem.',
+      color: 'red'
+    })
     loading.value = false
     return
   }
@@ -129,9 +127,12 @@ async function novaSenha() {
         token: token.value
       }
     })
-    message.value = 'Senha redefinida com sucesso!'
-    alertTitle.value = 'Sucesso!'
-    alertColor.value = 'green'
+
+    toast.add({
+      title: 'Sucesso!',
+      description: 'Senha redefinida com sucesso!',
+      color: 'green'
+    })
 
     setTimeout(() => {
       router.push('/login').catch((error) => {
@@ -139,9 +140,11 @@ async function novaSenha() {
       })
     }, 2000)
   } catch (error) {
-    message.value = 'Erro ao redefinir a senha.'
-    alertTitle.value = 'Erro'
-    alertColor.value = 'red'
+    toast.add({
+      title: 'Erro',
+      description: 'Erro ao redefinir a senha.',
+      color: 'red'
+    })
   }
 
   loading.value = false
