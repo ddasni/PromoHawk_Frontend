@@ -35,6 +35,16 @@
             nome="Finalizar"
           />
         </div>
+
+        <UAlert
+          v-if="message"
+          :title="alertTitle"
+          :description="message"
+          :color="alertColor"
+          variant="subtle"
+          class="mt-4"
+        />
+
       </div>
     </div>
   </div>
@@ -85,18 +95,14 @@ async function enviarEmail() {
     body: { email: email.value }
   })
 
-    // alerta flutuante
-    toast.add({
-      title: 'Sucesso!',
-      description: 'E-mail de recuperação enviado!',
-      color: 'green'
-    })
+    message.value = 'E-mail de recuperação enviado!'
+    alertTitle.value = 'Sucesso!'
+    alertColor.value = 'green'
+
   }catch(error) {
-    toast.add({
-      title: 'Erro',
-      description: 'Erro ao enviar o e-mail.',
-      color: 'red'
-    })
+    message.value = 'Erro ao enviar o e-mail.'
+    alertTitle.value = 'Erro'
+    alertColor.value = 'red'
   }
 
   loading.value = false
@@ -108,11 +114,8 @@ async function novaSenha() {
   messageStyle.value = {}
 
   if (password.value !== password_confirmation.value) {
-    toast.add({
-      title: 'Erro',
-      description: 'As senhas não coincidem.',
-      color: 'red'
-    })
+    message.value = 'As senhas não coincidem.'
+    messageStyle.value = { color: 'red' }
     loading.value = false
     return
   }
@@ -128,11 +131,9 @@ async function novaSenha() {
       }
     })
 
-    toast.add({
-      title: 'Sucesso!',
-      description: 'Senha redefinida com sucesso!',
-      color: 'green'
-    })
+    message.value = 'Senha redefinida com sucesso!'
+    alertTitle.value = 'Sucesso!'
+    alertColor.value = 'green'
 
     setTimeout(() => {
       router.push('/login').catch((error) => {
@@ -140,11 +141,9 @@ async function novaSenha() {
       })
     }, 2000)
   } catch (error) {
-    toast.add({
-      title: 'Erro',
-      description: 'Erro ao redefinir a senha.',
-      color: 'red'
-    })
+    message.value = 'Erro ao redefinir a senha.'
+    alertTitle.value = 'Erro'
+    alertColor.value = 'red'
   }
 
   loading.value = false
