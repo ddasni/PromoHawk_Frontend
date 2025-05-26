@@ -30,7 +30,7 @@ const cupons = [
 
 function copiar(codigo: string) {
   navigator.clipboard.writeText(codigo)
-  alert(`Código "${codigo}" copiado com sucesso! 🎉`)
+  alert(`Código "${codigo}" copiado com sucesso!`)
 }
 </script>
 
