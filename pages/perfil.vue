@@ -74,6 +74,12 @@
 </template>
 
 <script setup>
+// pagina protegida por meio do token de login
+definePageMeta({
+  middleware: 'auth'
+})
+
+
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import lapisIcon from '@/assets/icons/lapis.svg'
