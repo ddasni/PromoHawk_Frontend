@@ -34,7 +34,7 @@ import User from '~/components/Layout/Header/HeaderDropdown.vue';
 
 .direita {
  width: 390px;
- height: 40px;
+ align-items: center;
  gap: 20px;
  display: flex;
 }

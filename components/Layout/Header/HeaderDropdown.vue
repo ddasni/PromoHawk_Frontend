@@ -1,12 +1,18 @@
 <template>
   <UDropdownMenu size="xl" arrow :items="items" :ui="{ content: 'w-48' }">
     <UButton
-      class="font-bold rounded-full"
-      icon="mdi:user"
-      size="xl"
+      class="p-0 w-9 h-9 rounded-full overflow-hidden"
+      size="sm"
       color="primary"
       variant="solid"
-    />
+    >
+     <UAvatar
+        :src="userCookie?.imagem ? getFullImageUrl(userCookie.imagem) : undefined"
+        :icon="!userCookie?.imagem ? 'mdi:user' : undefined"
+        size="md"
+        class="rounded-full object-cover w-full h-full"
+      />
+    </UButton>
   </UDropdownMenu>
 </template>
 
@@ -16,47 +22,52 @@ import { useRouter } from 'vue-router'
 import { useCookie } from '#app' // composable de cookies do Nuxt 3
 import { useLogout } from '~/composables/useLogout'
 
+
+// Definindo a interface do usuário
+interface User {
+  username?: string
+  imagem?: string
+  // adicione outras propriedades conforme necessário
+}
+
+const API_BASE_URL = 'https://api.promohawk.com.br/'
 const tokenCookie = useCookie('token')
-const userCookie = useCookie('user')
+const userCookie = useCookie<User>('user')
 const router = useRouter()
 const isLoggedIn = ref(!!tokenCookie.value)
 const { logout } = useLogout()
 
+const getFullImageUrl = (path: string | undefined) => {
+  if (!path) return 'mdi:account' // se não houver imagem retorna um icone
+  return path.startsWith('http') ? path : `${API_BASE_URL}${path}`
+}
 
 watch(tokenCookie, (newVal) => {
   isLoggedIn.value = !!newVal
 })
 
-function getUserName() {
-  try {
-    const user = typeof userCookie.value === 'string'
-      ? JSON.parse(userCookie.value)
-      : userCookie.value
-    return user?.name || 'Usuário' // corrigido aqui
-  } catch (e) {
-    return 'Usuário'
-  }
-}
-
 const items = computed(() => {
+
+  const user = userCookie.value || {}
+
   if (!isLoggedIn.value) {
     return [
       [
         {
           label: 'Visitante',
           type: 'label',
-          avatar: { src: 'https://github.com/benjamincanac.png' },
+          icon: 'mdi:user',
         },
       ],
       [
         {
           label: 'Entrar',
-          icon: 'icon:user',
+          icon: 'mdi:login',
           onClick: () => router.push('/login'),
         },
         {
           label: 'Cadastrar',
-          icon: 'icon:user-plus',
+          icon: 'mdi:account-plus',
           onClick: () => router.push('/cadastro'),
         },
       ],
@@ -65,25 +76,25 @@ const items = computed(() => {
     return [
       [
         {
-          label: getUserName(),
+          label: user.username || 'Usuário',
           type: 'label',
-          avatar: { src: '' },
+          avatar: { src: getFullImageUrl(user.imagem) },
         },
       ],
       [
         {
           label: 'Perfil',
-          icon: 'i-lucide-user',
+          icon: 'mdi:account',
           onClick: () => router.push('/perfil'),
         },
         {
           label: 'Lista de Desejos',
-          icon: 'heroicons-outline:heart',
+          icon: 'mdi:heart-outline',
           onClick: () => router.push('/listadesejo'),
         },
         {
           label: 'Configurações',
-          icon: 'i-lucide-cog',
+          icon: 'mdi:cog-outline',
           onClick: () => router.push('/config'),
         },
       ],
