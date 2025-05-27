@@ -30,7 +30,8 @@ interface User {
   // adicione outras propriedades conforme necessário
 }
 
-const API_BASE_URL = 'https://api.promohawk.com.br/'
+// importando a url da api
+const config = useRuntimeConfig()
 const tokenCookie = useCookie('token')
 const userCookie = useCookie<User>('user')
 const router = useRouter()
@@ -39,7 +40,7 @@ const { logout } = useLogout()
 
 const getFullImageUrl = (path: string | undefined) => {
   if (!path) return 'mdi:account' // se não houver imagem retorna um icone
-  return path.startsWith('http') ? path : `${API_BASE_URL}${path}`
+  return path.startsWith('http') ? path : `${config.public.apiImage}${path}`
 }
 
 watch(tokenCookie, (newVal) => {

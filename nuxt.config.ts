@@ -13,5 +13,12 @@ export default defineNuxtConfig({
       prefix: 'icon-local',
       dir: './assets/icons'
     }]
+  },
+  runtimeConfig: {
+    // Public keys that are exposed to the client
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
+      apiImage: process.env.NUXT_API_IMAGE
+    }
   }
 })
