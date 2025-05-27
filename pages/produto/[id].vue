@@ -1,32 +1,15 @@
 <template>
   <div v-if="produto" class="pagina-produto">
     <div class="topo">
-      <div class="imagens-laterais">
-        <div class="miniaturas">
-  <img
-    v-for="(imagem, index) in produto.imagens"
-    :key="index"
-    :src="imagem"
-    class="miniatura"
-    @click="abrirModal(imagem)"
-    :alt="'Imagem ' + (index + 1)"
-  />
-</div>
-        <img v-for="n in 4" :key="n" :src="produto.imagem" class="miniatura" />
-      </div>
-
-      <img
-  :src="produto.imagem"
-  :alt="produto.nome"
-  class="imagem-produto-principal"
-  @click="abrirModal(produto.imagem)"
-/>
-
-      <!-- Imagem ampliada (modal) -->
-<div v-if="imagemModal" class="modal" @click="imagemModal = null">
-  <img :src="imagemModal" class="imagem-modal" />
-</div>
-
+      
+      <ImagemCarousel :images="[
+          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia.wired.com%2Fphotos%2F5fa5dc3dba670daaf8e97a8d%2Fmaster%2Fw_2560%252Cc_limit%2Fgames_gear_series-x.jpg&f=1&nofb=1&ipt=9ee63791efb694bab17d82f35480d2123ae99402bfc5fda962f301c94d912653',
+          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.mos.cms.futurecdn.net%2F6F3Vg5ah8vbS83GSikcND3.jpg&f=1&nofb=1&ipt=97fd8fac8d06415f86cb11f5891fcd076b15b0c8b880a6add70384c163b2d379',
+          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgizmodo.uol.com.br%2Fwp-content%2Fblogs.dir%2F8%2Ffiles%2F2019%2F12%2Fxbox-series-x-970x546.jpg&f=1&nofb=1&ipt=3f20ef9e6fe23b8ca7fff45fcbac3dc1b383178016bb4dd3e6eadfe0a2755882',
+          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.lendagames.com%2Fwp-content%2Fuploads%2F2020%2F03%2FASSET-XBOX-SERIES-X-SPECS.jpg&f=1&nofb=1&ipt=62b9c74231541dac306c6e20e5e381baf17d12981aabb9bd1aff8661657ca3bd',
+          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs.zst.com.br%2Fcms-assets%2F2020%2F11%2Fxbox-series-x-traseira.jpg&f=1&nofb=1&ipt=cd347db7f3274cfc4211d745b0c7580819b9f37b68d9272b067f98bfd62ff198'
+        ]" 
+      />
       <div class="info">
         <h1>{{ produto.nome }}</h1>
         <p class="avaliacao">⭐ {{ produto.avaliacao.toFixed(1) }} ({{ produto.totalAvaliacoes }} avaliações)</p>
@@ -94,6 +77,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import ImagemCarousel from '~/components/Produto/Imagem.vue'
 import {
   Chart,
   LineElement,
