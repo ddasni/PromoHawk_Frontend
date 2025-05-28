@@ -1,25 +1,18 @@
 <template>
   <div v-if="produto" class="pagina-produto">
     <div class="topo">
+      <ImagemCarousel :images="[produto.imagem,]"/>
       
-      <ImagemCarousel :images="[
-          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia.wired.com%2Fphotos%2F5fa5dc3dba670daaf8e97a8d%2Fmaster%2Fw_2560%252Cc_limit%2Fgames_gear_series-x.jpg&f=1&nofb=1&ipt=9ee63791efb694bab17d82f35480d2123ae99402bfc5fda962f301c94d912653',
-          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.mos.cms.futurecdn.net%2F6F3Vg5ah8vbS83GSikcND3.jpg&f=1&nofb=1&ipt=97fd8fac8d06415f86cb11f5891fcd076b15b0c8b880a6add70384c163b2d379',
-          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgizmodo.uol.com.br%2Fwp-content%2Fblogs.dir%2F8%2Ffiles%2F2019%2F12%2Fxbox-series-x-970x546.jpg&f=1&nofb=1&ipt=3f20ef9e6fe23b8ca7fff45fcbac3dc1b383178016bb4dd3e6eadfe0a2755882',
-          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.lendagames.com%2Fwp-content%2Fuploads%2F2020%2F03%2FASSET-XBOX-SERIES-X-SPECS.jpg&f=1&nofb=1&ipt=62b9c74231541dac306c6e20e5e381baf17d12981aabb9bd1aff8661657ca3bd',
-          'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs.zst.com.br%2Fcms-assets%2F2020%2F11%2Fxbox-series-x-traseira.jpg&f=1&nofb=1&ipt=cd347db7f3274cfc4211d745b0c7580819b9f37b68d9272b067f98bfd62ff198'
-        ]" 
-      />
       <div class="info">
-        <h1>{{ produto.nome }}</h1>
-        <p class="avaliacao">⭐ {{ produto.avaliacao.toFixed(1) }} ({{ produto.totalAvaliacoes }} avaliações)</p>
+        <h1 class="nome-produto">{{ produto.nome }}</h1>
+        <p class="avaliacao">⭐ {{ avaliacao.toFixed(1) }} ({{ totalAvaliacoes }} avaliações)</p>
         <p class="menor-preco">menor preço via Amazon</p>
-        <p class="preco-vista">R$ {{ formatarNumero(produto.precoVista) }} à vista</p>
-        <p class="parcelamento">{{ produto.parcelas }}x de R$ {{ formatarNumero(produto.precoVista / produto.parcelas) }} sem juros</p>
+        <p class="preco-vista">R$ {{ formatarNumero(precoAtual) }} à vista</p>
+        <p class="parcelamento">{{ parcelas }}x de R$ {{ formatarNumero(precoAtual / parcelas) }} sem juros</p>
         <button class="botao-ver-opcoes">Ver opções de compra</button>
         <button class="favoritar" @click.stop.prevent="toggleFavorito">
-        {{ favoritado ? '❤️' : '🤍' }}
-      </button>
+          {{ favoritado ? '❤️' : '🤍' }}
+        </button>
       </div>
     </div>
 
@@ -39,7 +32,7 @@
       <h3>Melhor Preço</h3>
       <div class="card-loja">
         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" />
-        <p><strong>R$ {{ formatarNumero(produto.precoVista) }}</strong> à vista</p>
+        <p><strong>R$ {{ formatarNumero(precoAtual) }}</strong> à vista</p>
         <button class="botao-ir-loja">Ir à loja</button>
       </div>
     </div>
@@ -47,24 +40,16 @@
     <div class="avaliacoes">
       <h3>Avaliação dos usuários</h3>
       <div class="nota-media">
-        <strong>{{ produto.avaliacao.toFixed(1) }}</strong>
-        <span>({{ produto.totalAvaliacoes }} reviews)</span>
+        <strong>{{ avaliacao.toFixed(1) }}</strong>
+        <span>({{ totalAvaliacoes }} reviews)</span>
       </div>
       <div class="barras">
         <div v-for="estrela in 5" :key="estrela" class="barra-avaliacao">
           <span>{{ estrela }} estrela</span>
           <div class="barra">
-            <div class="preenchida" :style="{ width: `${(produto.totalAvaliacoes / 5) * estrela / produto.totalAvaliacoes * 100}%` }"></div>
+            <div class="preenchida" :style="{ width: `${(totalAvaliacoes / 5) * estrela / totalAvaliacoes * 100}%` }"></div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="comentarios">
-      <h3>O que dizem sobre este produto</h3>
-      <div v-for="(comentario, index) in produto.comentarios" :key="index" class="comentario">
-        <p><strong>{{ comentario.usuario }}</strong> — ⭐ {{ comentario.nota }}</p>
-        <p>{{ comentario.texto }}</p>
       </div>
     </div>
   </div>
@@ -74,9 +59,8 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import ImagemCarousel from '~/components/Produto/Imagem.vue'
 import {
   Chart,
@@ -88,7 +72,7 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler  // <-- IMPORTANTE
+  Filler
 } from 'chart.js'
 
 Chart.register(
@@ -100,49 +84,56 @@ Chart.register(
   Title,
   Tooltip,
   Legend,
-  Filler // <-- REGISTRA AQUI
+  Filler
 )
 
-const imagemModal = ref(null)
+const { id } = useRoute().params
+const produto = ref(null)
+const favoritado = ref(false)
+const graficoCanvas = ref(null)
+const avaliacao = ref(4.5)
+const totalAvaliacoes = ref(0)
+const parcelas = ref(10)
 
-function abrirModal(src) {
-  imagemModal.value = src
-}
+// Configuração da API
+const config = useRuntimeConfig()
 
-import s25UltraImage from '~/assets/images/Produtos/samsung/Samsung S25 ultra.png'
+// Busca os dados do produto
+const { data, pending, error } = await useFetch(`https://api.promohawk.com.br/api/produto/${id}`, {
+  onResponse({ response }) {
+    if (response._data) {
+      produto.value = response._data.produto
+      if (produto.value.precos && produto.value.precos.length > 0) {
+        // Ordena os preços por data (mais recente primeiro)
+        produto.value.precos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        atualizarGrafico()
+      }
+    }
+  },
+  onError(error) {
+    console.error('Erro ao buscar produto:', error)
+  }
+})
 
-const produto = {
-  id: '1',
-  nome: 'Samsung Galaxy S25 Ultra 256GB',
-  imagem: s25UltraImage,
-  imagens: [
-    s25UltraImage,
-   
-  ],
-  precoVista: 4899.99,
-  parcelas: 10,
-  avaliacao: 4.8,
-  totalAvaliacoes: 321,
-  comentarios: [
-    { usuario: 'João', nota: 5, texto: 'Celular excelente, muito rápido e bonito!' },
-    { usuario: 'Maria', nota: 4, texto: 'Gostei bastante, mas achei a câmera um pouco exagerada.' },
-    { usuario: 'Carlos', nota: 5, texto: 'Desempenho top, roda tudo no máximo!' }
-  ]
-}
-
-
+const precoAtual = computed(() => {
+  if (!produto.value?.precos || produto.value.precos.length === 0) return 0
+  return parseFloat(produto.value.precos[produto.value.precos.length - 1].preco)
+})
 
 function formatarNumero(valor) {
   return typeof valor === 'number' ? valor.toFixed(2).replace('.', ',') : '0,00'
 }
 
-const graficoCanvas = ref(null)
+function toggleFavorito() {
+  favoritado.value = !favoritado.value
+}
 
+// Dados fictícios para o gráfico
 const dadosPrecos = {
   labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
   datasets: [{
     label: 'Preço (R$)',
-    data: [5299.99, 5199.99, 4999.99, 4899.99, 4799.99], // preços fictícios
+    data: [precoAtual.value * 1.1, precoAtual.value * 1.05, precoAtual.value * 1.02, precoAtual.value, precoAtual.value * 0.98],
     backgroundColor: 'rgba(59, 130, 246, 0.2)',
     borderColor: '#3b82f6',
     borderWidth: 2,
@@ -176,21 +167,14 @@ onMounted(() => {
     })
   }
 })
+
 definePageMeta({
   layout: 'default'
 })
-
-function toggleFavorito() {
-  favoritado.value = !favoritado.value
-  emit('update:favoritado', favoritado.value)
-}
 </script>
 
 
-
 <style scoped>
-
-
 .pagina-produto {
   padding: 40px;
   font-family: 'Segoe UI', sans-serif;
@@ -224,6 +208,11 @@ function toggleFavorito() {
   border-radius: 20px;
   object-fit: cover;
   background-color: #f3f4f6;
+}
+
+.nome-produto{
+  color: black;
+  font-size: 1.6rem;
 }
 
 .info {
