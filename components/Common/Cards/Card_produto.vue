@@ -5,18 +5,14 @@
 
       <div class="produto-info">
         <h2 class="produto-nome">{{ produto.nome }}</h2>
-        <p class="produto-descricao">{{ produto.descricao }}</p>
+
+        <div class="precos">
+          <span class="preco-atual">R$ {{ formatarPreco(precoAtual) }}</span>
+        </div>
 
         <div class="avaliacao" v-if="avaliacao">
           <span class="estrelas">⭐ {{ formatarNumero(avaliacao) }}</span>
           <span class="total-avaliacoes" v-if="totalAvaliacoes">({{ totalAvaliacoes }})</span>
-        </div>
-
-        <div class="precos">
-          <span class="preco-atual">R$ {{ formatarPreco(precoAtual) }}</span>
-          <span class="preco-anterior" v-if="precoAnterior">
-            De: R$ {{ formatarPreco(precoAnterior) }}
-          </span>
         </div>
       </div>
 
@@ -112,6 +108,7 @@ function formatarPreco(valor) {
 
 .produto-img {
   width: 100%;
+  min-height: 100px;
   max-height: 180px;
   object-fit: contain;
   border-radius: 12px;
@@ -120,6 +117,8 @@ function formatarPreco(valor) {
 .produto-info {
   margin-top: 16px;
   text-align: center;
+  width: 180px;
+  height: 110px;
 }
 
 .produto-nome {
