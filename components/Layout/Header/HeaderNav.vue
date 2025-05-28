@@ -26,7 +26,7 @@ const items = ref<NavigationMenuItem[]>([
   {
     label: 'Cupons',
     icon: 'iconamoon:discount-fill',
-    to: 'Cupons',
+    to: '/Cupons',
   },
   {
     label: 'Lojas',
@@ -64,27 +64,27 @@ const items = ref<NavigationMenuItem[]>([
     children: [
       {
         label: 'Eletrônico',
-        to: 'Categoria'
+        to: '/Categoria'
       },
       {
         label: 'Informática',
-        to: 'Categoria'
+        to: '/Categoria'
       },
       {
         label: 'Moda e Beleza',
-        to: 'modas'
+        to: '/modas'
       },
       {
         label: 'Casa e Eletrodomésticos',
-        to: 'Categoria'
+        to: '/Categoria'
       },
       {
         label: 'Saúde',
-        to: 'Categoria'
+        to: '/Categoria'
       },
       {
         label: 'Games',
-        to: 'Categoria'
+        to: '/Categoria'
       }
     ]
   }
