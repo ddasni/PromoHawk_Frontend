@@ -1,24 +1,23 @@
 <template>
-  <NuxtLink :to="`/produto/${id}`" class="card-produto-link">
+  <NuxtLink :to="`/produto/${produto.id}`" class="card-produto-link">
     <div class="card-produto">
-      <img :src="imagem" :alt="nome" class="produto-img" />
+      <img :src="produto.imagem" :alt="produto.nome" class="produto-img" />
 
       <div class="produto-info">
-        <h2 class="produto-nome">{{ nome }}</h2>
+        <h2 class="produto-nome">{{ produto.nome }}</h2>
+        <p class="produto-descricao">{{ produto.descricao }}</p>
 
-        <div class="avaliacao">
+        <div class="avaliacao" v-if="avaliacao">
           <span class="estrelas">⭐ {{ formatarNumero(avaliacao) }}</span>
-          <span class="total-avaliacoes">({{ totalAvaliacoes }})</span>
+          <span class="total-avaliacoes" v-if="totalAvaliacoes">({{ totalAvaliacoes }})</span>
         </div>
 
         <div class="precos">
-          <span class="preco-vista">R$ {{ formatarNumero(precoVista) }} à vista</span>
-          <span class="preco-parcelado">
-            {{ parcelas }}x de R$ {{ formatarNumero(precoVista / parcelas) }} sem juros
+          <span class="preco-atual">R$ {{ formatarPreco(precoAtual) }}</span>
+          <span class="preco-anterior" v-if="precoAnterior">
+            De: R$ {{ formatarPreco(precoAnterior) }}
           </span>
         </div>
-
-        
       </div>
 
       <button class="favoritar" @click.stop.prevent="toggleFavorito">
@@ -29,21 +28,40 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
-  id: [String, Number],
-  imagem: { type: String, required: true },
-  nome: { type: String, default: 'Produto desconhecido' },
-  precoVista: { type: Number, default: 0 },
-  parcelas: { type: Number, default: 10 },
-  avaliacao: { type: Number, default: 4.5 },
+  produto: {
+    type: Object,
+    required: true,
+    default: () => ({
+      id: null,
+      nome: 'Produto desconhecido',
+      descricao: '',
+      imagem: '',
+      precos: [],
+      status_produto: 'inativo'
+    })
+  },
+  avaliacao: { type: Number, default: 0 },
   totalAvaliacoes: { type: Number, default: 0 },
   favoritado: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:favoritado'])
 const favoritado = ref(props.favoritado)
+
+// Calcula o preço atual (último preço cadastrado)
+const precoAtual = computed(() => {
+  if (!props.produto.precos || props.produto.precos.length === 0) return 0
+  return parseFloat(props.produto.precos[props.produto.precos.length - 1].preco)
+})
+
+// Calcula o preço anterior (penúltimo preço cadastrado, se existir)
+const precoAnterior = computed(() => {
+  if (!props.produto.precos || props.produto.precos.length < 2) return null
+  return parseFloat(props.produto.precos[props.produto.precos.length - 2].preco)
+})
 
 watch(() => props.favoritado, (val) => {
   favoritado.value = val
@@ -56,6 +74,11 @@ function toggleFavorito() {
 
 function formatarNumero(valor) {
   return typeof valor === 'number' ? valor.toFixed(2).replace('.', ',') : '0,00'
+}
+
+function formatarPreco(valor) {
+  if (typeof valor !== 'number') return '0,00'
+  return valor.toFixed(2).replace('.', ',')
 }
 </script>
 
@@ -92,7 +115,6 @@ function formatarNumero(valor) {
   max-height: 180px;
   object-fit: contain;
   border-radius: 12px;
-  background-color: #f9fafb;
 }
 
 .produto-info {
@@ -105,6 +127,10 @@ function formatarNumero(valor) {
   font-weight: 600;
   color: #1e293b;
   margin-bottom: 6px;
+}
+
+.produto-descricao {
+  color: #6c6d6e;
 }
 
 .avaliacao {

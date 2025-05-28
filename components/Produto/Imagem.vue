@@ -38,7 +38,7 @@ function fecharModal() {
       <p>Nenhuma imagem disponível</p>
     </div>
 
-    <div v-else class="flex flex-row h-[300px] items-start gap-4">
+    <div v-else class="flex flex-row h-[340px] items-start gap-4">
       <!-- imagens da lateral esquerda -->
       <div class="flex flex-col gap-2">
         <div
@@ -57,12 +57,12 @@ function fecharModal() {
         ref="carousel"
         v-slot="{ item }"
         :items="images"
-        class="w-[450px] h-[450px]"
+        class="w-[350px] h-[350px]"
         @select="onSelect"
       >
         <img
           :src="item"
-          class="rounded-lg object-cover w-full h-full cursor-zoom-in"
+          class="rounded-lg w-[350px] h-[350px] object-contain cursor-zoom-in"
           @click="abrirModal(activeIndex)"
         >
       </UCarousel>
