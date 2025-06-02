@@ -1,7 +1,7 @@
 <template>
   <NuxtLink :to="`/produto/${produto.id}`" class="card-produto-link">
     <div class="card-produto">
-      <img :src="produto.imagem" :alt="produto.nome" class="produto-img" />
+      <img :src="imagem" :alt="produto.nome" class="produto-img" />
 
       <div class="produto-info">
         <h2 class="produto-nome">{{ produto.nome }}</h2>
@@ -39,11 +39,14 @@ const props = defineProps({
       status_produto: 'inativo'
     })
   },
+  imagem: {
+    type: String,
+    default: '/img/sem-imagem.png'
+  },
   avaliacao: { type: Number, default: 0 },
   totalAvaliacoes: { type: Number, default: 0 },
   favoritado: { type: Boolean, default: false },
 })
-
 const emit = defineEmits(['update:favoritado'])
 const favoritado = ref(props.favoritado)
 

@@ -12,6 +12,7 @@
         v-for="produto in produtos"
         :key="produto.id"
         :produto="produto"
+        :imagem="produto.imagens?.[1]?.imagem || '/img/sem-imagem.png'"
         :avaliacao="4.5"
         :totalAvaliacoes="0"
         :favoritado="false"
