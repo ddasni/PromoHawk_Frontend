@@ -4,8 +4,13 @@
   <br>
   <br>
   <Divisor titulo="Categorias" actionTexto="ver mais >" link="" />
-    <Categoria size="sm" nome="Eletrônicos" imgSrc="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimg.freepik.com%2Fvetores-premium%2Fgrupo-de-dispositivos-eletronicos-conjunto-de-icones-desenho-de-ilustracao-vetorial_1250153-9784.jpg&f=1&nofb=1&ipt=7461f6dd01d87d4a820c2cf3a392a6e5504c34d504810d9c29c917fea9e032b1"/>
-  <br />
+    <div class="categorias-container">
+      <Categoria
+        v-for="categoria in categorias"
+        :key="categoria.id"
+        :categoria="categoria"
+      />
+    </div>
   <Divisor titulo="Destaques" actionTexto="ver mais >" link="" />
     <div class="produtos-container">
       <Produto
@@ -36,21 +41,43 @@ import Cupons from "~/components/Common/Cards/Card_cupom.vue";
 const config = useRuntimeConfig()
 const searchQuery = ref('')
 
-// Faz a requisição
-const { data, pending, error } = await useFetch(`https://api.promohawk.com.br/api/produto`, {
+// Produtos
+const {
+  data: produtosData,
+  error: errorProdutos,
+  pending: pendingProdutos
+} = await useFetch(`https://api.promohawk.com.br/api/produto`, {
   onError(error) {
     console.error('Erro ao buscar produtos:', error)
-    // Você pode definir uma mensagem de erro para exibir ao usuário
   }
 })
 
-// Ajusta o dado para um array mesmo se vier só 1 produto
 const produtos = computed(() => {
-  if (error.value) return [] // Retorna array vazio se houver erro
-  if (data.value?.produto) return [data.value.produto]
-  if (Array.isArray(data.value?.produtos)) return data.value.produtos
+  if (errorProdutos.value) return []
+  if (produtosData.value?.produto) return [produtosData.value.produto]
+  if (Array.isArray(produtosData.value?.produtos)) return produtosData.value.produtos
   return []
 })
+
+
+// Categorias
+const {
+  data: categoriasData,
+  error: errorCategorias,
+  pending: pendingCategorias
+} = await useFetch(`https://api.promohawk.com.br/api/categoria`, {
+  onError(error) {
+    console.error('Erro ao buscar categorias:', error)
+  }
+})
+
+const categorias = computed(() => {
+  const data = categoriasData.value
+  if (errorCategorias.value || !data) return []
+  if (Array.isArray(data.categorias)) return data.categorias.filter(c => c?.id)
+  return []
+})
+
 </script>
 
 <style scoped>
@@ -59,5 +86,13 @@ const produtos = computed(() => {
   flex-wrap: wrap;
   gap: 24px;
   justify-content: center;
+}
+
+.categorias-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 32px;
 }
 </style>
