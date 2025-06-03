@@ -15,36 +15,16 @@
     </div>
 
     <div class="info-perfil">
-      <div
-        class="info-item"
-        v-for="(label, key) in campos"
-        :key="key"
-      >
+      <div class="info-item" v-for="(label, key) in campos" :key="key">
         <label :for="key">{{ label }}</label>
 
-        <div v-if="key === 'senha'" class="senha-wrapper">
+        <div v-if="key.includes('senha')" class="senha-wrapper">
           <input
-            v-model="dados.senha"
+            v-model="dados[key]"
             :type="mostrarSenha ? 'text' : 'password'"
-            id="senha"
+            :id="key"
             class="input"
-            placeholder="Senha"
-          />
-          <img
-            :src="mostrarSenha ? eyeOffIcon : eyeIcon"
-            class="icone-olho"
-            @click="mostrarSenha = !mostrarSenha"
-            alt="Ver senha"
-          />
-        </div>
-
-        <div v-else-if="key === 'confirmarSenha'" class="senha-wrapper">
-          <input
-            v-model="dados.confirmarSenha"
-            :type="mostrarSenha ? 'text' : 'password'"
-            id="confirmarSenha"
-            class="input"
-            placeholder="Confirmar Senha"
+            :placeholder="label"
           />
           <img
             :src="mostrarSenha ? eyeOffIcon : eyeIcon"
@@ -76,17 +56,19 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useCookie } from '#app'
+
 import lapisIcon from '@/assets/icons/lapis.svg'
 import eyeIcon from '@/assets/icons/eye.svg'
 import eyeOffIcon from '@/assets/icons/eye-off.svg'
-import { useCookie } from '#app'
 
 const router = useRouter()
+
 const tokenCookie = useCookie('token')
 const userCookie = useCookie('user')
 
-const fotoPerfil = ref('https://via.placeholder.com/150')
 const mostrarSenha = ref(false)
+const fotoPerfil = ref('https://via.placeholder.com/150')
 
 const dados = ref({
   username: '',
@@ -112,54 +94,37 @@ function parseUserCookie() {
       return JSON.parse(userCookie.value)
     } else if (typeof userCookie.value === 'object') {
       return userCookie.value
-    } else {
-      return {}
     }
+    return {}
   } catch {
     return {}
   }
 }
 
-onMounted(async () => {
-  const user = parseUserCookie()
-  const userId = user?.id
-  const token = tokenCookie.value
+// Atualiza dados e foto do usuário no estado local
+function carregarDadosUsuario(user) {
+  dados.value = {
+    username: user.username || '',
+    nome: user.nome || '',
+    telefone: user.telefone || '',
+    email: user.email || '',
+    senha: '',
+    confirmarSenha: '',
+  }
+  if (user.foto) {
+    fotoPerfil.value = `https://api.promohawk.com.br/storage/${user.foto}`
+  } else {
+    fotoPerfil.value = 'https://via.placeholder.com/150'
+  }
+}
 
-  if (!userId || !token) {
+onMounted(() => {
+  const user = parseUserCookie()
+  if (!user?.id || !tokenCookie.value) {
     router.push('/login')
     return
   }
-
-  console.log('Buscando dados do usuário:', userId)
-  console.log('Token:', token)
-
-  try {
-    const res = await fetch(`https://api.promohawk.com.br/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    if (!res.ok) throw new Error('Falha ao buscar dados do usuário.')
-
-    const userData = await res.json()
-
-    dados.value = {
-      username: userData.username || '',
-      nome: userData.nome || '',
-      telefone: userData.telefone || '',
-      email: userData.email || '',
-      senha: '',
-      confirmarSenha: '',
-    }
-
-    if (userData.foto) {
-      fotoPerfil.value = userData.foto
-    }
-  } catch (err) {
-    console.error(err)
-    alert('Erro ao carregar dados do perfil.')
-  }
+  carregarDadosUsuario(user)
 })
 
 function editarFoto() {
@@ -169,50 +134,54 @@ function editarFoto() {
 
 async function alterarFoto(event) {
   const file = event.target.files[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = async () => {
-      fotoPerfil.value = reader.result
+  if (!file) return
 
-      const user = parseUserCookie()
-      const userId = user?.id
-      const token = tokenCookie.value
+  const user = parseUserCookie()
+  const token = tokenCookie.value
 
-      if (!userId || !token) {
-        alert('Você precisa estar logado para alterar a foto.')
-        router.push('/login')
-        return
+  if (!user?.id || !token) {
+    alert('Você precisa estar logado.')
+    router.push('/login')
+    return
+  }
+
+  const formData = new FormData()
+  formData.append('imagem', file)
+
+  try {
+    const res = await fetch(
+      `https://api.promohawk.com.br/api/users/${user.id}/editImage`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
       }
+    )
 
-      try {
-        // Enviar imagem para API
-        const formData = new FormData()
-        formData.append('image', file)
+    const responseData = await res.json()
 
-        const res = await fetch(`https://api.promohawk.com.br/users/${userId}/editImage`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        })
-
-        if (!res.ok) {
-          throw new Error('Erro ao atualizar imagem.')
-        }
-
-        const updatedUser = await res.json()
-        userCookie.value = JSON.stringify(updatedUser)
-        alert('Foto atualizada com sucesso!')
-
-      } catch (err) {
-        console.error(err)
-        alert('Erro ao enviar imagem para o servidor.')
-      }
+    if (!res.ok) {
+      throw new Error(responseData?.erros?.imagem?.[0] || 'Erro ao atualizar imagem')
     }
-    reader.readAsDataURL(file)
+
+    // Atualiza apenas o campo foto do usuário no cookie
+    user.foto = responseData.foto || user.foto
+
+    // Regrava o cookie sem perder os dados
+    userCookie.value = JSON.stringify(user)
+
+    // Atualiza foto local para exibir na tela
+    fotoPerfil.value = `https://api.promohawk.com.br/storage/${user.foto}`
+
+    alert('Foto atualizada com sucesso!')
+  } catch (error) {
+    console.error('Erro ao enviar imagem:', error)
+    alert(`Erro ao enviar imagem: ${error.message}`)
   }
 }
+
 
 async function salvarAlteracoes() {
   if (dados.value.senha !== dados.value.confirmarSenha) {
@@ -221,49 +190,85 @@ async function salvarAlteracoes() {
   }
 
   const user = parseUserCookie()
-  const userId = user?.id
   const token = tokenCookie.value
 
-  if (!userId || !token) {
-    alert('Você precisa estar logado para salvar.')
+  if (!user?.id || !token) {
+    alert('Você precisa estar logado.')
     router.push('/login')
     return
   }
 
+  // Verificar se algum dado foi alterado
+  const dadosAtuais = {
+    username: dados.value.username,
+    nome: dados.value.nome,
+    telefone: dados.value.telefone,
+    email: dados.value.email,
+  }
+
+  const dadosOriginais = {
+    username: user.username,
+    nome: user.nome,
+    telefone: user.telefone,
+    email: user.email,
+  }
+
+  const alterouAlgo =
+    Object.keys(dadosAtuais).some(
+      (key) => dadosAtuais[key] !== dadosOriginais[key]
+    ) || !!dados.value.senha
+
+  if (!alterouAlgo) {
+    alert('Nenhuma alteração detectada.')
+    return
+  }
+
+  const payload = {
+    ...dadosAtuais,
+  }
+
+  if (dados.value.senha) {
+    payload.senha = dados.value.senha
+  }
+
   try {
-    // Prepara payload removendo confirmarSenha e senha vazia
-    const payload = { ...dados.value }
-    delete payload.confirmarSenha
+    const res = await fetch(
+      `https://api.promohawk.com.br/api/users/${user.id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    )
 
-    if (!payload.senha) {
-      delete payload.senha
-    }
-
-    const res = await fetch(`https://api.promohawk.com.br/users/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
+    const responseData = await res.json()
 
     if (!res.ok) {
-      throw new Error('Erro ao atualizar perfil.')
+      console.error('Erro ao atualizar perfil:', responseData)
+      throw new Error(responseData?.message || 'Erro ao atualizar perfil')
     }
 
-    const updatedUser = await res.json()
-    userCookie.value = JSON.stringify(updatedUser)
+    userCookie.value = JSON.stringify(responseData)
+    carregarDadosUsuario(responseData)
 
-    alert('Perfil atualizado com sucesso!')
+    alert('Dados atualizados com sucesso!')
     dados.value.senha = ''
     dados.value.confirmarSenha = ''
-  } catch (err) {
-    console.error('Erro ao salvar:', err)
-    alert('Erro ao salvar alterações.')
+  } catch (error) {
+    console.error('Erro ao salvar alterações:', error)
+    alert(`Erro ao salvar alterações: ${error.message}`)
   }
 }
+
+
+
 </script>
+
+
+
 
 <style scoped>
 /* Mantive seu estilo anterior */
