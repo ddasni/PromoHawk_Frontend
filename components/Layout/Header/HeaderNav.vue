@@ -1,21 +1,18 @@
 <template>
   <UNavigationMenu 
-      arrow 
-      highlight 
-      color="primary"
-      variant="link" 
-      content-orientation="vertical" 
-      class="justify-center"
-      :items="items" 
+    arrow 
+    highlight 
+    color="primary"
+    variant="link" 
+    content-orientation="vertical" 
+    class="justify-center"
+    :items="items" 
   />
 </template>
 
-<style scoped>
-
-</style>
-
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { ref } from 'vue'
 
 const items = ref<NavigationMenuItem[]>([
   {
@@ -26,66 +23,30 @@ const items = ref<NavigationMenuItem[]>([
   {
     label: 'Cupons',
     icon: 'iconamoon:discount-fill',
-    to: 'Cupons',
+    to: '/cupons',
   },
   {
     label: 'Lojas',
     icon: 'weui:shop-filled',
     children: [
-      {
-        label: 'Amazon',
-        to: '/loja/amazon'
-      },
-      {
-        label: 'Magazineluiza',
-        to: '/loja/magazineluiza'
-      },
-      {
-        label: 'Centauro',
-        to: '/loja/centauro'
-      },
-      {
-        label: 'Mercado Livre',
-        to: '/loja/mercadolivre'
-      },
-      {
-        label: 'Kabum',
-        to: '/loja/kabum'
-      },
-      {
-        label: 'Pichau',
-        to: '/loja/pichau'
-      }
+      { label: 'Amazon', to: '/loja/amazon' },
+      { label: 'Magazineluiza', to: '/loja/magazineluiza' },
+      { label: 'Centauro', to: '/loja/centauro' },
+      { label: 'Mercado Livre', to: '/loja/mercadolivre' },
+      { label: 'Kabum', to: '/loja/kabum' },
+      { label: 'Pichau', to: '/loja/pichau' }
     ]
   },
   {
     label: 'Categorias',
     icon: 'heroicons-outline:menu',
     children: [
-      {
-        label: 'Eletrônico',
-        to: 'Categoria'
-      },
-      {
-        label: 'Informática',
-        to: 'Categoria'
-      },
-      {
-        label: 'Moda e Beleza',
-        to: 'modas'
-      },
-      {
-        label: 'Casa e Eletrodomésticos',
-        to: 'Categoria'
-      },
-      {
-        label: 'Saúde',
-        to: 'Categoria'
-      },
-      {
-        label: 'Games',
-        to: 'Categoria'
-      }
+      { label: 'Eletrônico', to: '/categoria/eletronico' },
+      { label: 'Informática', to: '/categoria/informatica' },
+      { label: 'Moda e Beleza', to: '/categoria/moda-e-beleza' },
+      { label: 'Casa e Eletrodomésticos', to: '/categoria/casa-e-eletrodomesticos' },
+      { label: 'Saúde', to: '/categoria/saude' },
+      { label: 'Games', to: '/categoria/games' }
     ]
   }
 ])
