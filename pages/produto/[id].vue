@@ -16,18 +16,19 @@
       </div>
     </div>
 
-    <UContainer>
+   <UContainer class="container-flex" :ui="{ base: 'max-w-screen-xl' }">
       <Grafico />
+
+      <div class="preco-loja">
+        <h3>Melhor Preço</h3>
+        <div class="card-loja">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" />
+          <p><strong>R$ {{ formatarNumero(precoAtual) }}</strong> à vista</p>
+          <button class="botao-ir-loja">Ir à loja</button>
+        </div>
+      </div>
     </UContainer>
 
-    <div class="preco-loja">
-      <h3>Melhor Preço</h3>
-      <div class="card-loja">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" />
-        <p><strong>R$ {{ formatarNumero(precoAtual) }}</strong> à vista</p>
-        <button class="botao-ir-loja">Ir à loja</button>
-      </div>
-    </div>
 
     <div class="avaliacoes">
       <h3>Avaliação dos usuários</h3>
@@ -55,30 +56,7 @@
 import { ref, onMounted, computed } from 'vue'
 import ImagemCarousel from '~/components/Produto/Imagem.vue'
 import Grafico from '~/components/Produto/Grafico.vue'
-import {
-  Chart,
-  LineElement,
-  PointElement,
-  LineController,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-} from 'chart.js'
 
-Chart.register(
-  LineElement,
-  PointElement,
-  LineController,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-)
 
 const { id } = useRoute().params
 const produto = ref(null)
@@ -121,45 +99,6 @@ function toggleFavorito() {
   favoritado.value = !favoritado.value
 }
 
-// Dados fictícios para o gráfico
-const dadosPrecos = {
-  labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
-  datasets: [{
-    label: 'Preço (R$)',
-    data: [precoAtual.value * 1.1, precoAtual.value * 1.05, precoAtual.value * 1.02, precoAtual.value, precoAtual.value * 0.98],
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-    borderColor: '#3b82f6',
-    borderWidth: 2,
-    fill: true,
-    tension: 0.3
-  }]
-}
-
-onMounted(() => {
-  if (graficoCanvas.value) {
-    new Chart(graficoCanvas.value, {
-      type: 'line',
-      data: dadosPrecos,
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: true },
-          tooltip: { mode: 'index', intersect: false }
-        },
-        scales: {
-          y: {
-            beginAtZero: false,
-            ticks: {
-              callback: function (value) {
-                return `R$ ${value.toFixed(2).replace('.', ',')}`
-              }
-            }
-          }
-        }
-      }
-    })
-  }
-})
 
 definePageMeta({
   layout: 'default'
@@ -385,6 +324,13 @@ definePageMeta({
 .miniatura:hover {
   border-color: #3b82f6;
 }
+
+.container-flex {
+  display: flex;
+  align-items: flex-start; /* ou center, conforme desejado */
+  gap: 1rem; /* espaço entre o gráfico e a loja */
+}
+
 
 </style>
 
