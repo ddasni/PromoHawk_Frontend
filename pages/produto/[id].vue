@@ -16,17 +16,9 @@
       </div>
     </div>
 
-    <div class="grafico-preco">
-      <div class="cabecalho-grafico">
-        <h2>Histórico de Preços</h2>
-        <div class="periodo">
-          <button>3 Meses</button>
-          <button>6 Meses</button>
-          <button>1 Ano</button>
-        </div>
-      </div>
-      <canvas ref="graficoCanvas" height="200"></canvas>
-    </div>
+    <UContainer>
+      <Grafico />
+    </UContainer>
 
     <div class="preco-loja">
       <h3>Melhor Preço</h3>
@@ -62,6 +54,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import ImagemCarousel from '~/components/Produto/Imagem.vue'
+import Grafico from '~/components/Produto/Grafico.vue'
 import {
   Chart,
   LineElement,
