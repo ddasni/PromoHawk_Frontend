@@ -7,7 +7,7 @@
         <h1 class="nome-produto">{{ produto.nome }}</h1>
         <p class="avaliacao">⭐ {{ avaliacao.toFixed(1) }} ({{ totalAvaliacoes }} avaliações)</p>
         <p class="menor-preco">menor preço via Amazon</p>
-        <p class="preco-vista">R$ {{ formatarNumero(precoAtual) }} à vista</p>
+        <p class="preco-vista">R$ {{ precoAtual }} à vista</p>
         <p class="parcelamento">{{ parcelas }}x de R$ {{ formatarNumero(precoAtual / parcelas) }} sem juros</p>
         <button class="botao-ver-opcoes">Ver opções de compra</button>
         <button class="favoritar" @click.stop.prevent="toggleFavorito">
@@ -16,18 +16,7 @@
       </div>
     </div>
 
-   <UContainer class="container-flex" :ui="{ base: 'max-w-screen-xl' }">
-      <Grafico />
-
-      <div class="preco-loja">
-        <h3>Melhor Preço</h3>
-        <div class="card-loja">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" />
-          <p><strong>R$ {{ formatarNumero(precoAtual) }}</strong> à vista</p>
-          <button class="botao-ir-loja">Ir à loja</button>
-        </div>
-      </div>
-    </UContainer>
+    <Grafico/>
 
 
     <div class="avaliacoes">
@@ -324,16 +313,4 @@ definePageMeta({
 .miniatura:hover {
   border-color: #3b82f6;
 }
-
-.container-flex {
-  display: flex;
-  align-items: flex-start; /* ou center, conforme desejado */
-  gap: 1rem; /* espaço entre o gráfico e a loja */
-}
-
-
 </style>
-
-
-
-
