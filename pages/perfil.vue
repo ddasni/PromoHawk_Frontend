@@ -5,46 +5,32 @@
 
     <div class="foto-section">
       <div class="foto-perfil" @click="editarFoto">
-        <img :src="fotoPerfil" />
+        <img :src="fotoPerfil" alt="Foto do perfil" />
         <div class="overlay">
           <img :src="lapisIcon" alt="Editar" />
         </div>
       </div>
-      <input type="file" ref="inputFile" @change="alterarFoto" style="display: none" />
+      <input 
+        type="file" 
+        ref="inputFile" 
+        @change="alterarFoto" 
+        accept="image/*" 
+        style="display: none" 
+      />
       <h2 class="nome-usuario">{{ dados.nome || 'Usuário' }}</h2>
     </div>
 
     <div class="info-perfil">
-      <div
-        class="info-item"
-        v-for="(label, key) in campos"
-        :key="key"
-      >
+      <div class="info-item" v-for="(label, key) in campos" :key="key">
         <label :for="key">{{ label }}</label>
 
-        <div v-if="key === 'senha'" class="senha-wrapper">
+        <div v-if="key.includes('senha')" class="senha-wrapper">
           <input
-            v-model="dados.senha"
+            v-model="dados[key]"
             :type="mostrarSenha ? 'text' : 'password'"
-            id="senha"
+            :id="key"
             class="input"
-            placeholder="Senha"
-          />
-          <img
-            :src="mostrarSenha ? eyeOffIcon : eyeIcon"
-            class="icone-olho"
-            @click="mostrarSenha = !mostrarSenha"
-            alt="Ver senha"
-          />
-        </div>
-
-        <div v-else-if="key === 'confirmarSenha'" class="senha-wrapper">
-          <input
-            v-model="dados.confirmarSenha"
-            :type="mostrarSenha ? 'text' : 'password'"
-            id="confirmarSenha"
-            class="input"
-            placeholder="Confirmar Senha"
+            :placeholder="label"
           />
           <img
             :src="mostrarSenha ? eyeOffIcon : eyeIcon"
@@ -73,26 +59,18 @@
   </div>
 </template>
 
+
 <script setup>
-// pagina protegida por meio do token de login
-definePageMeta({
-  middleware: 'auth'
-})
-
-
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import lapisIcon from '@/assets/icons/lapis.svg'
-import eyeIcon from '@/assets/icons/eye.svg'
-import eyeOffIcon from '@/assets/icons/eye-off.svg'
-import { useCookie } from '#app'
 
 const router = useRouter()
-const tokenCookie = useCookie('token')
-const userCookie = useCookie('user')
+const token = useCookie('token')
+const user = useCookie('user')
 
-const fotoPerfil = ref('https://via.placeholder.com/150')
 const mostrarSenha = ref(false)
+const fotoPerfil = ref('https://via.placeholder.com/150')
+const inputFile = ref(null)
 
 const dados = ref({
   username: '',
@@ -112,167 +90,178 @@ const campos = {
   confirmarSenha: 'Confirmar senha:',
 }
 
+// Ícones - ajuste os caminhos conforme sua estrutura de arquivos
+const lapisIcon = '/icons/lapis.svg'
+const eyeIcon = '/icons/eye.svg'
+const eyeOffIcon = '/icons/eye-off.svg'
+
 function parseUserCookie() {
   try {
-    if (typeof userCookie.value === 'string') {
-      return JSON.parse(userCookie.value)
-    } else if (typeof userCookie.value === 'object') {
-      return userCookie.value
-    } else {
-      return {}
+    if (user.value) {
+      return typeof user.value === 'string' ? JSON.parse(user.value) : user.value
     }
+    return {}
   } catch {
     return {}
   }
 }
 
-onMounted(async () => {
-  const user = parseUserCookie()
-  const userId = user?.id
-  const token = tokenCookie.value
+function carregarDadosUsuario(userData) {
+  dados.value = {
+    username: userData.username || '',
+    nome: userData.nome || '',
+    telefone: userData.telefone || '',
+    email: userData.email || '',
+    senha: '',
+    confirmarSenha: '',
+  }
+  
+  if (userData.foto) {
+    fotoPerfil.value = `https://api.promohawk.com.br/storage/${userData.foto}`
+  } else {
+    fotoPerfil.value = 'https://via.placeholder.com/150'
+  }
+}
 
-  if (!userId || !token) {
+onMounted(() => {
+  const userData = parseUserCookie()
+  
+  if (!userData?.id || !token.value) {
     router.push('/login')
     return
   }
-
-  console.log('Buscando dados do usuário:', userId)
-  console.log('Token:', token)
-
-  try {
-    const res = await fetch(`https://api.promohawk.com.br/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    if (!res.ok) throw new Error('Falha ao buscar dados do usuário.')
-
-    const userData = await res.json()
-
-    dados.value = {
-      username: userData.username || '',
-      nome: userData.nome || '',
-      telefone: userData.telefone || '',
-      email: userData.email || '',
-      senha: '',
-      confirmarSenha: '',
-    }
-
-    if (userData.foto) {
-      fotoPerfil.value = userData.foto
-    }
-  } catch (err) {
-    console.error(err)
-    alert('Erro ao carregar dados do perfil.')
-  }
+  
+  carregarDadosUsuario(userData)
 })
 
 function editarFoto() {
-  const input = document.querySelector('input[type="file"]')
-  input?.click()
+  inputFile.value.click()
 }
 
 async function alterarFoto(event) {
   const file = event.target.files[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = async () => {
-      fotoPerfil.value = reader.result
+  if (!file) return
 
-      const user = parseUserCookie()
-      const userId = user?.id
-      const token = tokenCookie.value
-
-      if (!userId || !token) {
-        alert('Você precisa estar logado para alterar a foto.')
-        router.push('/login')
-        return
-      }
-
-      try {
-        // Enviar imagem para API
-        const formData = new FormData()
-        formData.append('image', file)
-
-        const res = await fetch(`https://api.promohawk.com.br/users/${userId}/editImage`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        })
-
-        if (!res.ok) {
-          throw new Error('Erro ao atualizar imagem.')
-        }
-
-        const updatedUser = await res.json()
-        userCookie.value = JSON.stringify(updatedUser)
-        alert('Foto atualizada com sucesso!')
-
-      } catch (err) {
-        console.error(err)
-        alert('Erro ao enviar imagem para o servidor.')
-      }
-    }
-    reader.readAsDataURL(file)
-  }
-}
-
-async function salvarAlteracoes() {
-  if (dados.value.senha !== dados.value.confirmarSenha) {
-    alert('As senhas não coincidem.')
+  if (!file.type.match('image.*')) {
+    alert('Por favor, selecione um arquivo de imagem válido.')
     return
   }
 
-  const user = parseUserCookie()
-  const userId = user?.id
-  const token = tokenCookie.value
+  const userData = parseUserCookie()
 
-  if (!userId || !token) {
-    alert('Você precisa estar logado para salvar.')
+  if (!userData?.id || !token.value) {
+    alert('Você precisa estar logado.')
     router.push('/login')
     return
   }
 
+  const formData = new FormData()
+  formData.append('imagem', file)
+
   try {
-    // Prepara payload removendo confirmarSenha e senha vazia
-    const payload = { ...dados.value }
-    delete payload.confirmarSenha
+    const response = await fetch(
+      `https://api.promohawk.com.br/api/users/${userData.id}/imagem`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token.value}`,
+        },
+        body: formData,
+      }
+    )
 
-    if (!payload.senha) {
-      delete payload.senha
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Erro ao atualizar imagem')
     }
 
-    const res = await fetch(`https://api.promohawk.com.br/users/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
+    if (data.foto) {
+      fotoPerfil.value = `https://api.promohawk.com.br/${data.foto}`
 
-    if (!res.ok) {
-      throw new Error('Erro ao atualizar perfil.')
+      // Atualiza o cookie do usuário
+      const updatedUser = { ...userData, foto: data.foto }
+      user.value = JSON.stringify(updatedUser)
     }
 
-    const updatedUser = await res.json()
-    userCookie.value = JSON.stringify(updatedUser)
-
-    alert('Perfil atualizado com sucesso!')
-    dados.value.senha = ''
-    dados.value.confirmarSenha = ''
-  } catch (err) {
-    console.error('Erro ao salvar:', err)
-    alert('Erro ao salvar alterações.')
+    alert('Foto atualizada com sucesso!')
+  } catch (error) {
+    console.error('Erro ao enviar imagem:', error)
+    alert(`Erro ao enviar imagem: ${error.message}`)
+  } finally {
+    event.target.value = ''
   }
 }
+
+
+async function salvarAlteracoes() {
+  if (dados.value.senha && dados.value.senha !== dados.value.confirmarSenha) {
+    alert('As senhas não coincidem.')
+    return
+  }
+
+  const userData = parseUserCookie()
+
+  if (!userData?.id || !token.value) {
+    alert('Você precisa estar logado.')
+    router.push('/login')
+    return
+  }
+
+  const alteracoes = {}
+  const camposParaVerificar = ['username', 'nome', 'telefone', 'email']
+
+  camposParaVerificar.forEach(campo => {
+    if (dados.value[campo] !== userData[campo]) {
+      alteracoes[campo] = dados.value[campo]
+    }
+  })
+
+  if (dados.value.senha) {
+    alteracoes.senha = dados.value.senha
+  }
+
+  if (Object.keys(alteracoes).length === 0) {
+    alert('Nenhuma alteração detectada.')
+    return
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.promohawk.com.br/api/users/${userData.id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token.value}`,
+        },
+        body: JSON.stringify(alteracoes),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Erro ao atualizar perfil')
+    }
+
+    // Atualiza o cookie do usuário
+    const updatedUser = { ...userData, ...alteracoes }
+    user.value = JSON.stringify(updatedUser)
+
+    // Recarrega os dados do usuário
+    carregarDadosUsuario(updatedUser)
+
+    alert('Dados atualizados com sucesso!')
+  } catch (error) {
+    console.error('Erro ao salvar alterações:', error)
+    alert(`Erro ao salvar alterações: ${error.message}`)
+  }
+}
+
 </script>
 
 <style scoped>
-/* Mantive seu estilo anterior */
 .perfil-container {
   max-width: 600px;
   margin: 60px auto;
@@ -430,4 +419,5 @@ async function salvarAlteracoes() {
   background-color: #2563eb;
 }
 </style>
+
 
