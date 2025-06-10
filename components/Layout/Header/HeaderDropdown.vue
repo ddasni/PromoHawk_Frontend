@@ -6,9 +6,9 @@
       color="primary"
       variant="solid"
     >
-     <UAvatar
-        :src="userCookie?.imagem ? getFullImageUrl(userCookie.imagem) : undefined"
-        :icon="!userCookie?.imagem ? 'mdi:user' : undefined"
+      <UAvatar
+        :src="user.imagem ? getFullImageUrl(user.imagem) : undefined"
+        :icon="!user.imagem ? 'mdi:user' : undefined"
         size="md"
         class="rounded-full object-cover w-full h-full"
       />
@@ -19,38 +19,43 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useCookie } from '#app' // composable de cookies do Nuxt 3
+import { useCookie, useRuntimeConfig } from '#app'
 import { useLogout } from '~/composables/useLogout'
 
-
-// Definindo a interface do usuário
+// Interface do usuário
 interface User {
   username?: string
   imagem?: string
-  // adicione outras propriedades conforme necessário
 }
 
-// importando a url da api
-const config = useRuntimeConfig()
+// Cookies e configs
 const tokenCookie = useCookie('token')
 const userCookie = useCookie<User>('user')
+const config = useRuntimeConfig()
 const router = useRouter()
+
+// Estado de login
 const isLoggedIn = ref(!!tokenCookie.value)
-const { logout } = useLogout()
 
-const getFullImageUrl = (path: string | undefined) => {
-  if (!path) return 'mdi:account' // se não houver imagem retorna um icone
-  return path.startsWith('http') ? path : `${config.public.apiImage}${path}`
-}
-
+// Reatividade para mudanças no cookie do token
 watch(tokenCookie, (newVal) => {
   isLoggedIn.value = !!newVal
 })
 
+// Objeto de usuário reativo
+const user = computed(() => userCookie.value || {})
+
+// Função para montar a URL da imagem
+const getFullImageUrl = (path: string | undefined) => {
+  if (!path) return 'mdi:account'
+  return path.startsWith('http') ? path : `${config.public.apiImage}${path}`
+}
+
+// Função de logout
+const { logout } = useLogout()
+
+// Itens do dropdown baseados no login
 const items = computed(() => {
-
-  const user = userCookie.value || {}
-
   if (!isLoggedIn.value) {
     return [
       [
@@ -73,40 +78,40 @@ const items = computed(() => {
         },
       ],
     ]
-  } else {
-    return [
-      [
-        {
-          label: user.username || 'Usuário',
-          type: 'label',
-          avatar: { src: getFullImageUrl(user.imagem) },
-        },
-      ],
-      [
-        {
-          label: 'Perfil',
-          icon: 'mdi:account',
-          onClick: () => router.push('/perfil'),
-        },
-        {
-          label: 'Lista de Desejos',
-          icon: 'mdi:heart-outline',
-          onClick: () => router.push('/listadesejo'),
-        },
-        {
-          label: 'Configurações',
-          icon: 'mdi:cog-outline',
-          onClick: () => router.push('/config'),
-        },
-      ],
-      [
-        {
-          label: 'Logout',
-          icon: 'i-lucide-log-out',
-          onClick: logout,
-        },
-      ],
-    ]
   }
+
+  return [
+    [
+      {
+        label: user.value.username || 'Usuário',
+        type: 'label',
+        avatar: { src: getFullImageUrl(user.value.imagem) },
+      },
+    ],
+    [
+      {
+        label: 'Perfil',
+        icon: 'mdi:account',
+        onClick: () => router.push('/perfil'),
+      },
+      {
+        label: 'Lista de Desejos',
+        icon: 'mdi:heart-outline',
+        onClick: () => router.push('/listadesejo'),
+      },
+      {
+        label: 'Configurações',
+        icon: 'mdi:cog-outline',
+        onClick: () => router.push('/config'),
+      },
+    ],
+    [
+      {
+        label: 'Logout',
+        icon: 'i-lucide-log-out',
+        onClick: logout,
+      },
+    ],
+  ]
 })
 </script>
