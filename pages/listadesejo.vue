@@ -3,7 +3,12 @@
     <h1 class="titulo-pagina">Minha Lista de Desejos</h1>
 
     <div v-if="itens.length > 0" class="lista-itens">
-      <div class="item-desejo" v-for="item in itens" :key="item.id">
+      <div 
+        class="item-desejo" 
+        v-for="item in itens" 
+        :key="item.id"
+        @click="irParaDetalhes(item.id)"
+      >
         <img :src="item.imagem" alt="Foto do Produto" class="imagem-produto" />
         <div class="detalhes">
           <h2 class="nome-produto">{{ item.nome }}</h2>
@@ -24,14 +29,21 @@ definePageMeta({
 })
 
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const itens = ref([])
+const router = useRouter()
 
 onMounted(() => {
   const favoritosSalvos = JSON.parse(localStorage.getItem('listaDesejos') || '[]')
   itens.value = favoritosSalvos
 })
+
+function irParaDetalhes(id) {
+  router.push(`/produto/${id}`)
+}
 </script>
+
 
 <style scoped>
 .wishlist-container {
