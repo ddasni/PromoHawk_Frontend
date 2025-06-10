@@ -1,6 +1,6 @@
 <template>
-  <NuxtLink :to="`/produto/${produto.id}`" class="card-produto-link">
-    <div class="card-produto">
+  <div class="card-produto">
+    <NuxtLink :to="`/produto/${produto.id}`" class="card-produto-link">
       <img :src="imagem" :alt="produto.nome" class="produto-img" />
 
       <div class="produto-info">
@@ -15,61 +15,45 @@
           <span class="total-avaliacoes" v-if="totalAvaliacoes">({{ totalAvaliacoes }})</span>
         </div>
       </div>
+    </NuxtLink>
 
-      <button class="favoritar" @click.stop.prevent="toggleFavorito">
+    <!-- Botão de favoritar -->
+    <button class="favoritar" @click.stop="adicionarAFavoritos">
+      <span :style="{ color: favoritado ? 'red' : '#999' }">
         {{ favoritado ? '❤️' : '🤍' }}
-      </button>
-    </div>
-  </NuxtLink>
+      </span>
+    </button>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
   produto: {
     type: Object,
-    required: true,
-    default: () => ({
-      id: null,
-      nome: 'Produto desconhecido',
-      descricao: '',
-      imagem: '',
-      precos: [],
-      status_produto: 'inativo'
-    })
+    required: true
   },
   imagem: {
     type: String,
     default: '/img/sem-imagem.png'
   },
   avaliacao: { type: Number, default: 0 },
-  totalAvaliacoes: { type: Number, default: 0 },
-  favoritado: { type: Boolean, default: false },
+  totalAvaliacoes: { type: Number, default: 0 }
 })
-const emit = defineEmits(['update:favoritado'])
-const favoritado = ref(props.favoritado)
 
-// Calcula o preço atual (último preço cadastrado)
+const favoritado = ref(false)
+
+// Verifica se o produto já está na lista de desejos
+onMounted(() => {
+  const favoritos = JSON.parse(localStorage.getItem('listaDesejos') || '[]')
+  favoritado.value = favoritos.some(p => p.id === props.produto.id)
+})
+
 const precoAtual = computed(() => {
   if (!props.produto.precos || props.produto.precos.length === 0) return 0
-  return parseFloat(props.produto.precos[props.produto.precos.length - 1].preco)
+  return parseFloat(props.produto.precos.at(-1).preco)
 })
-
-// Calcula o preço anterior (penúltimo preço cadastrado, se existir)
-const precoAnterior = computed(() => {
-  if (!props.produto.precos || props.produto.precos.length < 2) return null
-  return parseFloat(props.produto.precos[props.produto.precos.length - 2].preco)
-})
-
-watch(() => props.favoritado, (val) => {
-  favoritado.value = val
-})
-
-function toggleFavorito() {
-  favoritado.value = !favoritado.value
-  emit('update:favoritado', favoritado.value)
-}
 
 function formatarNumero(valor) {
   return typeof valor === 'number' ? valor.toFixed(2).replace('.', ',') : '0,00'
@@ -78,6 +62,28 @@ function formatarNumero(valor) {
 function formatarPreco(valor) {
   if (typeof valor !== 'number') return '0,00'
   return valor.toFixed(2).replace('.', ',')
+}
+
+function adicionarAFavoritos() {
+  const favoritos = JSON.parse(localStorage.getItem('listaDesejos') || '[]')
+  const index = favoritos.findIndex(p => p.id === props.produto.id)
+
+  if (index !== -1) {
+    // Já existe, remover
+    favoritos.splice(index, 1)
+    favoritado.value = false
+  } else {
+    // Não existe, adicionar
+    favoritos.push({
+      id: props.produto.id,
+      nome: props.produto.nome,
+      preco: precoAtual.value,
+      imagem: props.imagem
+    })
+    favoritado.value = true
+  }
+
+  localStorage.setItem('listaDesejos', JSON.stringify(favoritos))
 }
 </script>
 
@@ -101,7 +107,7 @@ function formatarPreco(valor) {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   position: relative;
-  margin-top: 24px; /* Afasta do header */
+  margin-top: 24px;
 }
 
 .card-produto:hover {
@@ -131,10 +137,6 @@ function formatarPreco(valor) {
   margin-bottom: 6px;
 }
 
-.produto-descricao {
-  color: #6c6d6e;
-}
-
 .avaliacao {
   font-size: 0.95rem;
   color: #f59e0b;
@@ -154,11 +156,6 @@ function formatarPreco(valor) {
   gap: 4px;
 }
 
-.preco-vista {
-  font-weight: 600;
-  color: #10b981;
-}
-
 .favoritar {
   position: absolute;
   top: 16px;
@@ -169,3 +166,4 @@ function formatarPreco(valor) {
   cursor: pointer;
 }
 </style>
+

@@ -7,8 +7,7 @@
         <img :src="item.imagem" alt="Foto do Produto" class="imagem-produto" />
         <div class="detalhes">
           <h2 class="nome-produto">{{ item.nome }}</h2>
-          <p class="preco-atual">Preço atual: R$ {{ item.preco.toFixed(2) }}</p>
-          
+          <p class="preco-atual">Preço atual: R$ {{ item.preco.toFixed(2).replace('.', ',') }}</p>
         </div>
       </div>
     </div>
@@ -20,30 +19,19 @@
 </template>
 
 <script setup>
-// pagina protegida por meio do token de login
 definePageMeta({
   middleware: 'auth'
 })
 
+import { ref, onMounted } from 'vue'
 
-import { ref } from 'vue';
+const itens = ref([])
 
-const itens = ref([
-  {
-    id: 1,
-    nome: 'Smartphone Samsung Galaxy S23',
-    preco: 3999.90,
-    imagem: '' 
-  },
-  {
-    id: 2,
-    nome: 'Robim buxa',
-    preco: 1.00,
-    imagem: ''
-  }
-]);
+onMounted(() => {
+  const favoritosSalvos = JSON.parse(localStorage.getItem('listaDesejos') || '[]')
+  itens.value = favoritosSalvos
+})
 </script>
-
 
 <style scoped>
 .wishlist-container {
@@ -112,14 +100,6 @@ const itens = ref([
   margin-bottom: 6px;
 }
 
-.notificacao-ativa {
-  display: inline-block;
-  font-size: 14px;
-  color: #28a745;
-  background: #eafaf1;
-  padding: 4px 10px;
-  border-radius: 8px;
-}
 .sem-itens {
   text-align: center;
   font-size: 16px;
@@ -127,3 +107,4 @@ const itens = ref([
   margin-top: 40px;
 }
 </style>
+
