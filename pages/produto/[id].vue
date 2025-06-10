@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <Grafico/>
+    <Grafico v-if="produto" :produtoId="produto.id"/>
 
 
     <div class="avaliacoes">

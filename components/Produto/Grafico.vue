@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect } from 'vue'
-import { useFetch } from '#app' // Nuxt 3
+import { useFetch } from '#app'
+import Botao from "~/components/Common/botao.vue"
 
 interface PrecoItem {
   id: number
   produto_id: number
   loja_id: number
   preco: number
+  forma_pagamento: string
+  loja_nome: string
+  link: string
   created_at: string
   updated_at: string
 }
@@ -65,23 +69,51 @@ const formatCurrency = (value: number) => {
   }).format(value)
 }
 
-const menorPreco = computed(() => {
-  if (!chartData.value.length) return null
-  const menor = Math.min(...chartData.value.map(item => item.amount))
-  return formatCurrency(menor)
+const menorPrecoInfo = ref<PrecoItem | null>(null)
+
+watchEffect(async () => {
+  if (!props.produtoId) return
+
+  const { data } = await useFetch<ProdutoApiResponse>(
+    `https://api.promohawk.com.br/api/produto/${props.produtoId}`
+  )
+
+  if (data.value?.produto?.precos) {
+    const precos = data.value.produto.precos
+
+    chartData.value = precos.map(item => ({
+      date: new Date(item.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+      amount: item.preco
+    }))
+
+    const menor = [...precos].sort((a, b) => a.preco - b.preco)[0]
+    menorPrecoInfo.value = menor
+  }
 })
+
+function irParaLoja() {
+  if (menorPrecoInfo.value?.link) {
+    window.open(menorPrecoInfo.value.link, '_blank')
+  }
+}
 </script>
 
 <template>
-  <UContainer class="container-flex" :ui="{ base: 'max-w-screen-xl' }">
-    <div class="mx-auto max-w-xl py-8">
+  <UContainer class="flex items-start gap-4" :ui="{ base: 'max-w-screen-xl' }">
+    <div class="mx-auto w-full sm:w-96 md:w-[28rem] lg:w-[32rem] xl:w-[36rem]">
       <UCard class="bg-(--ui-bg)">
         <template #header>
           <div class="space-y-1">
             <h3 class="text-sm text-(--ui-text-muted)">Menor Preço Registrado</h3>
             <h2 class="text-2xl font-medium">
-              {{ menorPreco || 'Carregando...' }}
+              {{ menorPrecoInfo ? formatCurrency(menorPrecoInfo.preco) : 'Carregando...' }}
             </h2>
+
+            <div v-if="menorPrecoInfo" class="bg-gray-100 p-3 rounded mt-2 text-sm text-black space-y-1">
+              <p><strong>Forma de pagamento:</strong> {{ menorPrecoInfo.forma_pagamento }}</p>
+              <p><strong>Loja:</strong> {{ menorPrecoInfo.loja_nome }}</p>
+              <Botao class="btn-link mt-2" nome="ir à loja" @click="irParaLoja" />
+            </div>
           </div>
         </template>
 
@@ -98,30 +130,14 @@ const menorPreco = computed(() => {
         />
       </UCard>
     </div>
-    <div class="melhor-preco">
-        <div class="titulo">
-          <h3>Melhor Preço</h3>
-        </div>
-        <div class="loja">
-          <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"/>
-          <p><strong>R$ 1.200</strong> à vista</p>  <!--{{ precoAtual }}-->
-        </div>
-        <NuxtLink to="">ir à loja</NuxtLink>
-    </div>
   </UContainer> 
 </template>
 
 <style scoped>
-.container-flex {
-  display: flex;
-  align-items: flex-start; /* ou center, conforme desejado */
-  gap: 1rem; /* espaço entre o gráfico e a loja */
-}
-
 .melhor-preco {
   width: 300px;
   height: 250px;
-  border-radius: 30px;
+  border-radius: 10px;
   background: #e0e0e0;
   box-shadow: 15px 15px 30px #bebebe,
              -15px -15px 30px #ffffff;
@@ -150,5 +166,16 @@ const menorPreco = computed(() => {
   border-radius: 50%;
   object-fit: contain;
   background-color: #ffffff;
+}
+
+.btn-link {
+  width: 100%;
+  padding: 12px;
+  background-color: seagreen;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
 }
 </style>
