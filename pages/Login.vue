@@ -90,8 +90,9 @@ const handleLogin = async () => {
   userCookie.value = data.value.user
 
 
-  // Redirecionar para a home
-  router.push('/')
+ 
+ window.location.href = '/'
+
 }
 </script>
 

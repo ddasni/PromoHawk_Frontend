@@ -12,7 +12,10 @@
         <img :src="item.imagem" alt="Foto do Produto" class="imagem-produto" />
         <div class="detalhes">
           <h2 class="nome-produto">{{ item.nome }}</h2>
-          <p class="preco-atual">Preço atual: R$ {{ item.preco.toFixed(2).replace('.', ',') }}</p>
+          <p class="preco-atual">
+  Preço atual: R$ 
+  {{ typeof item.preco === 'number' ? item.preco.toFixed(2).replace('.', ',') : 'Indisponível' }}
+</p>
         </div>
       </div>
     </div>
@@ -24,26 +27,62 @@
 </template>
 
 <script setup>
-definePageMeta({
-  middleware: 'auth'
-})
-
 import { ref, onMounted } from 'vue'
+import { useCookie } from '#app'
 import { useRouter } from 'vue-router'
 
-const itens = ref([])
 const router = useRouter()
+const token = useCookie('token')
+const itens = ref([])
 
-onMounted(() => {
-  const favoritosSalvos = JSON.parse(localStorage.getItem('listaDesejos') || '[]')
-  itens.value = favoritosSalvos
-})
+async function carregarItens() {
+  if (!token.value) {
+    console.warn('Token não encontrado. Usuário não autenticado.')
+    return
+  }
+
+  try {
+    const response = await fetch('https://api.promohawk.com.br/api/user-favoritos', {
+      headers: {
+        'Authorization': `Bearer ${token.value}`,
+        'Accept': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      console.error('Erro na resposta da API:', response.status, await response.text())
+      return
+    }
+
+    const data = await response.json()
+    console.log('Dados da API:', data)
+
+    if (!Array.isArray(data.favoritos)) {
+      console.error('Favoritos não é um array:', data.favoritos)
+      return
+    }
+
+    itens.value = data.favoritos.map(fav => ({
+      id: fav.produto_id,
+      nome: fav.produto_nome,
+      imagem: fav.produto_imagem,
+      preco: Number(fav.produto_preco) || 0
+    }))
+
+    console.log('Itens carregados no estado:', itens.value)
+  } catch (error) {
+    console.error('Erro ao carregar itens da lista de desejos:', error)
+  }
+}
 
 function irParaDetalhes(id) {
   router.push(`/produto/${id}`)
 }
-</script>
 
+onMounted(() => {
+  carregarItens()
+})
+</script>
 
 <style scoped>
 .wishlist-container {
@@ -79,6 +118,7 @@ function irParaDetalhes(id) {
   padding: 20px;
   border-radius: 12px;
   transition: 0.3s;
+  cursor: pointer;
 }
 
 .item-desejo:hover {
@@ -119,4 +159,8 @@ function irParaDetalhes(id) {
   margin-top: 40px;
 }
 </style>
+
+
+
+
 

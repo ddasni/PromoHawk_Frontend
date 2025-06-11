@@ -1,8 +1,8 @@
 <template>
   <div v-if="produto" class="pagina-produto">
     <div class="topo">
-      <ImagemCarousel :images="produto.imagens.map(img => img.imagem)" />
-      
+      <ImagemCarousel :images="produto?.imagens?.map(img => img.imagem) || []" />
+
       <div class="info">
         <h1 class="nome-produto">{{ produto.nome }}</h1>
         <p class="avaliacao">⭐ {{ avaliacao.toFixed(1) }} ({{ totalAvaliacoes }} avaliações)</p>
@@ -10,14 +10,13 @@
         <p class="preco-vista">R$ {{ precoAtual }} à vista</p>
         <p class="parcelamento">{{ parcelas }}x de R$ {{ formatarNumero(precoAtual / parcelas) }} sem juros</p>
         <button class="botao-ver-opcoes">Ver opções de compra</button>
-        <button class="favoritar" @click.stop.prevent="toggleFavorito">
-          {{ favoritado ? '❤️' : '🤍' }}
-        </button>
+
+        <!-- Novo botão de favoritar -->
+        <BotaoFavoritar :produtoId="produto.id" />
       </div>
     </div>
 
-    <Grafico v-if="produto" :produtoId="produto.id"/>
-
+    <Grafico v-if="produto" :produtoId="produto.id" />
 
     <div class="avaliacoes">
       <h3>Avaliação dos usuários</h3>
@@ -42,31 +41,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed } from 'vue'
+import { useRoute, useFetch, useRuntimeConfig } from '#imports'
 import ImagemCarousel from '~/components/Produto/Imagem.vue'
 import Grafico from '~/components/Produto/Grafico.vue'
-
+import BotaoFavoritar from '~/components/Produto/botaofavoritar.vue'
 
 const { id } = useRoute().params
 const produto = ref(null)
-const favoritado = ref(false)
-const graficoCanvas = ref(null)
 const avaliacao = ref(4.5)
 const totalAvaliacoes = ref(0)
 const parcelas = ref(10)
 
-// Configuração da API
 const config = useRuntimeConfig()
 
-// Busca os dados do produto
-const { data, pending, error } = await useFetch(`https://api.promohawk.com.br/api/produto/${id}`, {
+// Busca produto
+const { data, error } = await useFetch(`https://api.promohawk.com.br/api/produto/${id}`, {
   onResponse({ response }) {
     if (response._data) {
       produto.value = response._data.produto
-      if (produto.value.precos && produto.value.precos.length > 0) {
-        // Ordena os preços por data (mais recente primeiro)
+      if (produto.value.precos?.length > 0) {
         produto.value.precos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-        atualizarGrafico()
       }
     }
   },
@@ -76,22 +71,12 @@ const { data, pending, error } = await useFetch(`https://api.promohawk.com.br/ap
 })
 
 const precoAtual = computed(() => {
-  if (!produto.value?.precos || produto.value.precos.length === 0) return 0
-  return parseFloat(produto.value.precos[produto.value.precos.length - 1].preco)
+  return produto.value?.precos?.[0]?.preco || 0
 })
 
 function formatarNumero(valor) {
-  return typeof valor === 'number' ? valor.toFixed(2).replace('.', ',') : '0,00'
+  return valor.toFixed(2).replace('.', ',')
 }
-
-function toggleFavorito() {
-  favoritado.value = !favoritado.value
-}
-
-
-definePageMeta({
-  layout: 'default'
-})
 </script>
 
 
