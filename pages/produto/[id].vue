@@ -6,7 +6,7 @@
       <div class="info">
         <h1 class="nome-produto">{{ produto.nome }}</h1>
         <p class="avaliacao">⭐ {{ avaliacao.toFixed(1) }} ({{ totalAvaliacoes }} avaliações)</p>
-        <p class="menor-preco">menor preço via Amazon</p>
+        <p class="menor-preco">menor preço via {{ produto.loja.nome }}</p>
         <p class="preco-vista">R$ {{ precoAtual }} à vista</p>
         <p class="parcelamento">{{ parcelas }}x de R$ {{ formatarNumero(precoAtual / parcelas) }} sem juros</p>
         <button class="botao-ver-opcoes">Ver opções de compra</button>
