@@ -6,13 +6,18 @@ import Botao from "~/components/Common/botao.vue"
 interface PrecoItem {
   id: number
   produto_id: number
-  loja_id: number
-  preco: number
+  preco: string
   forma_pagamento: string
+  parcelas: number
+  valor_parcela: string
   loja_nome: string
   link: string
-  created_at: string
-  updated_at: string
+  data_registro: string
+  data_alteração: string
+  loja: {
+    id: number
+    nome: string
+  }
 }
 
 interface ProdutoApiResponse {
@@ -34,6 +39,7 @@ const props = defineProps<{
 }>()
 
 const chartData = ref<ChartEntry[]>([])
+const menorPrecoInfo = ref<PrecoItem | null>(null)
 
 watchEffect(async () => {
   if (!props.produtoId) return
@@ -42,16 +48,30 @@ watchEffect(async () => {
     `https://api.promohawk.com.br/api/produto/${props.produtoId}`
   )
 
-  if (data.value?.produto?.precos) {
-    chartData.value = data.value.produto.precos.map(item => {
-      const date = new Date(item.created_at)
-      return {
-        date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        amount:(item.preco)
-      }
+  const precos = data.value?.produto?.precos ?? []
+
+  chartData.value = precos.map(item => {
+    const precoFormatado = parseFloat(item.preco.replace('.', '').replace(',', '.'))
+
+    return {
+      date: item.data_registro.split(' ')[0],
+      amount: precoFormatado
+    }
+  })
+
+  if (precos.length > 0) {
+    const ordenado = [...precos].sort((a, b) => {
+      const pa= parseFloat(a.preco.replace('.', '').replace(',', '.'))
+
+      const pb= parseFloat(b.preco.replace('.', '').replace(',', '.'))
+
+      return pa - pb
     })
+    menorPrecoInfo.value = ordenado[0]
   }
 })
+
+const parsePreco = (valor: string): number => parseFloat(valor.replace(/\./g, '').replace(',','.'))
 
 const categories = {
   amount: {
@@ -69,28 +89,6 @@ const formatCurrency = (value: number) => {
   }).format(value)
 }
 
-const menorPrecoInfo = ref<PrecoItem | null>(null)
-
-watchEffect(async () => {
-  if (!props.produtoId) return
-
-  const { data } = await useFetch<ProdutoApiResponse>(
-    `https://api.promohawk.com.br/api/produto/${props.produtoId}`
-  )
-
-  if (data.value?.produto?.precos) {
-    const precos = data.value.produto.precos
-
-    chartData.value = precos.map(item => ({
-      date: new Date(item.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-      amount: item.preco
-    }))
-
-    const menor = [...precos].sort((a, b) => a.preco - b.preco)[0]
-    menorPrecoInfo.value = menor
-  }
-})
-
 function irParaLoja() {
   if (menorPrecoInfo.value?.link) {
     window.open(menorPrecoInfo.value.link, '_blank')
@@ -106,12 +104,12 @@ function irParaLoja() {
           <div class="space-y-1">
             <h3 class="text-sm text-(--ui-text-muted)">Menor Preço Registrado</h3>
             <h2 class="text-2xl font-medium">
-              {{ menorPrecoInfo ? formatCurrency(menorPrecoInfo.preco) : 'Carregando...' }}
+              {{ menorPrecoInfo ? formatCurrency(parsePreco(menorPrecoInfo.preco)) : 'Carregando...' }}
             </h2>
 
             <div v-if="menorPrecoInfo" class="bg-gray-100 p-3 rounded mt-2 text-sm text-black space-y-1">
               <p><strong>Forma de pagamento:</strong> {{ menorPrecoInfo.forma_pagamento }}</p>
-              <p><strong>Loja:</strong> {{ menorPrecoInfo.loja_nome }}</p>
+              <p><strong>Loja:</strong> {{ menorPrecoInfo.loja.nome }}</p>
               <Botao class="btn-link mt-2" nome="ir à loja" @click="irParaLoja" />
             </div>
           </div>
