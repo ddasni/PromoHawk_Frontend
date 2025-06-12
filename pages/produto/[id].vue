@@ -1,7 +1,7 @@
 <template>
   <div v-if="produto" class="pagina-produto">
     <div class="topo">
-      <ImagemCarousel :images="produto?.imagens?.map(img => img.imagem) || []" />
+      <ImagemCarousel :images="produto.imagens" />
 
       <div class="info">
         <h1 class="nome-produto">{{ produto.nome }}</h1>
