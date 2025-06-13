@@ -34,19 +34,61 @@
     </div>
 
     <!-- Formulário de Review -->
-    <div v-if="isLoggedIn" class="form-review">
-      <h3>Deixe sua avaliação</h3>
-      <label>Nota (1 a 5):</label>
-      <select v-model="novaAvaliacao">
-        <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
-      </select>
+    <div
+      v-if="isLoggedIn"
+      class="grid grid-cols-6 gap-3 rounded-md bg-white p-3 shadow-md"
+    >
+      <h1 class="col-span-6 text-2xl font-bold capitalize text-slate-400">
+        Deixe sua avaliação
+      </h1>
 
-      <label>Comentário:</label>
-      <textarea v-model="novoComentario" placeholder="Escreva sua opinião..."></textarea>
+      <!-- Comentário -->
+      <div class="col-span-6 relative">
+        <textarea
+          v-model="novoComentario"
+          maxlength="250"
+          class="w-full min-h-28 resize-none bg-slate-100 p-2 outline-none ring-2 ring-slate-200 duration-300 placeholder:text-slate-400 focus:ring-slate-400 rounded-md text-slate-400 pr-16"
+          placeholder="Escreva sua opinião..."
+        ></textarea>
 
-      <button @click="enviarReview">Enviar avaliação</button>
+        <!-- Contador de caracteres -->
+        <span class="absolute bottom-2 right-3 text-xs text-slate-500">
+          {{ novoComentario.length }}/250
+        </span>
+      </div>
+
+      <!-- Estrelas e botão de enviar -->
+      <div class="col-span-6 flex justify-between items-center">
+        <!-- Estrelas -->
+        <div
+          class="flex items-center gap-2 bg-slate-100 p-2 ring-2 ring-slate-200 rounded-md cursor-pointer"
+          title="Clique para dar sua nota"
+        >
+          <span class="text-slate-500 text-sm font-medium">Sua nota:</span>
+          <div class="flex gap-1">
+            <Icon
+              v-for="n in 5"
+              :key="n"
+              :name="n <= novaAvaliacao ? 'material-symbols:star' : 'material-symbols:star-outline'"
+              class="text-yellow-400 w-6 h-6 cursor-pointer"
+              @click="novaAvaliacao = n"
+            />
+          </div>
+        </div>
+
+        <!-- Botão de envio -->
+        <button
+          @click="enviarReview"
+          class="flex items-center justify-center bg-slate-100 px-4 py-2 ring-2 ring-slate-200 duration-300 hover:ring-slate-400 rounded-md text-slate-600"
+        >
+          Enviar
+          <Icon name="material-symbols:send" class="ml-2 w-5 h-5" />
+        </button>
+      </div>
     </div>
-    <div v-else class="aviso-login">
+
+
+    <div v-else class="text-gray-500 text-sm mt-4">
       Faça login para deixar uma avaliação.
     </div>
 
@@ -184,7 +226,7 @@ async function buscarReviews() {
 
 
 
-
+//--------------- enviar review ---------------------
 async function enviarReview() {
   if (!isLoggedIn.value) {
     alert('Você precisa estar logado para avaliar.')
@@ -210,7 +252,6 @@ async function enviarReview() {
 
     novaAvaliacao.value = 5
     novoComentario.value = ''
-    await buscarReviews()
     alert('Avaliação enviada com sucesso!')
   } catch (err) {
     console.error(err)
