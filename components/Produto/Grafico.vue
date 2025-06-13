@@ -13,7 +13,7 @@ interface PrecoItem {
   loja_nome: string
   link: string
   data_registro: string
-  data_alteração: string
+  data_alteracao: string
   loja: {
     id: number
     nome: string
@@ -59,6 +59,7 @@ watchEffect(async () => {
     }
   })
 
+  // Encontrar o menor preço
   if (precos.length > 0) {
     const ordenado = [...precos].sort((a, b) => {
       const pa= parseFloat(a.preco.replace('.', '').replace(',', '.'))
@@ -84,15 +85,9 @@ const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(value)
-}
-
-function irParaLoja() {
-  if (menorPrecoInfo.value?.link) {
-    window.open(menorPrecoInfo.value.link, '_blank')
-  }
 }
 </script>
 
@@ -100,19 +95,21 @@ function irParaLoja() {
   <UContainer class="flex items-start gap-4" :ui="{ base: 'max-w-screen-xl' }">
     <div class="mx-auto w-full sm:w-96 md:w-[28rem] lg:w-[32rem] xl:w-[36rem]">
       <UCard class="bg-(--ui-bg)">
-        <template #header>
-          <div class="space-y-1">
-            <h3 class="text-sm text-(--ui-text-muted)">Menor Preço Registrado</h3>
-            <h2 class="text-2xl font-medium">
-              {{ menorPrecoInfo ? formatCurrency(parsePreco(menorPrecoInfo.preco)) : 'Carregando...' }}
-            </h2>
-
-            <div v-if="menorPrecoInfo" class="bg-gray-100 p-3 rounded mt-2 text-sm text-black space-y-1">
-              <p><strong>Forma de pagamento:</strong> {{ menorPrecoInfo.forma_pagamento }}</p>
-              <p><strong>Loja:</strong> {{ menorPrecoInfo.loja.nome }}</p>
-              <Botao class="btn-link mt-2" nome="ir à loja" @click="irParaLoja" />
+         <template #header>
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-md text-gray-400 font-medium">Menor Preço Registrado</p>
+                <h2 class="text-xl font-bold text-white">
+                  {{ menorPrecoInfo ? formatCurrency(parsePreco(menorPrecoInfo.preco)) : 'Carregando...' }}
+                  <span v-if="menorPrecoInfo" class="text-sm font-normal text-gray-300">
+                    na {{ menorPrecoInfo.loja.nome }}
+                  </span>
+                </h2>
+                <!-- <p v-if="menorPrecoInfo" class="text-sm font-normal text-green-400">
+                  {{ menorPrecoInfo.loja.nome }}
+                </p> -->
+              </div>
             </div>
-          </div>
         </template>
 
         <AreaChart
