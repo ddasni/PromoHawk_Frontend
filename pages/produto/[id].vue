@@ -52,9 +52,45 @@
 
     <!-- Comentários -->
     <div class="comentarios">
-      <h3>Comentários</h3>
-      <div v-for="comentario in comentarios" :key="comentario.id" class="comentario">
-        <p><strong>⭐ {{ comentario.avaliacao_produto }}</strong> — {{ comentario.comentario_produto }}</p>
+      <h3 class="text-xl font-semibold mb-4 text-gray-900">Comentários</h3>
+
+      <div
+        v-for="comentario in produto.reviews"
+        :key="comentario.id"
+        class="flex flex-col gap-2 dark:text-white max-w-md w-full bg-white dark:bg-neutral-900 p-5 rounded-md mt-4 shadow-md hover:scale-105 transition-transform duration-150"
+      >
+        <!-- Nome do usuário, nota e data -->
+        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+        
+          <div class="flex gap-2 items-start">
+          <img
+            :src="baseURL + comentario.usuario.imagem"
+            alt="Foto do usuário"
+            class="w-8 h-8 rounded-full object-cover border border-gray-300 mt-0.5"
+          />
+
+          <div class="flex flex-col">
+            <p class="text-sm font-medium">{{ comentario.usuario.username }}</p>
+            <div class="flex gap-0.5">
+              <Icon
+                v-for="n in 5"
+                :key="n"
+                :name="n <= comentario.nota ? 'material-symbols:star' : 'material-symbols:star-outline'"
+                class="text-yellow-400 h-4 w-4"
+              />
+            </div>
+          </div>
+          
+        </div>
+          <p>{{ comentario.data_review || 'Data não disponível' }}</p>
+        </div>
+
+        
+
+        <!-- Comentário -->
+        <div class="text-sm text-gray-800 dark:text-gray-200">
+          {{ comentario.comentario_produto }}
+        </div>
       </div>
     </div>
   </div>
@@ -74,6 +110,7 @@ import BotaoFavoritar from '~/components/Produto/botaofavoritar.vue'
 const route = useRoute()
 const { id } = route.params
 const config = useRuntimeConfig()
+const baseURL = 'https://api.promohawk.com.br/'; // para a imagem do usuario
 
 const produto = ref(null)
 const avaliacao = ref(0)
@@ -356,7 +393,7 @@ async function enviarReview() {
 }
 
 .comentario {
-  background: #f3f4f6;
+  background: #012a7c;
   padding: 16px;
   border-radius: 10px;
   margin-bottom: 12px;
