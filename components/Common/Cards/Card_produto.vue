@@ -35,7 +35,6 @@
 <script setup>
 import { computed } from 'vue'
 import BotaoFavoritar from '~/components/Produto/botaofavoritar.vue'
-import Icon from 'nuxt-icon' // nuxt-icon 1.0+ já registra automaticamente, mas mantendo por clareza
 
 const props = defineProps({
   produto: {
