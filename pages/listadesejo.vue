@@ -63,10 +63,10 @@ async function carregarItens() {
     }
 
     itens.value = data.favoritos.map(fav => ({
-      id: fav.produto_id,
-      nome: fav.produto_nome,
-      imagem: fav.produto_imagem,
-      preco: Number(fav.produto_preco) || 0
+      id: fav.produto.id,
+      nome: fav.produto.nome,
+      imagem: fav.produto.imagem || 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fpreviews%2F005%2F720%2F408%2Foriginal%2Fcrossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg&f=1&nofb=1&ipt=f00c25340a6b40432e663df73b8b939d96dcccbdaa463f699110058e42a40094',
+      preco: fav.produto.precos?.[0]?.preco || 'Indisponível',
     }))
 
     console.log('Itens carregados no estado:', itens.value)
