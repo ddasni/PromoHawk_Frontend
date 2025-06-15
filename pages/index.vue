@@ -1,57 +1,58 @@
 <template>
-  <br>
-  <Carousel/>
-  <br>
-  <br>
-  <Divisor titulo="Categorias" actionTexto="ver mais >" link="" />
-    <div class="categorias-container">
-      <Categoria
-        v-for="categoria in categorias"
-        :key="categoria.id"
-        :categoria="categoria"
-      />
-    </div>
-  <Divisor titulo="Destaques" actionTexto="ver mais >" link="" />
-    <div class="produtos-container">
-      <Produto
-        v-for="produto in produtos"
-        :key="produto.id"
-        :produto="produto"
-        :imagem="produto.imagens?.[1]?.imagem || '/img/sem-imagem.png'"
-        :avaliacao="4.5"
-        :totalAvaliacoes="0"
-        :favoritado="false"
-      />
-    </div>
-    <br />
-  <Divisor titulo="Cupons" actionTexto="ver mais >" link="" />
-  <Cupons/>
+  <br />
+  <Carousel />
+  <br /><br />
+
+  <!-- Categorias -->
+  <Divisor title="Categorias" link="/categorias" />
+  <div class="categorias-container">
+    <Categoria
+      v-for="categoria in categorias.slice(0, 7)"
+      :key="categoria.id"
+      :categoria="categoria"
+    />
+  </div>
+
+  <!-- Produtos -->
+  <Divisor title="Produtos" link="/categorias" />
+  <div class="produtos-container">
+    <Produto
+      v-for="produto in produtos.slice(0, 9)"
+      :key="produto.id"
+      :produto="produto"
+      :imagem="produto.imagens?.[1]?.imagem || '/img/sem-imagem.png'"
+      :avaliacao="4.5"
+      :totalAvaliacoes="0"
+      :favoritado="false"
+    />
+  </div>
+
+  <!-- Cupons -->
+  <br />
+  <Divisor title="Cupons" link="/cupons" />
+  <div class="cupons-container">
+    <Cupom
+      v-for="cupom in cupons.slice(0, 9)"
+      :key="cupom.id"
+      :codigo="cupom.codigo"
+      :desconto="cupom.desconto"
+      :validade="cupom.validade"
+      :descricao="cupom.descricao"
+    />
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 import Carousel from '~/components/Home/Carousel.vue'
 import Divisor from "~/components/Home/Divisor.vue";
 import Categoria from "~/components/Home/Categoria.vue";
 import Produto from "~/components/Common/Cards/Card_produto.vue";
-import Cupons from "~/components/Common/Cards/Card_cupom.vue";
-
-// importando a url da api
-const config = useRuntimeConfig()
-const searchQuery = ref('')
+import Cupom from "~/components/Common/Cards/Card_cupom.vue"
 
 // Produtos
-const {
-  data: produtosData,
-  error: errorProdutos,
-  pending: pendingProdutos
-} = await useFetch(`https://api.promohawk.com.br/api/produto`, {
-  onError(error) {
-    console.error('Erro ao buscar produtos:', error)
-  }
-})
-
+const { data: produtosData, error: errorProdutos } = await useFetch(`https://api.promohawk.com.br/api/produto`)
 const produtos = computed(() => {
   if (errorProdutos.value) return []
   if (produtosData.value?.produto) return [produtosData.value.produto]
@@ -59,40 +60,57 @@ const produtos = computed(() => {
   return []
 })
 
-
 // Categorias
-const {
-  data: categoriasData,
-  error: errorCategorias,
-  pending: pendingCategorias
-} = await useFetch(`https://api.promohawk.com.br/api/categoria`, {
-  onError(error) {
-    console.error('Erro ao buscar categorias:', error)
-  }
-})
-
+const { data: categoriasData, error: errorCategorias } = await useFetch(`https://api.promohawk.com.br/api/categoria`)
 const categorias = computed(() => {
   const data = categoriasData.value
   if (errorCategorias.value || !data) return []
-  if (Array.isArray(data.categorias)) return data.categorias.filter(c => c?.id)
-  return []
+  return Array.isArray(data.categorias) ? data.categorias.filter(c => c?.id) : []
 })
 
+// Cupons
+const { data: cuponsData, error: errorCupons } = await useFetch('https://api.promohawk.com.br/api/cupom')
+const cupons = computed(() => cuponsData.value?.cupons || [])
 </script>
 
 <style scoped>
-.produtos-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: center;
-}
-
+/* Categorias */
 .categorias-container {
   display: flex;
-  flex-wrap: wrap;
+  overflow-x: auto;
   gap: 16px;
+  padding: 8px 0;
+  margin-bottom: 32px;
+  scroll-snap-type: x mandatory;
+}
+
+.categorias-container::-webkit-scrollbar {
+  display: none;
+}
+
+.categorias-container > * {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+}
+
+/* Produtos */
+.produtos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
   justify-content: center;
   margin-bottom: 32px;
+  padding: 0 12px;
+}
+
+/* Cupons */
+.cupons-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  justify-content: center;
+  margin-top: 16px;
+  margin-bottom: 64px;
+  padding: 0 12px;
 }
 </style>
