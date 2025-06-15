@@ -1,37 +1,9 @@
-<script setup lang="ts">
-definePageMeta({
-  layout: "default",
-  title: 'Cupons de Desconto'
-})
+<script setup>
+import Cupom from "~/components/Common/Cards/Card_cupom.vue"
 
-const cupons = [
-  {
-    id: 1,
-    titulo: "10% OFF em toda a loja",
-    loja: "Amazon",
-    descricao: "Válido para todos os produtos vendidos e entregues pela Amazon.",
-    codigo: "AMAZON10",
-  },
-  {
-    id: 2,
-    titulo: "R$20 de desconto",
-    loja: "Americanas",
-    descricao: "Desconto em compras acima de R$100.",
-    codigo: "AME20OFF",
-  },
-  {
-    id: 3,
-    titulo: "Frete Grátis",
-    loja: "Submarino",
-    descricao: "Frete grátis em produtos selecionados.",
-    codigo: "FRETEGRATIS",
-  }
-]
+const { data: cuponsData, error: errorCupons } = await useFetch('https://api.promohawk.com.br/api/cupom')
 
-function copiar(codigo: string) {
-  navigator.clipboard.writeText(codigo)
-  alert(`Código "${codigo}" copiado com sucesso!`)
-}
+const cupons = computed(() => cuponsData.value?.cupons || [])
 </script>
 
 <template>
@@ -40,17 +12,14 @@ function copiar(codigo: string) {
     <p class="subtitulo">Pegue um cupom e economize agora nas suas compras online!</p>
 
     <div class="cupons-list">
-      <div v-for="cupom in cupons" :key="cupom.id" class="cupom-card">
-        <div class="cupom-info">
-          <h2>{{ cupom.titulo }}</h2>
-          <span class="loja">Loja: <strong>{{ cupom.loja }}</strong></span>
-          <p class="descricao">{{ cupom.descricao }}</p>
-        </div>
-        <div class="cupom-footer">
-          <span class="codigo">{{ cupom.codigo }}</span>
-          <button @click="copiar(cupom.codigo)">Copiar</button>
-        </div>
-      </div>
+      <Cupom
+        v-for="cupom in cupons.slice(0, 9)"
+        :key="cupom.id"
+        :codigo="cupom.codigo"
+        :desconto="cupom.desconto"
+        :validade="cupom.validade"
+        :descricao="cupom.descricao"
+      />
     </div>
   </section>
 </template>
@@ -66,6 +35,7 @@ function copiar(codigo: string) {
 h1 {
   font-size: 32px;
   margin-bottom: 10px;
+  color: #333;
 }
 
 .subtitulo {
