@@ -90,10 +90,15 @@ const campos = {
   confirmarSenha: 'Confirmar senha:',
 }
 
-// Ícones - ajuste os caminhos conforme sua estrutura de arquivos
+// Ícones
 const lapisIcon = '/icons/lapis.svg'
 const eyeIcon = '/icons/eye.svg'
 const eyeOffIcon = '/icons/eye-off.svg'
+
+// Função utilitária para montar a URL da imagem corretamente
+function getImagemUrl(caminho) {
+  return caminho ? `https://api.promohawk.com.br/${caminho}` : 'https://via.placeholder.com/150'
+}
 
 function parseUserCookie() {
   try {
@@ -115,22 +120,18 @@ function carregarDadosUsuario(userData) {
     senha: '',
     confirmarSenha: '',
   }
-  
-  if (userData.foto) {
-    fotoPerfil.value = `https://api.promohawk.com.br/storage/${userData.foto}`
-  } else {
-    fotoPerfil.value = 'https://via.placeholder.com/150'
-  }
+
+  fotoPerfil.value = getImagemUrl(userData.foto || userData.imagem)
 }
 
 onMounted(() => {
   const userData = parseUserCookie()
-  
+
   if (!userData?.id || !token.value) {
     router.push('/login')
     return
   }
-  
+
   carregarDadosUsuario(userData)
 })
 
@@ -177,9 +178,10 @@ async function alterarFoto(event) {
     }
 
     if (data.foto) {
-      fotoPerfil.value = `https://api.promohawk.com.br/${data.foto}`
+      // Atualiza a imagem do perfil com nova URL
+      fotoPerfil.value = getImagemUrl(data.foto)
 
-      // Atualiza o cookie do usuário
+      // Atualiza o cookie do usuário com nova imagem
       const updatedUser = { ...userData, foto: data.foto }
       user.value = JSON.stringify(updatedUser)
     }
@@ -192,7 +194,6 @@ async function alterarFoto(event) {
     event.target.value = ''
   }
 }
-
 
 async function salvarAlteracoes() {
   if (dados.value.senha && dados.value.senha !== dados.value.confirmarSenha) {
@@ -245,11 +246,8 @@ async function salvarAlteracoes() {
       throw new Error(data.message || 'Erro ao atualizar perfil')
     }
 
-    // Atualiza o cookie do usuário
     const updatedUser = { ...userData, ...alteracoes }
     user.value = JSON.stringify(updatedUser)
-
-    // Recarrega os dados do usuário
     carregarDadosUsuario(updatedUser)
 
     alert('Dados atualizados com sucesso!')
@@ -258,8 +256,8 @@ async function salvarAlteracoes() {
     alert(`Erro ao salvar alterações: ${error.message}`)
   }
 }
-
 </script>
+
 
 <style scoped>
 .perfil-container {
@@ -419,5 +417,3 @@ async function salvarAlteracoes() {
   background-color: #2563eb;
 }
 </style>
-
-
