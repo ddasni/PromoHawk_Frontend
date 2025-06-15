@@ -11,22 +11,31 @@
         </div>
 
         <div class="avaliacao" v-if="avaliacao">
-          <span class="estrelas">⭐ {{ formatarNumero(avaliacao) }}</span>
-          <span class="total-avaliacoes" v-if="totalAvaliacoes">({{ totalAvaliacoes }})</span>
+          <span class="estrelas flex items-center gap-1 text-yellow-500">
+            <Icon name="mdi:star" class="w-4 h-4" /> {{ formatarNumero(avaliacao) }}
+          </span>
+          <span class="total-avaliacoes text-sm text-gray-500" v-if="totalAvaliacoes">
+            ({{ totalAvaliacoes }})
+          </span>
         </div>
       </div>
     </NuxtLink>
 
-    <!-- Botão Favoritar posicionado corretamente -->
+    <!-- Botão Favoritar -->
     <div class="wrapper-favoritar">
-      <BotaoFavoritar :produtoId="produto.id" />
+      <BotaoFavoritar :produtoId="produto.id">
+        <template #icon>
+          <Icon name="mdi:heart-outline" class="w-5 h-5 text-red-500 hover:text-red-600 transition" />
+        </template>
+      </BotaoFavoritar>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import BotaoFavoritar from '~/components/Produto/botaofavoritar.vue' // Verifique se o nome está exatamente igual ao arquivo
+import BotaoFavoritar from '~/components/Produto/botaofavoritar.vue'
+import Icon from 'nuxt-icon' // nuxt-icon 1.0+ já registra automaticamente, mas mantendo por clareza
 
 const props = defineProps({
   produto: {
@@ -47,7 +56,7 @@ const precoAtual = computed(() => {
 })
 
 function formatarNumero(valor) {
-  return typeof valor === 'number' ? valor.toFixed(2).replace('.', ',') : '0,00'
+  return typeof valor === 'number' ? valor.toFixed(1).replace('.', ',') : '0,0'
 }
 
 function formatarPreco(valor) {
@@ -98,8 +107,7 @@ function formatarPreco(valor) {
 .produto-info {
   margin-top: 16px;
   text-align: center;
-  width: 180px;
-  height: 110px;
+  width: 100%;
 }
 
 .produto-nome {
@@ -120,11 +128,10 @@ function formatarPreco(valor) {
 
 .avaliacao {
   font-size: 0.95rem;
-  color: #f59e0b;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   margin-bottom: 8px;
 }
 
@@ -134,7 +141,38 @@ function formatarPreco(valor) {
   right: 12px;
   z-index: 10;
 }
+
+/* Responsividade */
+@media (max-width: 640px) {
+  .card-produto {
+    padding: 16px;
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .produto-img {
+    max-height: 160px;
+  }
+
+  .produto-info {
+    width: 100%;
+  }
+
+  .produto-nome {
+    font-size: 1rem;
+  }
+
+  .precos {
+    font-size: 0.85rem;
+  }
+
+  .avaliacao {
+    font-size: 0.9rem;
+  }
+
+  .wrapper-favoritar {
+    top: 10px;
+    right: 10px;
+  }
+}
 </style>
-
-
-
