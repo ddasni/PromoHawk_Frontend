@@ -1,7 +1,17 @@
 <template>
-    <UCarousel v-slot="{ item }" dots :items="items" :autoplay="{ delay: 7000 }" class="w-full max-w-6xl mx-auto">
-        <img :src="item" width="1100" height="1100" class="rounded-lg">
-    </UCarousel>
+  <UCarousel
+    v-slot="{ item }"
+    dots
+    :items="items"
+    :autoplay="{ delay: 7000 }"
+    class="w-full max-w-6xl mx-auto"
+  >
+    <img
+      :src="item"
+      class="w-full h-auto rounded-lg object-cover"
+      alt="Banner"
+    />
+  </UCarousel>
 </template>
 
 <script setup lang="ts">
