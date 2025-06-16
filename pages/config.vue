@@ -1,42 +1,44 @@
 <template>
   <div class="config-container">
-    <h1 class="titulo">Configurações</h1>
+    <h1 class="titulo">Configurações da Conta</h1>
 
     <!-- Notificações -->
     <div class="config-section">
       <h2 class="secao-titulo">Notificações</h2>
 
-      <SwitchItem label="Receber notificações de queda de preço" v-model="notificacoesAtivadas" />
-      <SwitchItem label="Receber por Email" v-model="notificarPorEmail" />
-
-
-      <div class="config-item">
-        <label>Frequência de notificação</label>
-        <select v-model="frequenciaNotificacao" class="select">
-          <option value="imediato">Imediato</option>
-          <option value="diario">Diariamente</option>
-          <option value="semanal">Semanalmente</option>
-        </select>
-      </div>
+      <SwitchItem label="Alertas de queda de preço" v-model="alertaQuedaPreco" />
+      <SwitchItem label="Notificar novos cupons e ofertas" v-model="alertaOfertas" />
+      <SwitchItem label="Alertas de variação de preço significativa" v-model="alertaVariaPreco" />
+      <SwitchItem label="Receber notificações por email" v-model="notificarPorEmail" />
     </div>
 
-    <!-- Preferências -->
+    <!-- Preferências de Navegação -->
     <div class="config-section">
-      <h2 class="secao-titulo">Preferências</h2>
+      <h2 class="secao-titulo">Preferências de Navegação</h2>
 
-      <SwitchItem label="Receber promoções e ofertas personalizadas" v-model="ofertasPersonalizadas" />
-      <SwitchItem label="Permitir recomendações personalizadas" v-model="recomendacoes" />
+      <SwitchItem label="Mostrar apenas produtos em estoque" v-model="somenteEstoque" />
+      <SwitchItem label="Filtrar produtos com frete grátis" v-model="filtrarFreteGratis" />
       <SwitchItem label="Ativar histórico de buscas" v-model="historicoBuscas" />
     </div>
 
 
+    <!-- Dados e Privacidade -->
+    <div class="config-section">
+      <h2 class="secao-titulo">Dados e Privacidade</h2>
+
+      <SwitchItem label="Limpar histórico de buscas automaticamente" v-model="limparHistoricoAuto" />
+      <SwitchItem label="Permitir coleta de dados para melhorias" v-model="permitirColetaDados" />
+    </div>
+
     <!-- Ações -->
     <div class="config-actions">
-      <button @click="salvarConfiguracoes" class="btn-salvar">Salvar Configurações</button>
+      <button @click="salvarConfiguracoes" class="btn-salvar">
+        Salvar Configurações
+      </button>
 
       <transition name="fade">
         <p v-if="showSavedMessage" class="saved-message">
-           Configurações salvas com sucesso!
+          ✅ Configurações salvas com sucesso!
         </p>
       </transition>
     </div>
@@ -44,7 +46,6 @@
 </template>
 
 <script setup>
-// pagina protegida por meio do token de login
 definePageMeta({
   middleware: 'auth'
 })
@@ -52,17 +53,25 @@ definePageMeta({
 import { ref } from 'vue'
 import SwitchItem from '@/components/SwitchItem.vue'
 
-
 // Notificações
-const notificacoesAtivadas = ref(true)
+const alertaQuedaPreco = ref(true)
+const alertaOfertas = ref(true)
+const alertaVariaPreco = ref(true)
 const notificarPorEmail = ref(true)
-const frequenciaNotificacao = ref('imediato')
 
-// Preferências
-const ofertasPersonalizadas = ref(true)
-const recomendacoes = ref(true)
+// Preferências de navegação
+const somenteEstoque = ref(false)
+const filtrarFreteGratis = ref(false)
+const priorizarLojasConfiaveis = ref(true)
 const historicoBuscas = ref(true)
 
+// Preferências de lojas
+const mostrarLojasFavoritas = ref(true)
+const ocultarLojasIndesejadas = ref(false)
+
+// Dados e privacidade
+const limparHistoricoAuto = ref(false)
+const permitirColetaDados = ref(true)
 
 // Mensagem de sucesso
 const showSavedMessage = ref(false)
@@ -70,13 +79,18 @@ const showSavedMessage = ref(false)
 // Função para salvar
 function salvarConfiguracoes() {
   console.log('Configurações salvas:', {
-    notificacoesAtivadas: notificacoesAtivadas.value,
+    alertaQuedaPreco: alertaQuedaPreco.value,
+    alertaOfertas: alertaOfertas.value,
+    alertaVariaPreco: alertaVariaPreco.value,
     notificarPorEmail: notificarPorEmail.value,
-    frequenciaNotificacao: frequenciaNotificacao.value,
-    ofertasPersonalizadas: ofertasPersonalizadas.value,
-    recomendacoes: recomendacoes.value,
+    somenteEstoque: somenteEstoque.value,
+    filtrarFreteGratis: filtrarFreteGratis.value,
+    priorizarLojasConfiaveis: priorizarLojasConfiaveis.value,
     historicoBuscas: historicoBuscas.value,
-  
+    mostrarLojasFavoritas: mostrarLojasFavoritas.value,
+    ocultarLojasIndesejadas: ocultarLojasIndesejadas.value,
+    limparHistoricoAuto: limparHistoricoAuto.value,
+    permitirColetaDados: permitirColetaDados.value,
   })
 
   showSavedMessage.value = true
@@ -85,7 +99,7 @@ function salvarConfiguracoes() {
 </script>
 
 <style scoped>
-/* Layout Geral */
+/* Mantém o mesmo style anterior porque ele já estava muito bom */
 .config-container {
   max-width: 750px;
   margin: 40px auto;
@@ -96,7 +110,6 @@ function salvarConfiguracoes() {
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Títulos */
 .titulo {
   text-align: center;
   font-size: 32px;
@@ -112,7 +125,6 @@ function salvarConfiguracoes() {
   margin-bottom: 20px;
 }
 
-/* Itens */
 .config-section {
   margin-bottom: 40px;
 }
@@ -135,7 +147,6 @@ function salvarConfiguracoes() {
   color: #333;
 }
 
-/* Botões */
 .config-actions {
   text-align: center;
   margin-top: 30px;
@@ -157,14 +168,12 @@ function salvarConfiguracoes() {
   background-color: #0056b3;
 }
 
-/* Mensagem de salvo */
 .saved-message {
   color: #28a745;
   margin-top: 20px;
   font-weight: 600;
 }
 
-/* Animações */
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.4s;
 }
@@ -172,5 +181,7 @@ function salvarConfiguracoes() {
   opacity: 0;
 }
 </style>
+
+
 
 
