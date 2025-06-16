@@ -28,7 +28,8 @@
         <button type="submit" class="btn-login">Entrar</button>
         <p v-if="erro" style="color: red; margin-top: 10px;">{{ erro }}</p>
         <div class="links">
-        
+        <NuxtLink to="/esqueceu">Esqueceu a senha?</NuxtLink><br>
+          <NuxtLink to="/Cadastro">Cadastrar-se</NuxtLink>
         </div>
       </form>
     </div>
