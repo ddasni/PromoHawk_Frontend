@@ -30,7 +30,7 @@
 
         <button @click="limparFiltros" class="text-indigo-600 hover:text-indigo-800 underline text-sm">
           Limpar filtros
-        </button>
+        </button>rm -rf .nuxt
       </div>
 
       <!-- Grid dos Produtos -->
