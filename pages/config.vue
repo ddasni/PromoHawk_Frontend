@@ -16,8 +16,7 @@
     <div class="config-section">
       <h2 class="secao-titulo">Preferências de Navegação</h2>
 
-      <SwitchItem label="Mostrar apenas produtos em estoque" v-model="somenteEstoque" />
-      <SwitchItem label="Filtrar produtos com frete grátis" v-model="filtrarFreteGratis" />
+      
       <SwitchItem label="Ativar histórico de buscas" v-model="historicoBuscas" />
     </div>
 
