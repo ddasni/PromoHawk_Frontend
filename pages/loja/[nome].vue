@@ -12,8 +12,14 @@
     <div class="secao">
       <h2>Cupons Disponíveis</h2>
       <div class="container-cards">
-        
-        <Card_cupom />
+        <Cupom
+          v-for="cupom in cupons.slice(0, 9)"
+          :key="cupom.id"
+          :codigo="cupom.codigo"
+          :desconto="cupom.desconto"
+          :validade="cupom.validade"
+          :descricao="cupom.descricao"
+        />
       </div>
     </div>
 
@@ -33,7 +39,7 @@
 </template>
 
 <script setup>
-import Card_cupom from '~/components/Common/Cards/Card_cupom.vue'
+import Cupom from "~/components/Common/Cards/Card_cupom.vue"
 import Card_produto from '~/components/Common/Cards/Card_produto.vue'
 
 const route = useRoute()
@@ -73,6 +79,9 @@ const lojas = {
 }
 
 const lojaAtual = computed(() => lojas[nomeLoja.value] || {})
+
+const { data: cuponsData, error: errorCupons } = await useFetch('https://api.promohawk.com.br/api/cupom')
+const cupons = computed(() => cuponsData.value?.cupons || [])
 </script>
 
 <style scoped>
