@@ -11,8 +11,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { useFetch } from '#app'
+
+// ✅ Tipagem da categoria (ajusta conforme sua API)
+interface Categoria {
+  id: number
+  nome: string
+}
 
 const items = ref<NavigationMenuItem[]>([
   {
@@ -40,17 +47,37 @@ const items = ref<NavigationMenuItem[]>([
   {
     label: 'Categorias',
     icon: 'heroicons-outline:menu',
-    children: [
-      { label: 'Eletrônico', to: '/categoria/eletronico' },
-      { label: 'Informática', to: '/categoria/informatica' },
-      { label: 'Moda e Beleza', to: '/categoria/moda-e-beleza' },
-      { label: 'Casa e Eletrodomésticos', to: '/categoria/casa-e-eletrodomesticos' },
-      { label: 'Saúde', to: '/categoria/saude' },
-      { label: 'Games', to: '/categoria/games' }
-    ]
+    children: [] // Vai ser preenchido dinâmico
   }
 ])
+
+const carregarCategorias = async () => {
+  const { data, error } = await useFetch<{ categorias: Categoria[] }>(
+    'https://api.promohawk.com.br/api/categoria'
+  )
+
+  if (error.value) {
+    console.error('Erro ao buscar categorias:', error.value)
+    return
+  }
+
+  const categorias = data.value?.categorias || []
+
+  const categoriasFormatadas = categorias.map((categoria) => ({
+    label: categoria.nome,
+    to: `/categoria/${categoria.id}`  // ou `/categoria/${categoria.nome}` se quiser slug
+  }))
+
+  const categoriasMenu = items.value.find(item => item.label === 'Categorias')
+  if (categoriasMenu) {
+    categoriasMenu.children = categoriasFormatadas
+  }
+}
+
+onMounted(() => {
+  carregarCategorias()
+})
 </script>
 
-<style scoped>
-</style>
+
+

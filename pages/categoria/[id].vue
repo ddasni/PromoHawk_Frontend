@@ -30,14 +30,14 @@
 
         <button @click="limparFiltros" class="text-indigo-600 hover:text-indigo-800 underline text-sm">
           Limpar filtros
-        </button>rm -rf .nuxt
+        </button>
       </div>
 
       <!-- Grid dos Produtos -->
       <div v-if="produtosFiltradosOrdenados.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-12">
         <Produto
           v-for="produto in produtosFiltradosOrdenados"
-          :key="produto.id"
+          :key="produto.id || produto._id || produto.nome"
           :produto="produto"
           :imagem="produto.imagens?.[0]?.imagem || '/img/sem-imagem.png'"
           :avaliacao="produto.avaliacao || 4.5"
@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import Produto from "~/components/Common/Cards/Card_produto.vue";
 
@@ -71,45 +71,51 @@ const criterioOrdenacao = ref("relevancia");
 const precoMin = ref(null);
 const precoMax = ref(null);
 
-// Buscar categoria pelo ID
-const {
-  data: categoriaData,
-  error: categoriaError,
-} = await useFetch(`https://api.promohawk.com.br/api/categoria/${categoriaId.value}`, {
-  onError(error) {
-    console.error("Erro ao buscar categoria:", error);
-  },
-});
+// Buscar categoria
+const { data: categoriaData, error: categoriaError } = await useFetch(
+  `https://api.promohawk.com.br/api/categoria/${categoriaId.value}`,
+  {
+    onError(error) {
+      console.error("Erro ao buscar categoria:", error);
+    },
+  }
+);
 
 const categoriaAtual = computed(() => categoriaData.value?.categoria?.nome || "Desconhecida");
 
-// Buscar produtos por categoria ID
-const {
-  data: produtosData,
-  error: errorProdutos,
-} = await useFetch(`https://api.promohawk.com.br/api/produto?categoria_id=${categoriaId.value}`, {
-  onError(error) {
-    console.error("Erro ao buscar produtos:", error);
-  },
-});
+// Buscar produtos
+const { data: produtosData, error: errorProdutos } = await useFetch(
+  `https://api.promohawk.com.br/api/produto?categoria_id=${categoriaId.value}`,
+  {
+    onError(error) {
+      console.error("Erro ao buscar produtos:", error);
+    },
+  }
+);
 
-// Normaliza produtos
+// Produtos normalizados
 const produtos = computed(() => {
-  if (errorProdutos.value) return [];
-  return Array.isArray(produtosData.value?.produtos) ? produtosData.value.produtos : [];
+  const dados = produtosData.value;
+  if (errorProdutos.value || !dados) return [];
+  return Array.isArray(dados) ? dados : dados?.produtos || [];
 });
 
-// Marcas únicas
+// Protege contra produtos inválidos
+const produtosValidos = computed(() => {
+  return produtos.value.filter((p) => p && (p.id || p._id || p.nome));
+});
+
+// Marcas únicas disponíveis
 const marcasDisponiveis = computed(() => {
-  return [...new Set(produtos.value.map((p) => p.loja?.nome).filter(Boolean))];
+  return [...new Set(produtosValidos.value.map((p) => p.loja?.nome).filter(Boolean))];
 });
 
-// Filtros aplicados
+// Aplicação dos filtros
 const produtosFiltradosPorMarca = computed(() => {
   if (filtroMarca.value) {
-    return produtos.value.filter((p) => p.loja?.nome === filtroMarca.value);
+    return produtosValidos.value.filter((p) => p.loja?.nome === filtroMarca.value);
   }
-  return produtos.value;
+  return produtosValidos.value;
 });
 
 const produtosFiltradosPorPreco = computed(() => {
@@ -129,7 +135,7 @@ const produtosFiltradosOrdenados = computed(() => {
   if (criterioOrdenacao.value === "preco-desc") {
     return lista.sort((a, b) => (b.precos?.[0]?.preco || 0) - (a.precos?.[0]?.preco || 0));
   }
-  // Relevância
+  // Ordenação por relevância
   return lista.sort((a, b) => {
     const scoreA = (a.avaliacao || 4.5) * (a.totalAvaliacoes || 0);
     const scoreB = (b.avaliacao || 4.5) * (b.totalAvaliacoes || 0);
@@ -137,12 +143,18 @@ const produtosFiltradosOrdenados = computed(() => {
   });
 });
 
+// Limpa todos os filtros
 const limparFiltros = () => {
   filtroMarca.value = "";
   criterioOrdenacao.value = "relevancia";
   precoMin.value = null;
   precoMax.value = null;
 };
+
+// Debug opcional
+watch(produtosData, (val) => {
+  console.log("Produtos carregados:", val);
+});
 </script>
 
 <style scoped>
@@ -152,5 +164,6 @@ h1 {
   font-family: "Inter", sans-serif;
 }
 </style>
+
 
 
