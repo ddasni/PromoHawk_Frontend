@@ -117,7 +117,7 @@ async function finalizarCadastro() {
   }
 
   alert('Cadastro realizado com sucesso!')
-  router.push('/')
+  router.push('/login')
   etapa.value = 1
   nome.value = ''
   nomeUsuario.value = ''
