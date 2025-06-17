@@ -37,9 +37,9 @@
       <div v-if="produtosFiltradosOrdenados.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-12">
         <Produto
           v-for="produto in produtosFiltradosOrdenados"
-          :key="produto.id || produto._id || produto.nome"
+          :key="produto.id"
           :produto="produto"
-          :imagem="produto.imagens?.[0]?.imagem || '/img/sem-imagem.png'"
+          :imagem="obterImagemPrincipal(produto)"
           :avaliacao="produto.avaliacao || 4.5"
           :totalAvaliacoes="produto.totalAvaliacoes || 0"
           :favoritado="false"
@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import Produto from "~/components/Common/Cards/Card_produto.vue";
 
@@ -81,11 +81,32 @@ const { data: categoriaData, error: categoriaError } = await useFetch(
   }
 );
 
-const categoriaAtual = computed(() => categoriaData.value?.categoria?.nome || "Desconhecida");
+// Computado corrigido para exibir nome da categoria
+const categoriaAtual = computed(() => {
+  try {
+    console.log("Estrutura da categoria:", JSON.stringify(categoriaData.value, null, 2));
+  } catch (e) {
+    console.warn("Erro ao mostrar categoria:", e);
+  }
+
+  if (categoriaError.value) return "Erro ao carregar";
+
+  return (
+    categoriaData.value?.data?.nome ||
+    categoriaData.value?.categoria?.nome ||
+    categoriaData.value?.nome ||
+    "Desconhecida"
+  );
+});
+
+onMounted(() => {
+  console.log("ID da categoria:", categoriaId.value);
+  console.log("Dados da categoria:", categoriaData.value);
+});
 
 // Buscar produtos
 const { data: produtosData, error: errorProdutos } = await useFetch(
-  `https://api.promohawk.com.br/api/produto?categoria_id=${categoriaId.value}`,
+  `https://api.promohawk.com.br/api/produto`,
   {
     onError(error) {
       console.error("Erro ao buscar produtos:", error);
@@ -93,49 +114,103 @@ const { data: produtosData, error: errorProdutos } = await useFetch(
   }
 );
 
-// Produtos normalizados
-const produtos = computed(() => {
-  const dados = produtosData.value;
-  if (errorProdutos.value || !dados) return [];
-  return Array.isArray(dados) ? dados : dados?.produtos || [];
-});
-
-// Protege contra produtos inválidos
-const produtosValidos = computed(() => {
-  return produtos.value.filter((p) => p && (p.id || p._id || p.nome));
-});
-
-// Marcas únicas disponíveis
-const marcasDisponiveis = computed(() => {
-  return [...new Set(produtosValidos.value.map((p) => p.loja?.nome).filter(Boolean))];
-});
-
-// Aplicação dos filtros
-const produtosFiltradosPorMarca = computed(() => {
-  if (filtroMarca.value) {
-    return produtosValidos.value.filter((p) => p.loja?.nome === filtroMarca.value);
+// Obter imagem
+const obterImagemPrincipal = (produto) => {
+  if (produto.imagens && produto.imagens.length > 0) {
+    return produto.imagens[0].imagem;
   }
-  return produtosValidos.value;
+  return '/img/sem-imagem.png';
+};
+
+// Produtos por categoria
+const produtos = computed(() => {
+  if (errorProdutos.value || !produtosData.value) return [];
+
+  const lista = Array.isArray(produtosData.value)
+    ? produtosData.value
+    : produtosData.value?.produtos || [];
+
+  return lista.filter(
+    (produto) =>
+      produto.categoria_id?.toString() === categoriaId.value?.toString()
+  );
 });
 
+// Produtos válidos
+const produtosValidos = computed(() => {
+  return produtos.value.filter((p) => p && p.id && p.nome);
+});
+
+// Marcas disponíveis
+const marcasDisponiveis = computed(() => {
+  const marcas = produtosValidos.value.map((p) => {
+    if (p.link) {
+      const domain = p.link.split("/")[2];
+      if (domain.includes("amazon.")) return "Amazon";
+      if (domain.includes("magazineluiza.")) return "Magazine Luiza";
+      if (domain.includes("americanas.")) return "Americanas";
+      if (domain.includes("pichau.")) return "Pichau";
+      if (domain.includes("samsung.")) return "Samsung";
+      if (domain.includes("lg.")) return "LG";
+    }
+    return p.nome.split(" ")[0];
+  });
+
+  return [...new Set(marcas)].filter(Boolean);
+});
+
+// Filtro por marca
+const produtosFiltradosPorMarca = computed(() => {
+  if (!filtroMarca.value) return produtosValidos.value;
+
+  return produtosValidos.value.filter((p) => {
+    const marcaProduto = p.link?.includes("amazon.")
+      ? "Amazon"
+      : p.link?.includes("magazineluiza.")
+      ? "Magazine Luiza"
+      : p.link?.includes("americanas.")
+      ? "Americanas"
+      : p.link?.includes("pichau.")
+      ? "Pichau"
+      : p.link?.includes("samsung.")
+      ? "Samsung"
+      : p.link?.includes("lg.")
+      ? "LG"
+      : p.nome.split(" ")[0];
+
+    return marcaProduto === filtroMarca.value;
+  });
+});
+
+// Filtro por preço
 const produtosFiltradosPorPreco = computed(() => {
   return produtosFiltradosPorMarca.value.filter((p) => {
-    const preco = p.precos?.[0]?.preco || 0;
+    const preco = p.preco || p.precos?.[0]?.preco || 0;
     const dentroMin = precoMin.value ? preco >= precoMin.value : true;
     const dentroMax = precoMax.value ? preco <= precoMax.value : true;
     return dentroMin && dentroMax;
   });
 });
 
+// Ordenação
 const produtosFiltradosOrdenados = computed(() => {
   const lista = [...produtosFiltradosPorPreco.value];
+
   if (criterioOrdenacao.value === "preco-asc") {
-    return lista.sort((a, b) => (a.precos?.[0]?.preco || 0) - (b.precos?.[0]?.preco || 0));
+    return lista.sort(
+      (a, b) =>
+        (a.preco || a.precos?.[0]?.preco || 0) -
+        (b.preco || b.precos?.[0]?.preco || 0)
+    );
   }
   if (criterioOrdenacao.value === "preco-desc") {
-    return lista.sort((a, b) => (b.precos?.[0]?.preco || 0) - (a.precos?.[0]?.preco || 0));
+    return lista.sort(
+      (a, b) =>
+        (b.preco || b.precos?.[0]?.preco || 0) -
+        (a.preco || a.precos?.[0]?.preco || 0)
+    );
   }
-  // Ordenação por relevância
+
   return lista.sort((a, b) => {
     const scoreA = (a.avaliacao || 4.5) * (a.totalAvaliacoes || 0);
     const scoreB = (b.avaliacao || 4.5) * (b.totalAvaliacoes || 0);
@@ -143,7 +218,7 @@ const produtosFiltradosOrdenados = computed(() => {
   });
 });
 
-// Limpa todos os filtros
+// Limpar filtros
 const limparFiltros = () => {
   filtroMarca.value = "";
   criterioOrdenacao.value = "relevancia";
@@ -151,9 +226,10 @@ const limparFiltros = () => {
   precoMax.value = null;
 };
 
-// Debug opcional
+// Debug
 watch(produtosData, (val) => {
   console.log("Produtos carregados:", val);
+  console.log("Produtos filtrados:", produtos.value);
 });
 </script>
 
@@ -164,6 +240,8 @@ h1 {
   font-family: "Inter", sans-serif;
 }
 </style>
+
+
 
 
 
