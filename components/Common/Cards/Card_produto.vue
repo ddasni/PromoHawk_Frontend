@@ -49,18 +49,27 @@ const props = defineProps({
   totalAvaliacoes: { type: Number, default: 0 }
 })
 
-const precoAtual = computed(() => {
-  if (!props.produto.precos || props.produto.precos.length === 0) return 0
-  return parseFloat(props.produto.precos.at(-1).preco)
-})
-
 function formatarNumero(valor) {
   return typeof valor === 'number' ? valor.toFixed(1).replace('.', ',') : '0,0'
 }
 
+const precoAtual = computed(() => {
+  if (!props.produto.precos || props.produto.precos.length === 0) return 0
+  return parsePreco(props.produto.precos.at(-1).preco)
+})
+
+function parsePreco(precoString) {
+  if (!precoString) return 0
+  // Remove ponto dos milhares e troca vírgula por ponto decimal
+  return parseFloat(precoString.replace(/\./g, '').replace(',', '.'))
+}
+
 function formatarPreco(valor) {
   if (typeof valor !== 'number') return '0,00'
-  return valor.toFixed(2).replace('.', ',')
+  return valor.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
 }
 </script>
 

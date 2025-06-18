@@ -4,7 +4,7 @@
   <br /><br />
 
   <!-- Categorias -->
-  <Divisor title="Categorias" link="/categorias" />
+  <Divisor title="Categorias" link="/lista?tipo=categoria" />
   <div class="categorias-container">
     <Categoria
       v-for="categoria in categorias.slice(0, 7)"
@@ -14,22 +14,22 @@
   </div>
 
   <!-- Produtos -->
-  <Divisor title="Produtos" link="/categorias" />
+  <Divisor title="Produtos" link="/lista?tipo=produto" />
   <div class="produtos-container">
     <Produto
       v-for="produto in produtos.slice(0, 9)"
       :key="produto.id"
       :produto="produto"
-      :imagem="produto.imagens?.[1]?.imagem || '/img/sem-imagem.png'"
-      :avaliacao="4.5"
-      :totalAvaliacoes="0"
+      :imagem="produto.imagens?.[0] || '/img/sem-imagem.png'"
+      :avaliacao="produto.media_nota || 0"
+      :totalAvaliacoes="produto.reviews?.length || 0"
       :favoritado="false"
     />
   </div>
 
   <!-- Cupons -->
   <br />
-  <Divisor title="Cupons" link="/cupons" />
+  <Divisor title="Cupons" link="/Cupons" />
   <div class="cupons-container">
     <Cupom
       v-for="cupom in cupons.slice(0, 9)"

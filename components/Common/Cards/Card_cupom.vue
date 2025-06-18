@@ -81,12 +81,25 @@ const copyCode = () => {
 // Formatação da data
 const validadeFormatada = computed(() => {
   if (!validade) return '';
-  const data = new Date(validade);
+
+  // Divide a string "27/06/2025 23:59:59" em partes
+  const [data, hora] = validade.split(' ');
+  if (!data || !hora) return 'Data inválida';
+
+  const [dia, mes, ano] = data.split('/');
+  if (!dia || !mes || !ano) return 'Data inválida';
+
+  // Monta a data em formato ISO
+  const isoDate = `${ano}-${mes}-${dia}T${hora}`;
+
+  const dateObj = new Date(isoDate);
+  if (isNaN(dateObj.getTime())) return 'Data inválida';
+
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: 'long',
     year: 'numeric'
-  }).format(data);
+  }).format(dateObj);
 });
 
 // Transformar (exemplo) 40.00 → "40% de desconto"

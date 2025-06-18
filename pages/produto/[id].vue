@@ -5,10 +5,14 @@
 
       <div class="info">
         <h1 class="nome-produto">{{ produto.nome }}</h1>
-        <p class="avaliacao">⭐ {{ avaliacao.toFixed(1) }} ({{ totalAvaliacoes }} avaliações)</p>
-        <p class="menor-preco">menor preço via {{ produto.loja.nome }}</p>
-        <p class="preco-vista">R$ {{ precoAtual }} à vista</p>
-        <p class="parcelamento">{{ parcelas }}x de R$ {{ formatarNumero(precoAtual / parcelas) }} sem juros</p>
+        <p class="avaliacao">⭐ {{ formatarPreco(produto.media_nota || 0) }}</p>
+        <p class="menor-preco">
+          menor preço via {{ produto.precos?.[0]?.loja?.nome || 'Loja não identificada' }}
+        </p>
+        <p class="preco-vista">R$ {{ formatarPreco(precoAtual) }} à vista</p>
+        <p class="parcelamento">
+          {{ parcelas }}x de R$ {{ formatarPreco(precoAtual / parcelas) }} sem juros
+        </p>
         <button class="botao-ver-opcoes">Ver opções de compra</button>
         <BotaoFavoritar :produtoId="produto.id" />
       </div>
@@ -75,6 +79,7 @@
             />
           </div>
         </div>
+        
 
         <!-- Botão de envio -->
         <button
@@ -96,43 +101,45 @@
     <div class="comentarios">
       <h3 class="text-xl font-semibold mb-4 text-gray-900">Comentários</h3>
 
-      <div
-        v-for="comentario in produto.reviews"
-        :key="comentario.id"
-        class="flex flex-col gap-2 dark:text-white max-w-md w-full bg-white dark:bg-neutral-900 p-5 rounded-md mt-4 shadow-md hover:scale-105 transition-transform duration-150"
-      >
-        <!-- Nome do usuário, nota e data -->
-        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-        
-          <div class="flex gap-2 items-start">
-          <img
-            :src="baseURL + comentario.usuario.imagem"
-            alt="Foto do usuário"
-            class="w-8 h-8 rounded-full object-cover border border-gray-300 mt-0.5"
-          />
-
-          <div class="flex flex-col">
-            <p class="text-sm font-medium">{{ comentario.usuario.username }}</p>
-            <div class="flex gap-0.5">
-              <Icon
-                v-for="n in 5"
-                :key="n"
-                :name="n <= comentario.nota ? 'material-symbols:star' : 'material-symbols:star-outline'"
-                class="text-yellow-400 h-4 w-4"
+      <div v-if="produto.reviews && produto.reviews.length > 0">
+        <div
+          v-for="comentario in produto.reviews"
+          :key="comentario.id"
+          class="flex flex-col gap-2 dark:text-white max-w-md w-full bg-white dark:bg-neutral-900 p-5 rounded-md mt-4 shadow-md hover:scale-105 transition-transform duration-150"
+        >
+          <!-- Nome do usuário, nota e data -->
+          <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+            <div class="flex gap-2 items-start">
+              <img
+                :src="comentario.usuario.imagem || 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fpluspng.com%2Fimg-png%2Fpng-user-icon-circled-user-icon-2240.png&f=1&nofb=1&ipt=899c6220867a85c104ce2d1afdfda139193b13368588b926fba8131b0da05df5'"
+                alt="Foto do usuário"
+                class="w-8 h-8 rounded-full object-cover border border-gray-300 mt-0.5"
               />
+
+              <div class="flex flex-col">
+                <p class="text-sm font-medium">{{ comentario.usuario.username }}</p>
+                <div class="flex gap-0.5">
+                  <Icon
+                    v-for="n in 5"
+                    :key="n"
+                    :name="n <= comentario.avaliacao_produto ? 'material-symbols:star' : 'material-symbols:star-outline'"
+                    class="text-yellow-400 h-4 w-4"
+                  />
+                </div>
+              </div>
             </div>
+            <p>{{ formatarData(comentario.created_at) }}</p>
           </div>
-          
-        </div>
-          <p>{{ comentario.data_review || 'Data não disponível' }}</p>
-        </div>
 
-        
-
-        <!-- Comentário -->
-        <div class="text-sm text-gray-800 dark:text-gray-200">
-          {{ comentario.comentario_produto }}
+          <!-- Comentário -->
+          <div class="text-sm text-gray-800 dark:text-gray-200">
+            {{ comentario.comentario_produto }}
+          </div>
         </div>
+      </div>
+      
+      <div v-else class="text-gray-500 dark:text-gray-400 py-4">
+        Nenhum comentário ainda. Seja o primeiro a avaliar!
       </div>
     </div>
   </div>
@@ -154,6 +161,10 @@ const { id } = route.params
 const config = useRuntimeConfig()
 const baseURL = 'https://api.promohawk.com.br/'; // para a imagem do usuario
 
+const token = useCookie('token')
+const user = useCookie('user')
+const isLoggedIn = computed(() => !!token.value && !!user.value)
+
 const produto = ref(null)
 const avaliacao = ref(0)
 const totalAvaliacoes = ref(0)
@@ -161,19 +172,22 @@ const parcelas = ref(10)
 const comentarios = ref([])
 const novaAvaliacao = ref(5)
 const novoComentario = ref('')
-const precoAtual = computed(() => produto.value?.precos?.[0]?.preco || 0)
+const precoAtual = computed(() => {
+  const precoString = produto.value?.precos?.[0]?.preco
+  return precoString ? parseFloat(precoString.replace('.', '').replace(',', '.')) : 0
+})
 
-const token = useCookie('token')
-const user = useCookie('user')
-const isLoggedIn = computed(() => !!token.value && !!user.value)
 
 onMounted(async () => {
   await buscarProduto()
   await buscarReviews()
 })
 
-function formatarNumero(valor) {
-  return valor.toFixed(2).replace('.', ',')
+function formatarPreco(valor) {
+  return valor.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
 }
 
 function getBarraWidth(estrela) {
@@ -186,44 +200,20 @@ function getBarraWidth(estrela) {
 async function buscarProduto() {
   const { data, error } = await useFetch(`https://api.promohawk.com.br/api/produto/${id}`, {
     onResponse({ response }) {
-      produto.value = response._data.produto
-      if (produto.value.precos?.length > 0) {
-        produto.value.precos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      }
+      const dados = response._data.produto
+
+      // converte os preços para número
+      dados.precos.forEach(preco => {
+        preco.precoNumerico = parseFloat(preco.preco.replace('.', '').replace(',', '.'))
+      })
+
+      produto.value = dados
     },
     onError(error) {
       console.error('Erro ao buscar produto:', error)
     }
   })
 }
-
-async function buscarReviews() {
-  try {
-    const { data, error } = await useFetch(`https://api.promohawk.com.br/api/review/${id}`)
-
-    if (error.value || !data.value) {
-      throw new Error(`Erro ao buscar avaliações: ${error.value?.message || 'Erro desconhecido'}`)
-    }
-
-    comentarios.value = Array.isArray(data.value) ? data.value : []
-    totalAvaliacoes.value = comentarios.value.length
-
-    if (totalAvaliacoes.value > 0) {
-      const soma = comentarios.value.reduce((acc, c) => acc + c.avaliacao_produto, 0)
-      avaliacao.value = soma / totalAvaliacoes.value
-    } else {
-      avaliacao.value = 0
-    }
-
-  } catch (err) {
-    console.error('Erro ao buscar avaliações:', err)
-    comentarios.value = []
-    totalAvaliacoes.value = 0
-    avaliacao.value = 0
-  }
-}
-
-
 
 
 //--------------- enviar review ---------------------
@@ -256,6 +246,21 @@ async function enviarReview() {
   } catch (err) {
     console.error(err)
     alert('Erro ao enviar sua avaliação.')
+  }
+}
+
+function formatarData(dataString) {
+  if (!dataString) return 'Data não disponível';
+  
+  try {
+    const [datePart, timePart] = dataString.split(' ');
+    const [day, month, year] = datePart.split('/');
+    const [hour, minute] = timePart.split(':');
+    
+    // Formata manualmente no formato desejado
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year} - ${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+  } catch {
+    return dataString || 'Data não disponível';
   }
 }
 </script>
