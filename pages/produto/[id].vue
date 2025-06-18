@@ -16,26 +16,11 @@
         <button class="botao-ver-opcoes">Ver opções de compra</button>
         <BotaoFavoritar :produtoId="produto.id" />
       </div>
-    </div>
+    </div><br>
 
-    <Grafico :produtoId="produto.id" />
+    <Grafico :produtoId="produto.id" /><br>
 
-    <div class="avaliacoes">
-      <h3>Avaliação dos usuários</h3>
-      <div class="nota-media">
-        <strong>{{ avaliacao.toFixed(1) }}</strong>
-        <span>({{ totalAvaliacoes }} reviews)</span>
-      </div>
-
-      <div class="barras">
-        <div v-for="estrela in 5" :key="estrela" class="barra-avaliacao">
-          <span>{{ estrela }} estrela</span>
-          <div class="barra">
-            <div class="preenchida" :style="{ width: getBarraWidth(estrela) + '%' }"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <UserRating :reviews="produto.reviews" />
 
     <!-- Formulário de Review -->
     <div
@@ -155,6 +140,7 @@ import { useRoute, useFetch, useCookie, useRuntimeConfig } from '#imports'
 import ImagemCarousel from '~/components/Produto/Imagem.vue'
 import Grafico from '~/components/Produto/Grafico.vue'
 import BotaoFavoritar from '~/components/Produto/botaofavoritar.vue'
+import UserRating from '~/components/Produto/infoRating.vue'
 
 const route = useRoute()
 const { id } = route.params
