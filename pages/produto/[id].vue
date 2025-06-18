@@ -226,14 +226,27 @@ async function enviarReview() {
 
     if (!response.ok) throw new Error('Erro ao enviar review')
 
+    // Resetar os campos
     novaAvaliacao.value = 5
     novoComentario.value = ''
-    alert('Avaliação enviada com sucesso!')
+    
+    // Atualizar os dados do produto
+    await buscarProduto()
+    
+    // Opcional: rolar para a seção de comentários
+    setTimeout(() => {
+      const comentariosSection = document.querySelector('.comentarios')
+      if (comentariosSection) {
+        comentariosSection.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 100)
+    
   } catch (err) {
     console.error(err)
     alert('Erro ao enviar sua avaliação.')
   }
 }
+
 
 function formatarData(dataString) {
   if (!dataString) return 'Data não disponível';
