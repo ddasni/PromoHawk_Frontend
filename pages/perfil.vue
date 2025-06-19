@@ -23,25 +23,8 @@
     <div class="info-perfil">
       <div class="info-item" v-for="(label, key) in campos" :key="key">
         <label :for="key">{{ label }}</label>
-
-        <div v-if="key.includes('senha')" class="senha-wrapper">
-          <input
-            v-model="dados[key]"
-            :type="mostrarSenha ? 'text' : 'password'"
-            :id="key"
-            class="input"
-            :placeholder="label"
-          />
-          <img
-            :src="mostrarSenha ? eyeOffIcon : eyeIcon"
-            class="icone-olho"
-            @click="mostrarSenha = !mostrarSenha"
-            alt="Ver senha"
-          />
-        </div>
-
         <input
-          v-else
+          v-if="!key.includes('senha')"
           v-model="dados[key]"
           :type="key === 'email' ? 'email' : 'text'"
           :id="key"
@@ -50,15 +33,55 @@
         />
       </div>
 
+      <!-- Seção de senhas -->
+      <div class="info-item">
+        <label for="senha-atual">Senha atual:</label>
+        <div class="senha-wrapper">
+          <input
+            v-model="senhaAtual"
+            type="password"
+            id="senha-atual"
+            class="input"
+            placeholder="Digite sua senha atual"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="info-item">
+        <label for="nova-senha">Nova senha:</label>
+        <div class="senha-wrapper">
+          <input
+            v-model="novaSenha"
+            type="password"
+            id="nova-senha"
+            class="input"
+            placeholder="Digite sua nova senha"
+          />
+        </div>
+      </div>
+
+      <div class="info-item">
+        <label for="confirmar-senha">Confirmar nova senha:</label>
+        <div class="senha-wrapper">
+          <input
+            v-model="confirmarSenha"
+            type="password"
+            id="confirmar-senha"
+            class="input"
+            placeholder="Confirme sua nova senha"
+          />
+        </div>
+      </div>
+
       <div class="info-actions">
-        <button @click="salvarAlteracoes" class="btn-salvar">
-          Salvar Alterações
+        <button @click="salvarAlteracoes" class="btn-salvar" :disabled="carregando">
+          {{ carregando ? 'Salvando...' : 'Salvar Alterações' }}
         </button>
       </div>
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -68,36 +91,44 @@ const router = useRouter()
 const token = useCookie('token')
 const user = useCookie('user')
 
-const mostrarSenha = ref(false)
 const fotoPerfil = ref('https://via.placeholder.com/150')
 const inputFile = ref(null)
+const carregando = ref(false)
 
+// Dados do formulário
 const dados = ref({
   username: '',
   nome: '',
   telefone: '',
-  email: '',
-  senha: '',
-  confirmarSenha: '',
+  email: ''
 })
+
+// Campos de senha
+const senhaAtual = ref('')
+const novaSenha = ref('')
+const confirmarSenha = ref('')
 
 const campos = {
   username: 'Nome de usuário:',
   nome: 'Nome completo:',
   telefone: 'Telefone:',
-  email: 'Email:',
-  senha: 'Senha:',
-  confirmarSenha: 'Confirmar senha:',
+  email: 'Email:'
 }
 
-// Ícones
-const lapisIcon = '/icons/lapis.svg'
-const eyeIcon = '/icons/eye.svg'
-const eyeOffIcon = '/icons/eye-off.svg'
+// Ícones - corrigindo caminhos
+const lapisIcon = '/images/icons/lapis.svg'
+const eyeIcon = '/images/icons/eye.svg'
+const eyeOffIcon = '/images/icons/eye-off.svg'
 
-// Função utilitária para montar a URL da imagem corretamente
 function getImagemUrl(caminho) {
-  return caminho ? `https://api.promohawk.com.br/${caminho}` : 'https://via.placeholder.com/150'
+  if (!caminho) return 'https://via.placeholder.com/150'
+  
+  // Corrigindo URL da imagem
+  if (caminho.startsWith('http')) return caminho
+  
+  // Verifica se o caminho já começa com 'storage/'
+  const path = caminho.startsWith('storage/') ? caminho : `storage/${caminho}`
+  return `https://api.promohawk.com.br/${path}`
 }
 
 function parseUserCookie() {
@@ -116,9 +147,7 @@ function carregarDadosUsuario(userData) {
     username: userData.username || '',
     nome: userData.nome || '',
     telefone: userData.telefone || '',
-    email: userData.email || '',
-    senha: '',
-    confirmarSenha: '',
+    email: userData.email || ''
   }
 
   fotoPerfil.value = getImagemUrl(userData.foto || userData.imagem)
@@ -159,6 +188,8 @@ async function alterarFoto(event) {
   const formData = new FormData()
   formData.append('imagem', file)
 
+  carregando.value = true
+  
   try {
     const response = await fetch(
       `https://api.promohawk.com.br/api/users/${userData.id}/imagem`,
@@ -178,10 +209,7 @@ async function alterarFoto(event) {
     }
 
     if (data.foto) {
-      // Atualiza a imagem do perfil com nova URL
       fotoPerfil.value = getImagemUrl(data.foto)
-
-      // Atualiza o cookie do usuário com nova imagem
       const updatedUser = { ...userData, foto: data.foto }
       user.value = JSON.stringify(updatedUser)
     }
@@ -192,13 +220,29 @@ async function alterarFoto(event) {
     alert(`Erro ao enviar imagem: ${error.message}`)
   } finally {
     event.target.value = ''
+    carregando.value = false
   }
 }
 
 async function salvarAlteracoes() {
-  if (dados.value.senha && dados.value.senha !== dados.value.confirmarSenha) {
-    alert('As senhas não coincidem.')
-    return
+  // Verificar se há alteração de senha
+  const alterandoSenha = novaSenha.value || confirmarSenha.value
+  
+  if (alterandoSenha) {
+    if (!senhaAtual.value) {
+      alert('Por favor, digite sua senha atual para alterar a senha.')
+      return
+    }
+
+    if (novaSenha.value !== confirmarSenha.value) {
+      alert('As novas senhas não coincidem.')
+      return
+    }
+
+    if (novaSenha.value.length < 6) {
+      alert('A nova senha deve ter pelo menos 6 caracteres.')
+      return
+    }
   }
 
   const userData = parseUserCookie()
@@ -218,15 +262,18 @@ async function salvarAlteracoes() {
     }
   })
 
-  if (dados.value.senha) {
-    alteracoes.senha = dados.value.senha
+  if (novaSenha.value) {
+    alteracoes.senha_atual = senhaAtual.value
+    alteracoes.nova_senha = novaSenha.value
   }
 
-  if (Object.keys(alteracoes).length === 0) {
+  if (Object.keys(alteracoes).length === 0 && !alterandoSenha) {
     alert('Nenhuma alteração detectada.')
     return
   }
 
+  carregando.value = true
+  
   try {
     const response = await fetch(
       `https://api.promohawk.com.br/api/users/${userData.id}`,
@@ -250,16 +297,23 @@ async function salvarAlteracoes() {
     user.value = JSON.stringify(updatedUser)
     carregarDadosUsuario(updatedUser)
 
+    // Limpar campos de senha após sucesso
+    senhaAtual.value = ''
+    novaSenha.value = ''
+    confirmarSenha.value = ''
+
     alert('Dados atualizados com sucesso!')
   } catch (error) {
     console.error('Erro ao salvar alterações:', error)
     alert(`Erro ao salvar alterações: ${error.message}`)
+  } finally {
+    carregando.value = false
   }
 }
 </script>
 
-
 <style scoped>
+/* Estilos mantidos iguais ao anterior */
 .perfil-container {
   max-width: 600px;
   margin: 60px auto;
@@ -415,5 +469,10 @@ async function salvarAlteracoes() {
 
 .btn-salvar:hover {
   background-color: #2563eb;
+}
+
+.btn-salvar:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
 }
 </style>
