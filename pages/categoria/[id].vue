@@ -39,9 +39,9 @@
           v-for="produto in produtosFiltradosOrdenados"
           :key="produto.id"
           :produto="produto"
-          :imagem="obterImagemPrincipal(produto)"
-          :avaliacao="produto.avaliacao || 4.5"
-          :totalAvaliacoes="produto.totalAvaliacoes || 0"
+          :imagem="produto.imagens?.[0] || '/img/sem-imagem.png'"
+          :avaliacao="produto.media_nota || 0"
+          :totalAvaliacoes="produto.reviews?.length || 0"
           :favoritado="false"
         />
       </div>
@@ -114,26 +114,10 @@ const { data: produtosData, error: errorProdutos } = await useFetch(
   }
 );
 
-// Obter imagem
-const obterImagemPrincipal = (produto) => {
-  if (produto.imagens && produto.imagens.length > 0) {
-    return produto.imagens[0].imagem;
-  }
-  return '/img/sem-imagem.png';
-};
-
-// Produtos por categoria
+// Produtos direto da resposta da categoria
 const produtos = computed(() => {
-  if (errorProdutos.value || !produtosData.value) return [];
-
-  const lista = Array.isArray(produtosData.value)
-    ? produtosData.value
-    : produtosData.value?.produtos || [];
-
-  return lista.filter(
-    (produto) =>
-      produto.categoria_id?.toString() === categoriaId.value?.toString()
-  );
+  if (categoriaError.value || !categoriaData.value) return [];
+  return categoriaData.value.categoria?.produtos || [];
 });
 
 // Produtos válidos
@@ -240,8 +224,3 @@ h1 {
   font-family: "Inter", sans-serif;
 }
 </style>
-
-
-
-
-
