@@ -171,6 +171,9 @@ const fetchUsuarios = async () => {
 }
 
 const deletarReview = async (id) => {
+  const confirmar = confirm('Tem certeza que deseja excluir esta review? Esta ação não pode ser desfeita.')
+  if (!confirmar) return
+
   try {
     const response = await fetch(`https://api.promohawk.com.br/api/review/${id}`, {
       method: 'DELETE',
@@ -190,6 +193,9 @@ const deletarReview = async (id) => {
 }
 
 const deletarUsuario = async (id) => {
+  const confirmar = confirm('Tem certeza que deseja excluir este usuário? Esta ação é irreversível.')
+  if (!confirmar) return
+
   try {
     const response = await fetch(`https://api.promohawk.com.br/api/users/${id}`, {
       method: 'DELETE',
@@ -207,6 +213,7 @@ const deletarUsuario = async (id) => {
     alert('Erro ao excluir usuário: ' + err.message)
   }
 }
+
 
 const formatDate = (isoDate) => {
   if (!isoDate) return 'Data não disponível'
