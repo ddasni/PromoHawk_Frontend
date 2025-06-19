@@ -1,36 +1,36 @@
 <template>
-  <div class="page-center">
-    <div class="login-container">
-      <h2>Login do Administrador</h2>
+  <div class="login-page">
+    <div class="login-card">
+      <h1>Painel Administrativo</h1>
       <form @submit.prevent="handleLogin">
-        <div class="input-group">
-          <label for="email">E-mail</label>
+        <div class="form-group">
+          <label>E-mail</label>
           <input
-            v-model="loginData.email"
+            v-model="form.email"
             type="email"
-            id="email"
+            placeholder="admin@exemplo.com"
             required
-            placeholder="exemplo@dominio.com"
-            @input="clearError"
           />
         </div>
-        <div class="input-group">
-          <label for="password">Senha</label>
+        <div class="form-group">
+          <label>Senha</label>
           <input
-            v-model="loginData.password"
+            v-model="form.password"
             type="password"
-            id="password"
-            required
-            placeholder="Digite sua senha"
-            @input="clearError"
+            placeholder="••••••••"
             minlength="6"
+            required
           />
         </div>
-        <button type="submit" class="btn-login" :disabled="loading">
-          <span v-if="!loading">Entrar</span>
-          <span v-else class="loading-spinner"></span>
+        <button type="submit" :disabled="isLoading">
+          {{ isLoading ? "Carregando..." : "Entrar" }}
         </button>
-        <p v-if="error" class="error-message">{{ error }}</p>
+        <div v-if="error" class="error-message">
+          {{ error }}
+          <button v-if="isServerError" @click="retryLogin" class="retry-button">
+            Tentar Novamente
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -38,192 +38,181 @@
 
 <script setup>
 definePageMeta({
-  layout: 'basic'
+  layout: 'basic',
 })
 
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCookie } from '#app'
+const form = reactive({
+  email: "",
+  password: "",
+});
 
-const router = useRouter()
-const loginData = ref({
-  email: '',
-  password: ''
-})
-const error = ref('')
-const loading = ref(false)
-
-// Cookies
-const tokenCookie = useCookie('token', { maxAge: 60 * 60 * 24 * 30 })
-const userCookie = useCookie('user')
-
-const clearError = () => error.value = ''
+const isLoading = ref(false);
+const error = ref("");
+const isServerError = ref(false);
 
 const handleLogin = async () => {
-  loading.value = true
-  error.value = ''
+  isLoading.value = true;
+  error.value = "";
+  isServerError.value = false;
 
   try {
-    // Validação básica no frontend
-    if (!loginData.value.email || !loginData.value.password) {
-      error.value = 'Todos os campos são obrigatórios'
-      loading.value = false
-      return
+    if (!form.email || !form.password) {
+      throw new Error("Preencha todos os campos.");
     }
 
-    // Normalização dos dados
-    const payload = {
-      email: loginData.value.email.trim().toLowerCase(),
-      password: loginData.value.password
-    }
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Tempo de conexão excedido")), 10000)
+    );
 
-    console.log('Enviando para API:', payload)
-
-    const response = await fetch('https://api.promohawk.com.br/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+    const loginPromise = useFetch("https://api.promohawk.com.br/api/adm/login", {
+      method: "POST",
+      body: {
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
       },
-      body: JSON.stringify(payload)
-    })
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-    const data = await response.json()
-    console.log('Resposta da API:', data)
+    const { data, error: fetchError } = await Promise.race([
+      loginPromise,
+      timeoutPromise,
+    ]);
 
-    if (!response.ok) {
-      handleApiError(response, data)
-      return
+    if (fetchError.value) {
+      const status = fetchError.value?.response?.status || 500;
+      throw new Error(`Erro ${status}: ${fetchError.value.message}`);
     }
 
-    if (!data.token || !data.user) {
-      error.value = 'Resposta inválida do servidor'
-      loading.value = false
-      return
+    const response = data.value;
+    console.log("Resposta da API:", response);
+
+    // Verificações com base na resposta real
+    if (!response?.status || !response?.token || !response?.adm) {
+      throw new Error(response?.message || "Resposta inválida do servidor.");
     }
 
-    // Login bem-sucedido
-    tokenCookie.value = data.token
-    userCookie.value = data.user
-    await router.push('/admin')
+    const tokenCookie = useCookie("admin_token", {
+      secure: true,
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    const userCookie = useCookie("admin_user", {
+      secure: true,
+    });
+
+    tokenCookie.value = response.token;
+    userCookie.value = JSON.stringify(response.adm);
+
+    await navigateTo("/admin/admin");
 
   } catch (err) {
-    console.error('Erro inesperado:', err)
-    error.value = 'Erro na conexão com o servidor'
-  } finally {
-    loading.value = false
-  }
-}
+    console.error("Erro no login:", err);
 
-const handleApiError = (response, data) => {
-  console.error('Erro da API:', { status: response.status, data })
-  
-  if (response.status === 422) {
-    // Tratamento especial para erros de validação
-    if (data.errors) {
-      const errorMessages = []
-      if (data.errors.email) errorMessages.push(...data.errors.email)
-      if (data.errors.password) errorMessages.push(...data.errors.password)
-      error.value = errorMessages.join(' ') || 'Dados inválidos'
+    if (err.message.includes("500")) {
+      error.value = "Erro interno no servidor. Verifique os dados ou tente novamente mais tarde.";
+      isServerError.value = true;
+    } else if (err.message.includes("Tempo")) {
+      error.value = "O servidor demorou muito para responder.";
+      isServerError.value = true;
     } else {
-      error.value = data.message || 'Verifique seu e-mail e senha'
+      error.value = err.message || "Erro desconhecido ao fazer login.";
     }
-  } else if (response.status === 401) {
-    error.value = 'Credenciais inválidas'
-  } else {
-    error.value = 'Erro no servidor. Tente novamente.'
+  } finally {
+    isLoading.value = false;
   }
-}
+};
+
+const retryLogin = () => {
+  handleLogin();
+};
 </script>
 
 
 <style scoped>
-.page-center {
+.login-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f4f4f9;
+  min-height: 100vh;
+  background-color: #f8fafc;
 }
 
-.login-container {
-  background-color: #fff;
-  padding: 24px;
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+.login-card {
+  background: white;
+  padding: 2rem;
   border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
+}
+
+h1 {
   text-align: center;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
 }
 
-.input-group {
-  margin-bottom: 16px;
-  text-align: left;
+.form-group {
+  margin-bottom: 1.5rem;
 }
 
-.input-group label {
+label {
   display: block;
-  font-size: 14px;
+  margin-bottom: 0.5rem;
   font-weight: 500;
-  margin-bottom: 4px;
+  color: #334155;
 }
 
-.input-group input {
+input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 1rem;
 }
 
-.input-group input:focus {
-  outline: none;
-  border-color: seagreen;
-}
-
-.btn-login {
+button[type="submit"] {
   width: 100%;
-  padding: 12px;
-  background-color: seagreen;
+  padding: 0.75rem;
+  background-color: #3b82f6;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
-  margin-top: 8px;
 }
 
-.btn-login:hover {
-  background-color: darkgreen;
+button[type="submit"]:hover {
+  background-color: #2563eb;
 }
 
-.btn-login:disabled {
-  background-color: #cccccc;
+button[type="submit"]:disabled {
+  background-color: #94a3b8;
   cursor: not-allowed;
 }
 
 .error-message {
-  margin-top: 12px;
-  color: #d32f2f;
-  font-size: 14px;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fee2e2;
+  border-radius: 4px;
+  color: #dc2626;
 }
 
-.loading-spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 50%;
-  border-top-color: #fff;
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.retry-button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>
+
+
 
 
 
