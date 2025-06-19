@@ -1,28 +1,34 @@
 <template>
   <div class="admin-page">
     <header class="header">
-      <h1> Painel do Administrador</h1>
+      <h1>Painel do Administrador</h1>
     </header>
 
     <main class="content">
+      <!-- Error Message Display -->
+      <div v-if="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
       <!-- Setor de Reviews -->
       <section class="card">
         <h2>📝 Gerenciar Reviews</h2>
-        <div v-if="reviews.length">
+        <div v-if="reviewsLoading">Carregando reviews...</div>
+        <div v-else-if="reviews && reviews.length">
           <div
             class="item"
             v-for="review in reviews"
             :key="review.id"
           >
             <div class="info">
-              <p class="review-text">“{{ review.texto }}”</p>
+              <p class="review-text">"{{ review.texto }}"</p>
               <p class="user-name">
-                Por: <strong>@{{ review.username }}</strong> | 
+                Por: <strong>@{{ review.username }}</strong> |
                 <span class="date">{{ formatDate(review.data) }}</span>
               </p>
             </div>
-            <button class="btn-delete">
-               Excluir
+            <button class="btn-delete" @click="deletarReview(review.id)">
+              Excluir
             </button>
           </div>
         </div>
@@ -44,18 +50,22 @@
           />
         </div>
 
-        <div v-if="usuariosFiltrados.length">
+        <div v-if="usuariosLoading">Carregando usuários...</div>
+        <div v-else-if="usuariosFiltrados && usuariosFiltrados.length">
           <div
             class="item"
             v-for="usuario in usuariosFiltrados"
             :key="usuario.id"
           >
             <div class="info">
-              <p class="user-name"><strong>@{{ usuario.username }}</strong></p>
+              <p class="user-name">
+                <strong>@{{ usuario.username }}</strong>
+              </p>
               <p class="email">{{ usuario.email }}</p>
+              <p class="user-id">ID: {{ usuario.id }}</p>
             </div>
-            <button class="btn-delete">
-               Excluir
+            <button class="btn-delete" @click="deletarUsuario(usuario.id)">
+              Excluir
             </button>
           </div>
         </div>
@@ -66,60 +76,161 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
-definePageMeta({
-  layout: 'basic',
-})
+definePageMeta({ layout: 'basic' })
 
-// Dados simulados
-const reviews = [
-  {
-    id: 1,
-    texto: 'Produto excelente, recomendo muito!',
-    username: 'gabriel_p',
-    data: '2025-06-01T10:00:00Z',
-  },
-  {
-    id: 2,
-    texto: 'Chegou rápido e bem embalado.',
-    username: 'fernanda_s',
-    data: '2025-06-05T15:30:00Z',
-  },
-  {
-    id: 3,
-    texto: 'Infelizmente veio com defeito.',
-    username: 'lucas_a',
-    data: '2025-06-10T09:45:00Z',
-  },
-]
+const reviews = ref([])
+const usuarios = ref([])
+const busca = ref('')
+const reviewsLoading = ref(true)
+const usuariosLoading = ref(true)
+const errorMessage = ref('')
 
-const usuarios = [
-  { id: 1, username: 'gabriel_p', email: 'gabriel@email.com' },
-  { id: 2, username: 'fernanda_s', email: 'fernanda@email.com' },
-  { id: 3, username: 'lucas_a', email: 'lucas@email.com' },
-]
-
-// Função para formatar data
-const formatDate = (isoDate) => {
-  const date = new Date(isoDate)
-  return date.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
+const adminToken = useCookie('admin_token').value
+const headers = {
+  Authorization: `Bearer ${adminToken}`,
+  'Content-Type': 'application/json',
 }
 
-// Barra de pesquisa
-const busca = ref('')
+const fetchReviews = async () => {
+  try {
+    reviewsLoading.value = true
+    errorMessage.value = ''
+
+    const response = await fetch('https://api.promohawk.com.br/api/review', {
+      method: 'GET',
+      headers,
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    console.log('Resposta completa da API (reviews):', data)
+
+    if (!data || !Array.isArray(data.reviews)) {
+      console.warn('Estrutura de dados não reconhecida:', data)
+      errorMessage.value = 'Formato de dados inesperado para reviews'
+      return
+    }
+
+    reviews.value = data.reviews.map(item => ({
+      id: item.id,
+      texto: item.comentario_produto || 'Sem conteúdo',
+      username: item.usuario?.username || 'Anônimo',
+      data: item.created_at
+    }))
+
+  } catch (err) {
+    console.error('Erro ao processar reviews:', err)
+    errorMessage.value = 'Falha ao carregar reviews: ' + err.message
+    reviews.value = []
+  } finally {
+    reviewsLoading.value = false
+  }
+}
+
+const fetchUsuarios = async () => {
+  try {
+    usuariosLoading.value = true
+    errorMessage.value = ''
+
+    const response = await fetch('https://api.promohawk.com.br/api/users', {
+      method: 'GET',
+      headers,
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    console.log('Resposta completa da API (usuários):', data)
+
+    if (!data || !Array.isArray(data.usuarios)) {
+      console.warn('Estrutura de dados não reconhecida:', data)
+      errorMessage.value = 'Formato de dados inesperado para usuários'
+      return
+    }
+
+    usuarios.value = data.usuarios.map(user => ({
+      id: user.id,
+      username: user.username || 'usuário',
+      email: user.email || 'email@não.informado'
+    }))
+
+  } catch (err) {
+    console.error('Erro ao processar usuários:', err)
+    errorMessage.value = 'Falha ao carregar usuários: ' + err.message
+    usuarios.value = []
+  } finally {
+    usuariosLoading.value = false
+  }
+}
+
+const deletarReview = async (id) => {
+  try {
+    const response = await fetch(`https://api.promohawk.com.br/api/review/${id}`, {
+      method: 'DELETE',
+      headers,
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    reviews.value = reviews.value.filter((r) => r.id !== id)
+    alert('Review excluída com sucesso!')
+  } catch (err) {
+    console.error('Erro ao deletar review:', err)
+    alert('Erro ao excluir review: ' + err.message)
+  }
+}
+
+const deletarUsuario = async (id) => {
+  try {
+    const response = await fetch(`https://api.promohawk.com.br/api/users/${id}`, {
+      method: 'DELETE',
+      headers,
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    usuarios.value = usuarios.value.filter((u) => u.id !== id)
+    alert('Usuário excluído com sucesso!')
+  } catch (err) {
+    console.error('Erro ao deletar usuário:', err)
+    alert('Erro ao excluir usuário: ' + err.message)
+  }
+}
+
+const formatDate = (isoDate) => {
+  if (!isoDate) return 'Data não disponível'
+  try {
+    const [dia, mes, ano] = isoDate.split(' ')[0].split('/')
+    return `${dia}/${mes}/${ano}`
+  } catch {
+    return isoDate
+  }
+}
 
 const usuariosFiltrados = computed(() => {
-  if (!busca.value) return usuarios
-  return usuarios.filter((u) =>
-    u.username.toLowerCase().includes(busca.value.toLowerCase())
+  if (!busca.value) return usuarios.value
+  return usuarios.value.filter((u) =>
+    u.username?.toLowerCase().includes(busca.value.toLowerCase())
   )
 })
+
+onMounted(() => {
+  fetchReviews()
+  fetchUsuarios()
+})
 </script>
+
 
 <style scoped>
 :root {
@@ -198,12 +309,14 @@ body {
 .info {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
 .review-text {
   font-size: 16px;
   color: var(--text);
   margin: 0 0 4px 0;
+  font-style: italic;
 }
 
 .user-name {
@@ -215,6 +328,12 @@ body {
 .email {
   color: #777;
   font-size: 14px;
+  margin: 4px 0 0;
+}
+
+.user-id {
+  color: #999;
+  font-size: 12px;
   margin: 4px 0 0;
 }
 
@@ -236,6 +355,8 @@ body {
   align-items: center;
   gap: 6px;
   transition: background-color 0.3s, transform 0.2s;
+  margin-left: 12px;
+  flex-shrink: 0;
 }
 
 .btn-delete:hover {
@@ -247,6 +368,17 @@ body {
   text-align: center;
   color: #999;
   margin-top: 20px;
+  padding: 20px;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 1px solid #ef9a9a;
+  grid-column: 1 / -1;
 }
 
 /* Barra de pesquisa com ícone */
@@ -284,9 +416,3 @@ body {
   }
 }
 </style>
-
-
-
-
-
-
