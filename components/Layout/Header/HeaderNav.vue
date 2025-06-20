@@ -10,8 +10,6 @@
   />
 </template>
 
-
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import type { NavigationMenuItem } from '@nuxt/ui'
@@ -30,14 +28,7 @@ const items = ref<NavigationMenuItem[]>([
   {
     label: 'Lojas',
     icon: 'weui:shop-filled',
-    children: [
-      { label: 'Amazon', to: '/loja/amazon' },
-      { label: 'Magazineluiza', to: '/loja/magazineluiza' },
-      { label: 'Centauro', to: '/loja/centauro' },
-      { label: 'Mercado Livre', to: '/loja/mercadolivre' },
-      { label: 'Kabum', to: '/loja/kabum' },
-      { label: 'Pichau', to: '/loja/pichau' }
-    ]
+    children: [] // ← será preenchido via API
   },
   {
     label: 'Categorias',
@@ -46,29 +37,45 @@ const items = ref<NavigationMenuItem[]>([
   }
 ])
 
-onMounted(async () => {
+const fetchData = async () => {
   try {
-    const res = await fetch('https://api.promohawk.com.br/api/categoria')
-    const json = await res.json()
-    const categorias = json?.categorias || []
+    // Busca categorias
+    const catRes = await fetch('https://api.promohawk.com.br/api/categoria')
+    const catJson = await catRes.json()
+    const categorias = (catJson?.categorias || []).slice(0, 10) // Limita a 10 itens
 
     const categoriasFormatadas = categorias.map((cat: any) => ({
       label: cat.nome,
-      to: `/categoria/${cat.id}`
+      to: `/categoria/${cat.slug || cat.id}` // Usa slug se existir, caso contrário usa id
     }))
 
-    // Atualiza apenas o item "Categorias"
-    const categoriaMenu = items.value.find(i => i.label === 'Categorias')
-    if (categoriaMenu) {
-      categoriaMenu.children = categoriasFormatadas
-    }
+    // Busca lojas
+    const lojaRes = await fetch('https://api.promohawk.com.br/api/loja')
+    const lojaJson = await lojaRes.json()
+    const lojas = (lojaJson?.lojas || []).slice(0, 10) // Limita a 10 itens
+
+    const lojasFormatadas = lojas.map((loja: any) => ({
+      label: loja.nome,
+      to: `/loja/${loja.slug || loja.id}` // Usa slug se existir, caso contrário usa id
+    }))
+
+    // Atualiza os itens do menu
+    items.value = items.value.map(item => {
+      if (item.label === 'Categorias') {
+        return { ...item, children: categoriasFormatadas }
+      }
+      if (item.label === 'Lojas') {
+        return { ...item, children: lojasFormatadas }
+      }
+      return item
+    })
   } catch (e) {
-    console.error('Erro ao carregar categorias', e)
+    console.error('Erro ao carregar dados da API', e)
   }
-})
+}
+
+onMounted(fetchData)
 </script>
-
-
 
 <style scoped>
 </style>
