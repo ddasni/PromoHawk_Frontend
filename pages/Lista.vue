@@ -108,7 +108,6 @@ import { ref, watchEffect } from 'vue'
 
 // Componentes
 import Produto from '~/components/Common/Cards/Card_produto.vue'
-import Cupom from '~/components/Common/Cards/Card_cupom.vue'
 import Categoria from '~/components/Home/Categoria.vue'
 import Loja from '~/components/Lista/loja.vue'
 
@@ -133,7 +132,6 @@ const tituloPlural = computed(() => {
   if (tipo.value === "produto") return "Produtos"
   if (tipo.value === "categoria") return "Categorias"
   if (tipo.value === "loja") return "Lojas"
-  if (tipo.value === "cupom") return "Cupons"
   return tipo.value.charAt(0).toUpperCase() + tipo.value.slice(1) + "s"
 })
 
@@ -147,9 +145,37 @@ watchEffect(async () => {
   if (!tipo.value) return
 
   try {
-    const url = `https://api.promohawk.com.br/api/${tipo.value}`
-    const { data } = await useFetch(url)
+    let url = `https://api.promohawk.com.br/api/${tipo.value}`
+    const queryParams = {}
 
+    // Se for busca com texto
+    if (route.query.search && tipo.value === 'produto') {
+      url += '/search'
+      queryParams.query = route.query.search
+
+      const { data } = await useFetch(url, { params: queryParams })
+
+      const produtosSimples = data.value?.produtos || []
+
+      // Buscar detalhes para cada produto
+      const resultadosDetalhados = await Promise.all(
+        produtosSimples.map(async (produto) => {
+          try {
+            const detalhe = await $fetch(`https://api.promohawk.com.br/api/produto/${produto.id}`)
+            return detalhe?.produto || null
+          } catch (e) {
+            console.error(`Erro ao buscar detalhes do produto ${produto.id}`, e)
+            return null
+          }
+        })
+      )
+
+      dados.value = resultadosDetalhados.filter(Boolean)
+      return
+    }
+
+    // Caso não seja pesquisa, uso padrão
+    const { data } = await useFetch(url)
     const mapTipoParaChave = {
       produto: 'produtos',
       categoria: 'categorias',
@@ -158,12 +184,8 @@ watchEffect(async () => {
     }
 
     const chave = mapTipoParaChave[tipo.value]
+    dados.value = Array.isArray(data.value?.[chave]) ? data.value[chave] : []
 
-    if (chave && Array.isArray(data.value?.[chave])) {
-      dados.value = data.value[chave]
-    } else {
-      dados.value = []
-    }
   } catch (err) {
     console.error('Erro ao buscar dados:', err)
     dados.value = []
