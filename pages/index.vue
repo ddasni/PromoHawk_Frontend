@@ -17,7 +17,7 @@
   <Divisor title="Produtos" link="/lista?tipo=produto" />
   <div class="produtos-container">
     <Produto
-      v-for="produto in produtos.slice(0, 9)"
+      v-for="produto in produtos.slice(0, 12)"
       :key="produto.id"
       :produto="produto"
       :imagem="produto.imagens?.[0] || '/img/sem-imagem.png'"
@@ -32,7 +32,7 @@
   <Divisor title="Cupons" link="/Cupons" />
   <div class="cupons-container">
     <Cupom
-      v-for="cupom in cupons.slice(0, 9)"
+      v-for="cupom in cupons.slice(0, 12)"
       :key="cupom.id"
       :codigo="cupom.codigo"
       :desconto="cupom.desconto"
@@ -78,8 +78,7 @@ const cupons = computed(() => cuponsData.value?.cupons || [])
 .categorias-container {
   display: flex;
   overflow-x: auto;
-  gap: 16px;
-  padding: 8px 0;
+  padding: 5px 0;
   margin-bottom: 32px;
   scroll-snap-type: x mandatory;
 }
