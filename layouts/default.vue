@@ -12,8 +12,11 @@
 </script>
 
 <style scoped>
+body {
+    background-color: rgb(250, 250, 250);
+}
+
 .conteudo{
-    background-color: white;
     margin: 10px 200px;
 }
 </style>

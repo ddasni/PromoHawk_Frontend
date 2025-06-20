@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white py-16 px-6">
+  <div class="min-h-screen py-16 px-6">
     <div class="max-w-7xl mx-auto">
       <!-- Título -->
     <h1 class="text-5xl font-extrabold text-gray-900 mb-4 font-sans tracking-tight flex items-center gap-4 capitalize">
