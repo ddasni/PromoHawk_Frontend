@@ -102,7 +102,7 @@ const items = computed(() => {
       {
         label: 'Sobre nós',
         icon: 'mdi:cog-outline',
-        onClick: () => router.push('/config'),
+        onClick: () => router.push('/sobre'),
       },
     ],
     [

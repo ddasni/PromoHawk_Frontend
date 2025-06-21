@@ -5,7 +5,7 @@
         <h1 class="main-title">Sobre o <span class="brand">PromoHawk</span></h1>
         <p class="tagline">Seu comparador inteligente de preços, cupons e promoções</p>
       </div>
-      
+
       <section class="about-section">
         <div class="section-header">
           <div class="decorative-line"></div>
@@ -13,51 +13,36 @@
           <div class="decorative-line"></div>
         </div>
         <div class="section-content">
-          <p>No PromoHawk, transformamos a maneira como você encontra as melhores ofertas online. Somos mais que um comparador - somos seu aliado inteligente para economizar em cada compra.</p>
-          <p>Desde 2020, ajudamos milhares de brasileiros a tomar decisões de compra mais inteligentes, com informações precisas e atualizadas em tempo real.</p>
+          <p>No PromoHawk, nossa missão é transformar a forma como você descobre e aproveita as melhores ofertas online. Mais do que um simples comparador de preços, somos seu parceiro estratégico para economizar em todas as compras.</p>
+          <p>Desde 2020, temos ajudado milhares de brasileiros a fazer escolhas mais inteligentes, com dados atualizados em tempo real, histórico de preços e cupons testados por nossa equipe.</p>
         </div>
       </section>
 
-      <section class="features-section">
-        <h2 class="section-title">Como Nós Te Ajudamos</h2>
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">💎</div>
-            <h3>Comparação Precisa</h3>
-            <p>Analisamos preços em centenas de lojas para você comprar sempre no melhor lugar</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🛒</div>
-            <h3>Cupons Verificados</h3>
-            <p>Descontos reais testados por nossa equipe para garantir que funcionam</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">📉</div>
-            <h3>Histórico Completo</h3>
-            <p>Veja a variação de preços e identifique as verdadeiras promoções</p>
-          </div>
+      <section class="history-section">
+        <h2 class="section-title">Nossa História</h2>
+        <div class="section-content">
+          <p>O PromoHawk nasceu da paixão por tecnologia e economia. Criado por um grupo de desenvolvedores e entusiastas do varejo digital, nosso objetivo sempre foi claro: ajudar pessoas a fazerem compras mais inteligentes.</p>
+          <p>Combinando tecnologia de rastreamento de preços, cupons e análise de mercado, criamos uma plataforma que já impactou milhares de consumidores em todo o Brasil.</p>
+          <p>Hoje, seguimos evoluindo com você, trazendo inovação, transparência e praticidade para o seu dia a dia de compras.</p>
         </div>
       </section>
 
       <section class="benefits-section">
-        <h2 class="section-title">Vantagens Exclusivas</h2>
+        <h2 class="section-title">Por Que Escolher o PromoHawk?</h2>
         <ul class="benefits-list">
           <li>
             <span class="check-icon">✓</span>
-            <span>Cobertura nacional com as principais lojas</span>
+            <span>Cobertura nacional com as maiores lojas do Brasil</span>
           </li>
           <li>
             <span class="check-icon">✓</span>
-            <span>Atualizações em tempo real das promoções</span>
+            <span>Promoções e preços atualizados em tempo real</span>
           </li>
           <li>
             <span class="check-icon">✓</span>
             <span>Alertas personalizados para seus produtos favoritos</span>
           </li>
-          <li>
-            <span class="check-icon">✓</span>
-            <span>Interface simples e fácil de usar</span>
-          </li>
+       
         </ul>
       </section>
     </div>
@@ -145,8 +130,20 @@ h2 {
   font-size: 1.1rem;
 }
 
-.features-section {
+.history-section {
   margin: 5rem 0;
+}
+
+.history-section .section-content {
+  max-width: 750px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  color: #4a5568;
+  line-height: 1.8;
+}
+
+.history-section .section-content p {
+  margin-bottom: 1.5rem;
 }
 
 .section-title {
@@ -163,44 +160,6 @@ h2 {
   background: linear-gradient(90deg, #4f46e5, #a78bfa);
   margin: 0.8rem auto 0;
   border-radius: 3px;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-}
-
-.feature-card {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  border: 1px solid #edf2f7;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  text-align: center;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-.feature-icon {
-  font-size: 2.2rem;
-  margin-bottom: 1.2rem;
-}
-
-.feature-card h3 {
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-  color: #2d3748;
-  font-weight: 600;
-}
-
-.feature-card p {
-  color: #718096;
-  font-size: 1rem;
 }
 
 .benefits-section {
@@ -236,25 +195,22 @@ h2 {
   .content-container {
     padding: 2rem 1.5rem;
   }
-  
+
   .main-title {
     font-size: 2rem;
   }
-  
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
-  
+
   .section-header {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .decorative-line {
     width: 100%;
   }
 }
 </style>
+
 
 
 
