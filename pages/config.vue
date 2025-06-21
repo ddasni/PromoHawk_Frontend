@@ -1,183 +1,258 @@
 <template>
-  <div class="config-container">
-    <h1 class="titulo">Configurações da Conta</h1>
-
-    <!-- Notificações -->
-    <div class="config-section">
-      <h2 class="secao-titulo">Notificações</h2>
-
-      <SwitchItem label="Alertas de queda de preço" v-model="alertaQuedaPreco" />
-      <SwitchItem label="Notificar novos cupons e ofertas" v-model="alertaOfertas" />
-      <SwitchItem label="Alertas de variação de preço significativa" v-model="alertaVariaPreco" />
-      <SwitchItem label="Receber notificações por email" v-model="notificarPorEmail" />
-    </div>
-
-    <!-- Preferências de Navegação -->
-    <div class="config-section">
-      <h2 class="secao-titulo">Preferências de Navegação</h2>
-
+  <div class="about-page">
+    <div class="content-container">
+      <div class="title-container">
+        <h1 class="main-title">Sobre o <span class="brand">PromoHawk</span></h1>
+        <p class="tagline">Seu comparador inteligente de preços, cupons e promoções</p>
+      </div>
       
-      <SwitchItem label="Ativar histórico de buscas" v-model="historicoBuscas" />
-    </div>
+      <section class="about-section">
+        <div class="section-header">
+          <div class="decorative-line"></div>
+          <h2>Nossa Missão</h2>
+          <div class="decorative-line"></div>
+        </div>
+        <div class="section-content">
+          <p>No PromoHawk, transformamos a maneira como você encontra as melhores ofertas online. Somos mais que um comparador - somos seu aliado inteligente para economizar em cada compra.</p>
+          <p>Desde 2020, ajudamos milhares de brasileiros a tomar decisões de compra mais inteligentes, com informações precisas e atualizadas em tempo real.</p>
+        </div>
+      </section>
 
+      <section class="features-section">
+        <h2 class="section-title">Como Nós Te Ajudamos</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">💎</div>
+            <h3>Comparação Precisa</h3>
+            <p>Analisamos preços em centenas de lojas para você comprar sempre no melhor lugar</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🛒</div>
+            <h3>Cupons Verificados</h3>
+            <p>Descontos reais testados por nossa equipe para garantir que funcionam</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📉</div>
+            <h3>Histórico Completo</h3>
+            <p>Veja a variação de preços e identifique as verdadeiras promoções</p>
+          </div>
+        </div>
+      </section>
 
-    <!-- Dados e Privacidade -->
-    <div class="config-section">
-      <h2 class="secao-titulo">Dados e Privacidade</h2>
-
-      <SwitchItem label="Limpar histórico de buscas automaticamente" v-model="limparHistoricoAuto" />
-      <SwitchItem label="Permitir coleta de dados para melhorias" v-model="permitirColetaDados" />
-    </div>
-
-    <!-- Ações -->
-    <div class="config-actions">
-      <button @click="salvarConfiguracoes" class="btn-salvar">
-        Salvar Configurações
-      </button>
-
-      <transition name="fade">
-        <p v-if="showSavedMessage" class="saved-message">
-          ✅ Configurações salvas com sucesso!
-        </p>
-      </transition>
+      <section class="benefits-section">
+        <h2 class="section-title">Vantagens Exclusivas</h2>
+        <ul class="benefits-list">
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Cobertura nacional com as principais lojas</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Atualizações em tempo real das promoções</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Alertas personalizados para seus produtos favoritos</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Interface simples e fácil de usar</span>
+          </li>
+        </ul>
+      </section>
     </div>
   </div>
 </template>
 
-<script setup>
-definePageMeta({
-  middleware: 'auth'
-})
-
-import { ref } from 'vue'
-import SwitchItem from '@/components/SwitchItem.vue'
-
-// Notificações
-const alertaQuedaPreco = ref(true)
-const alertaOfertas = ref(true)
-const alertaVariaPreco = ref(true)
-const notificarPorEmail = ref(true)
-
-// Preferências de navegação
-const somenteEstoque = ref(false)
-const filtrarFreteGratis = ref(false)
-const priorizarLojasConfiaveis = ref(true)
-const historicoBuscas = ref(true)
-
-// Preferências de lojas
-const mostrarLojasFavoritas = ref(true)
-const ocultarLojasIndesejadas = ref(false)
-
-// Dados e privacidade
-const limparHistoricoAuto = ref(false)
-const permitirColetaDados = ref(true)
-
-// Mensagem de sucesso
-const showSavedMessage = ref(false)
-
-// Função para salvar
-function salvarConfiguracoes() {
-  console.log('Configurações salvas:', {
-    alertaQuedaPreco: alertaQuedaPreco.value,
-    alertaOfertas: alertaOfertas.value,
-    alertaVariaPreco: alertaVariaPreco.value,
-    notificarPorEmail: notificarPorEmail.value,
-    somenteEstoque: somenteEstoque.value,
-    filtrarFreteGratis: filtrarFreteGratis.value,
-    priorizarLojasConfiaveis: priorizarLojasConfiaveis.value,
-    historicoBuscas: historicoBuscas.value,
-    mostrarLojasFavoritas: mostrarLojasFavoritas.value,
-    ocultarLojasIndesejadas: ocultarLojasIndesejadas.value,
-    limparHistoricoAuto: limparHistoricoAuto.value,
-    permitirColetaDados: permitirColetaDados.value,
-  })
-
-  showSavedMessage.value = true
-  setTimeout(() => (showSavedMessage.value = false), 3000)
-}
-</script>
-
 <style scoped>
-/* Mantém o mesmo style anterior porque ele já estava muito bom */
-.config-container {
-  max-width: 750px;
-  margin: 40px auto;
-  background: #ffffff;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  font-family: 'Segoe UI', sans-serif;
+.about-page {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #2d3748;
+  line-height: 1.7;
+  min-height: 100vh;
+  background-color: #fafafa;
 }
 
-.titulo {
+.content-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.title-container {
   text-align: center;
-  font-size: 32px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 40px;
+  margin-bottom: 4rem;
 }
 
-.secao-titulo {
-  font-size: 22px;
-  font-weight: 600;
-  color: #007bff;
-  margin-bottom: 20px;
+.main-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
 }
 
-.config-section {
-  margin-bottom: 40px;
+.brand {
+  color: #4f46e5;
+  position: relative;
 }
 
-.config-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+.brand:after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #4f46e5, #a78bfa);
+  border-radius: 3px;
 }
 
-.select {
-  padding: 8px 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: #fff;
-  color: #333;
-}
-
-.config-actions {
-  text-align: center;
-  margin-top: 30px;
-}
-
-.btn-salvar {
-  padding: 14px 30px;
-  background-color: #007bff;
-  color: #fff;
+.tagline {
+  font-size: 1.2rem;
+  color: #4a5568;
   font-weight: 500;
-  border: none;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.decorative-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+}
+
+h2 {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #1a202c;
+  text-align: center;
+}
+
+.section-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.section-content p {
+  margin-bottom: 1.5rem;
+  color: #4a5568;
+  font-size: 1.1rem;
+}
+
+.features-section {
+  margin: 5rem 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.section-title:after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #4f46e5, #a78bfa);
+  margin: 0.8rem auto 0;
+  border-radius: 3px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.feature-card {
+  background: white;
   border-radius: 12px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #edf2f7;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
 }
 
-.btn-salvar:hover {
-  background-color: #0056b3;
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.saved-message {
-  color: #28a745;
-  margin-top: 20px;
+.feature-icon {
+  font-size: 2.2rem;
+  margin-bottom: 1.2rem;
+}
+
+.feature-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #2d3748;
   font-weight: 600;
 }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.4s;
+.feature-card p {
+  color: #718096;
+  font-size: 1rem;
 }
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
+
+.benefits-section {
+  margin-top: 4rem;
+}
+
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.benefits-list li {
+  padding: 1rem 1.5rem;
+  margin-bottom: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #edf2f7;
+}
+
+.check-icon {
+  color: #4f46e5;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .content-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .main-title {
+    font-size: 2rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .decorative-line {
+    width: 100%;
+  }
 }
 </style>
 

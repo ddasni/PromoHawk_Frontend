@@ -70,20 +70,14 @@ const handleLogin = async () => {
     }
   })
 
-  if (error.value) {
-    erro.value = 'Erro na requisição ao servidor.'
-    return
-  }
+  
 
   if (!data.value?.status) {
     erro.value = data.value?.message || 'E-mail ou senha inválidos.'
     return
   }
 
-  if (!data.value.token) {
-    erro.value = 'Token não recebido da API.'
-    return
-  }
+ 
 
   // Armazena o token e os dados do usuário
   tokenCookie.value = data.value.token

@@ -100,7 +100,7 @@ const items = computed(() => {
         onClick: () => router.push('/listadesejo'),
       },
       {
-        label: 'Configurações',
+        label: 'Sobre nós',
         icon: 'mdi:cog-outline',
         onClick: () => router.push('/config'),
       },
