@@ -46,10 +46,15 @@ watch(tokenCookie, (newVal) => {
 const user = computed(() => userCookie.value || {})
 
 // Função para montar a URL da imagem
-const getFullImageUrl = (path: string | undefined) => {
-  if (!path) return 'mdi:account'
-  return path.startsWith('http') ? path : `${config.public.apiImage}${path}`
+const getFullImageUrl = (caminho: string | undefined) => {
+  if (!caminho) return 'https://via.placeholder.com/150'
+
+  if (caminho.startsWith('http')) return caminho
+
+  const path = caminho.startsWith('storage/') ? caminho : `storage/${caminho}`
+  return `https://api.promohawk.com.br/${path}`
 }
+
 
 // Função de logout
 const { logout } = useLogout()
