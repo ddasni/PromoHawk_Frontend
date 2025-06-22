@@ -22,7 +22,7 @@
     </div>
 
     <!-- Produtos da Loja -->
-    <Divisor title="Produtos em Destaque" />
+    <Divisor title="Produtos" />
     <div class="produtos-container">
       <Card_produto
         v-for="produto in produtos.slice(0, 12)"
