@@ -51,8 +51,13 @@ const lojaId = route.params.id
 const { data: lojaData } = await useFetch(`https://api.promohawk.com.br/api/loja/${lojaId}`)
 
 const lojaAtual = computed(() => lojaData.value?.loja || {})
-const cupons = computed(() => lojaAtual.value?.loja?.cupons || [])
-const produtos = computed(() => lojaData.value?.loja?.produtos || [])
+const cupons = computed(() => lojaAtual.value?.cupons || [])
+const produtos = computed(() => lojaAtual.value?.produtos || [])
+
+watch(lojaData, () => {
+  console.log('Dados da loja recebidos:', lojaData.value)
+})
+
 </script>
 
 <style scoped>
