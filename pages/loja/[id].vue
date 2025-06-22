@@ -1,12 +1,12 @@
 <template>
   <section class="perfil-loja">
-    <div class="fundo" :style="{ backgroundColor: lojaAtual?.cor || '#0057d9' }"></div>
-
-    <div class="foto-loja">
-      <img :src="lojaAtual?.imagem" :alt="lojaAtual?.nome">
+    <!-- Cabeçalho da loja -->
+    <div class="cabecalho-loja">
+      <div class="foto-loja">
+        <img :src="lojaAtual?.imagem" :alt="lojaAtual?.nome" />
+      </div>
+      <h1 class="nome-loja">{{ lojaAtual?.nome }}</h1>
     </div>
-
-    <h1 class="nome-loja">{{ lojaAtual?.nome }}</h1>
 
     <!-- Cupons da Loja -->
     <Divisor title="Cupons Disponíveis" />
@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import Divisor from '~/components/Home/Divisor.vue'
@@ -46,21 +46,13 @@ import Cupom from '~/components/Common/Cards/Card_cupom.vue'
 import Card_produto from '~/components/Common/Cards/Card_produto.vue'
 
 const route = useRoute()
-const lojaId = route.params.nome
+const lojaId = route.params.id
 
-// Loja
-const { data: lojaData, error: lojaError } = await useFetch(`https://api.promohawk.com.br/api/loja/${lojaId}`)
+const { data: lojaData } = await useFetch(`https://api.promohawk.com.br/api/loja/${lojaId}`)
+
 const lojaAtual = computed(() => lojaData.value?.loja || {})
-
-// Cupons filtrados pela loja
-const { data: cuponsData, error: errorCupons } = await useFetch(`https://api.promohawk.com.br/api/cupom`)
-const cupons = computed(() =>
-  cuponsData.value?.cupons?.filter(c => c.loja_id == lojaAtual.value?.id) || []
-)
-
-// Produtos da loja
-const { data: produtosData, error: errorProdutos } = await useFetch(`https://api.promohawk.com.br/api/produto?loja_id=${lojaId}`)
-const produtos = computed(() => produtosData.value?.produtos || [])
+const cupons = computed(() => lojaAtual.value?.loja?.cupons || [])
+const produtos = computed(() => lojaData.value?.loja?.produtos || [])
 </script>
 
 <style scoped>
@@ -69,26 +61,25 @@ const produtos = computed(() => produtosData.value?.produtos || [])
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  padding-bottom: 100px;
+  padding: 32px 16px;
+  background-color: #f8f9fa;
 }
 
-.fundo {
-  width: 100vw;
-  height: 200px;
+.cabecalho-loja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
 }
 
 .foto-loja {
-  position: absolute;
-  top: 120px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 160px;
-  height: 160px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: white;
-  padding: 5px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  padding: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
 }
 
 .foto-loja img {
@@ -99,40 +90,45 @@ const produtos = computed(() => produtosData.value?.produtos || [])
 }
 
 .nome-loja {
-  margin-top: 120px;
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 26px;
+  font-weight: 600;
   text-align: center;
+  color: #333;
 }
 
 /* Cupons */
 .cupons-container {
+  width: 100%;
+  max-width: 1200px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
-  justify-content: center;
   margin: 24px 0 48px;
   padding: 0 12px;
 }
 
 /* Produtos */
 .produtos-container {
+  width: 100%;
+  max-width: 1200px;
   display: flex;
   overflow-x: auto;
   gap: 20px;
-  padding: 0 12px;
+  padding: 0 12px 48px;
   scroll-snap-type: x mandatory;
 }
+
 .produtos-container::-webkit-scrollbar {
   display: none;
 }
+
 .produtos-container > * {
   flex: 0 0 auto;
   scroll-snap-align: center;
 }
-
-
 </style>
+
+
 
 
 

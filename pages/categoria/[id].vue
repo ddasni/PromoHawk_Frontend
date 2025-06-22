@@ -10,12 +10,7 @@
       </h2>
 
       <!-- Filtros -->
-      <div class="flex flex-col md:flex-row flex-wrap justify-between items-center gap-4 mb-12">
-        <select v-model="filtroMarca" class="border border-gray-300 rounded px-4 py-2 text-gray-700 focus:outline-none">
-          <option value="">MARCA</option>
-          <option v-for="marca in marcasDisponiveis" :key="marca" :value="marca">{{ marca }}</option>
-        </select>
-
+      <div class="flex flex-col md:flex-row flex-wrap justify-start md:justify-between items-center gap-4 mb-12">
         <select v-model="criterioOrdenacao" class="border border-gray-300 rounded px-4 py-2 text-gray-700 focus:outline-none">
           <option value="relevancia">ORDENAR POR: Relevância</option>
           <option value="preco-asc">Menor preço</option>
@@ -66,7 +61,6 @@ const route = useRoute();
 const categoriaId = ref(route.params.id);
 
 // Filtros
-const filtroMarca = ref("");
 const criterioOrdenacao = ref("relevancia");
 const precoMin = ref(null);
 const precoMax = ref(null);
@@ -81,7 +75,6 @@ const { data: categoriaData, error: categoriaError } = await useFetch(
   }
 );
 
-// Computado corrigido para exibir nome da categoria
 const categoriaAtual = computed(() => {
   try {
     console.log("Estrutura da categoria:", JSON.stringify(categoriaData.value, null, 2));
@@ -114,57 +107,17 @@ const { data: produtosData, error: errorProdutos } = await useFetch(
   }
 );
 
-// Produtos direto da resposta da categoria
 const produtos = computed(() => {
   if (categoriaError.value || !categoriaData.value) return [];
   return categoriaData.value.categoria?.produtos || [];
 });
 
-// Produtos válidos
 const produtosValidos = computed(() => {
   return produtos.value.filter((p) => p && p.id && p.nome);
 });
 
-// Marcas disponíveis
-const marcasDisponiveis = computed(() => {
-  const marcas = produtosValidos.value.map((p) => {
-    if (p.link) {
-      const domain = p.link.split("/")[2];
-      if (domain.includes("amazon.")) return "Amazon";
-      if (domain.includes("magazineluiza.")) return "Magazine Luiza";
-      if (domain.includes("americanas.")) return "Americanas";
-      if (domain.includes("pichau.")) return "Pichau";
-      if (domain.includes("samsung.")) return "Samsung";
-      if (domain.includes("lg.")) return "LG";
-    }
-    return p.nome.split(" ")[0];
-  });
-
-  return [...new Set(marcas)].filter(Boolean);
-});
-
-// Filtro por marca
-const produtosFiltradosPorMarca = computed(() => {
-  if (!filtroMarca.value) return produtosValidos.value;
-
-  return produtosValidos.value.filter((p) => {
-    const marcaProduto = p.link?.includes("amazon.")
-      ? "Amazon"
-      : p.link?.includes("magazineluiza.")
-      ? "Magazine Luiza"
-      : p.link?.includes("americanas.")
-      ? "Americanas"
-      : p.link?.includes("pichau.")
-      ? "Pichau"
-      : p.link?.includes("samsung.")
-      ? "Samsung"
-      : p.link?.includes("lg.")
-      ? "LG"
-      : p.nome.split(" ")[0];
-
-    return marcaProduto === filtroMarca.value;
-  });
-});
+// Sem filtro de marca
+const produtosFiltradosPorMarca = computed(() => produtosValidos.value);
 
 // Filtro por preço
 const produtosFiltradosPorPreco = computed(() => {
@@ -202,15 +155,12 @@ const produtosFiltradosOrdenados = computed(() => {
   });
 });
 
-// Limpar filtros
 const limparFiltros = () => {
-  filtroMarca.value = "";
   criterioOrdenacao.value = "relevancia";
   precoMin.value = null;
   precoMax.value = null;
 };
 
-// Debug
 watch(produtosData, (val) => {
   console.log("Produtos carregados:", val);
   console.log("Produtos filtrados:", produtos.value);
