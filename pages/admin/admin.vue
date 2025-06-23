@@ -12,7 +12,7 @@
 
       <!-- Setor de Reviews -->
       <section class="card">
-        <h2>📝 Gerenciar Reviews</h2>
+        <h2><Icon name="mdi:note-edit-outline" class="icon" /> Gerenciar Reviews</h2>
         <div v-if="reviewsLoading">Carregando reviews...</div>
         <div v-else-if="reviews && reviews.length">
           <div
@@ -37,11 +37,11 @@
 
       <!-- Setor de Usuários -->
       <section class="card">
-        <h2>👥 Gerenciar Usuários</h2>
+        <h2><Icon name="mdi:account-group" class="icon" /> Gerenciar Usuários</h2>
 
         <!-- Barra de Pesquisa -->
         <div class="search-container">
-          <span class="icon">🔍</span>
+          <Icon name="mdi:magnify" class="search-icon" />
           <input
             v-model="busca"
             type="text"
@@ -238,7 +238,6 @@ onMounted(() => {
 })
 </script>
 
-
 <style scoped>
 :root {
   --primary: #2e7d32;
@@ -299,6 +298,10 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.icon {
+  font-size: 24px;
 }
 
 .item {
@@ -394,18 +397,18 @@ body {
   margin-bottom: 16px;
 }
 
-.search-container .icon {
+.search-icon {
   position: absolute;
   top: 50%;
   left: 12px;
   transform: translateY(-50%);
   color: #888;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .search-bar {
   width: 100%;
-  padding: 8px 12px 8px 36px;
+  padding: 8px 12px 8px 40px;
   border-radius: 8px;
   border: 1px solid var(--border);
   font-size: 15px;
