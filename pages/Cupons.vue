@@ -13,7 +13,7 @@ const cupons = computed(() => cuponsData.value?.cupons || [])
 
     <div class="cupons-list">
       <Cupom
-        v-for="cupom in cupons.slice(0, 9)"
+        v-for="cupom in cupons"
         :key="cupom.id"
         :codigo="cupom.codigo"
         :desconto="cupom.desconto"
@@ -47,7 +47,8 @@ h1 {
 .cupons-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
+  column-gap: 10px;  /* Espaço entre colunas (horizontal) */
+  row-gap: 40px;     /* Espaço entre linhas (vertical) - Ajuste este valor */
 }
 
 .cupom-card {

@@ -105,8 +105,9 @@ const cupons = computed(() => cuponsData.value?.cupons || [])
 /* Cupons */
 .cupons-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(3, minmax(240px, 1fr)); /* 3 colunas fixas */
+  column-gap: 10px;  /* Espaço entre colunas (horizontal) */
+  row-gap: 40px;     /* Espaço entre linhas (vertical) - Ajuste este valor */
   justify-content: center;
   margin-top: 16px;
   margin-bottom: 64px;
