@@ -126,8 +126,17 @@ onMounted(() => {
   margin-bottom: 8px;
   color: #2d3748;
   background: linear-gradient(90deg, #4a5568, #1a202c);
+
+  /* Compatibilidade com background-clip: text */
+  background-clip: text;
   -webkit-background-clip: text;
+  -moz-background-clip: text;
+
+  /* Necessário para mostrar texto com gradiente */
+  color: transparent;
   -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+
   letter-spacing: -0.5px;
 }
 
@@ -195,10 +204,20 @@ onMounted(() => {
   font-weight: 600;
   color: #2d3748;
   margin-bottom: 8px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+
+  /* Suporte para clamping (limitar número de linhas) */
+  display: -webkit-box;         /* Necessário para aplicar line-clamp */
+  display: -moz-box;            /* Para compatibilidade extra com Firefox antigo */
+  display: box;
+
+  -webkit-box-orient: vertical; /* Define a direção do box */
+  -moz-box-orient: vertical;
+  box-orient: vertical;
+
+  -webkit-line-clamp: 2;        /* Limita a 2 linhas */
+  overflow: hidden;             /* Oculta o excesso */
+  text-overflow: ellipsis;      /* Adiciona reticências (...) */
+  line-clamp: 2;                /* Não é amplamente suportado, mas pode ser incluído */
   line-height: 1.4;
 }
 
