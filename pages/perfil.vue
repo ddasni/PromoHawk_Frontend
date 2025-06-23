@@ -264,8 +264,9 @@ async function salvarAlteracoes() {
 
   if (novaSenha.value) {
     alteracoes.senha_atual = senhaAtual.value
-    alteracoes.nova_senha = novaSenha.value
+    alteracoes.password = novaSenha.value
   }
+
 
   if (Object.keys(alteracoes).length === 0 && !alterandoSenha) {
     alert('Nenhuma alteração detectada.')
