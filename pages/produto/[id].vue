@@ -13,7 +13,14 @@
         <p class="parcelamento">
           {{ parcelas }}x de R$ {{ formatarPreco(precoAtual / parcelas) }} sem juros
         </p>
-        <button class="botao-ver-opcoes">Ver opções de compra</button>
+        <a
+          :href="produto.link"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="botao-ver-opcoes"
+        >
+          Ir para a loja
+        </a>
         <BotaoFavoritar :produtoId="produto.id" />
       </div>
     </div><br>
