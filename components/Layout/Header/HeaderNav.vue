@@ -5,7 +5,7 @@
     color="primary"
     variant="link"
     content-orientation="vertical"
-    class="justify-center"
+    class="justify-center z-[9999] relative"
     :items="items"
   />
 </template>
@@ -76,6 +76,3 @@ const fetchData = async () => {
 
 onMounted(fetchData)
 </script>
-
-<style scoped>
-</style>
