@@ -53,6 +53,7 @@
 <script setup>
 definePageMeta({ layout: 'basic' })
 
+import { useCookie } from '#app'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Botao from '~/components/Common/botao.vue'
@@ -68,8 +69,11 @@ const messageStyle = ref({})
 const route = useRoute()
 const router = useRouter()
 const alertTitle = ref('')
-const alertColor = ref('primary') // Pode ser: primary, red, green, yellow, etc.
+const alertColor = ref('primary')
 
+// cookies de login
+const tokenCookie = useCookie('token')
+const userCookie = useCookie('user')
 
 const API_URL = 'https://api.promohawk.com.br/api/auth'
 
@@ -77,6 +81,13 @@ onMounted(() => {
   const urlToken = route.query.token
   const urlEmail = route.query.email
 
+  // Se o usuário já estiver logado e não estiver acessando via token (ou seja, digitou /esqueceu direto), redireciona
+  if (tokenCookie.value && userCookie.value && !urlToken) {
+    router.push('/')
+    return
+  }
+
+  // Se veio pelo link do e-mail (token e email), ativa a etapa 2
   if (urlToken && urlEmail) {
     token.value = urlToken
     email.value = urlEmail
@@ -90,16 +101,15 @@ async function enviarEmail() {
   messageStyle.value = {}
 
   try {
-  await $fetch(`${API_URL}/forgot-password`, {
-    method: 'POST',
-    body: { email: email.value }
-  })
+    await $fetch(`${API_URL}/forgot-password`, {
+      method: 'POST',
+      body: { email: email.value }
+    })
 
     message.value = 'E-mail de recuperação enviado!'
     alertTitle.value = 'Sucesso!'
     alertColor.value = 'green'
-
-  }catch(error) {
+  } catch (error) {
     message.value = 'Erro ao enviar o e-mail.'
     alertTitle.value = 'Erro'
     alertColor.value = 'red'
@@ -120,7 +130,7 @@ async function novaSenha() {
     return
   }
 
-   try {
+  try {
     await $fetch(`${API_URL}/reset-password`, {
       method: 'POST',
       body: {
@@ -139,7 +149,7 @@ async function novaSenha() {
       router.push('/login').catch((error) => {
         console.error('Erro ao redirecionar:', error)
       })
-    }, 2000)
+    }, 1500)
   } catch (error) {
     message.value = 'Erro ao redefinir a senha.'
     alertTitle.value = 'Erro'
