@@ -1,4 +1,5 @@
 <template>
+  <!-- Template permanece EXATAMENTE o mesmo -->
   <section class="perfil-loja">
     <!-- Cabeçalho da loja -->
     <div class="cabecalho-loja">
@@ -38,6 +39,7 @@
 </template>
 
 <script setup>
+/* Script permanece EXATAMENTE o mesmo */
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -57,7 +59,6 @@ const produtos = computed(() => lojaAtual.value?.produtos || [])
 watch(lojaData, () => {
   console.log('Dados da loja recebidos:', lojaData.value)
 })
-
 </script>
 
 <style scoped>
@@ -66,39 +67,62 @@ watch(lojaData, () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 16px;
-  background-color: #f8f9fa;
+  padding: 40px 20px;
+  background-color: #f8fafc;
 }
 
 .cabecalho-loja {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 48px;
+  text-align: center;
 }
 
 .foto-loja {
-  width: 140px;
-  height: 140px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background: white;
-  padding: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 16px;
+  padding: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+  border: 2px solid #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.foto-loja:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .foto-loja img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  object-fit: contain;
+  object-fit: cover;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
 }
 
 .nome-loja {
-  font-size: 26px;
-  font-weight: 600;
-  text-align: center;
-  color: #333;
+  font-size: 28px;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.nome-loja::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  border-radius: 3px;
 }
 
 /* Cupons */
@@ -106,10 +130,10 @@ watch(lojaData, () => {
   width: 100%;
   max-width: 1200px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
-  margin: 24px 0 48px;
-  padding: 0 12px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin: 32px 0 56px;
+  padding: 0 16px;
 }
 
 /* Produtos */
@@ -118,23 +142,69 @@ watch(lojaData, () => {
   max-width: 1200px;
   display: flex;
   overflow-x: auto;
-  gap: 20px;
-  padding: 0 12px 48px;
+  gap: 24px;
+  padding: 0 16px 56px;
   scroll-snap-type: x mandatory;
+  scroll-padding: 16px;
 }
 
 .produtos-container::-webkit-scrollbar {
-  display: none;
+  height: 6px;
+  background-color: #f1f5f9;
+}
+
+.produtos-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  border-radius: 3px;
 }
 
 .produtos-container > * {
   flex: 0 0 auto;
-  scroll-snap-align: center;
+  scroll-snap-align: start;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .perfil-loja {
+    padding: 32px 16px;
+  }
+  
+  .foto-loja {
+    width: 130px;
+    height: 130px;
+  }
+  
+  .nome-loja {
+    font-size: 24px;
+  }
+  
+  .cupons-container {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  
+  .produtos-container {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cabecalho-loja {
+    margin-bottom: 40px;
+  }
+  
+  .foto-loja {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .nome-loja {
+    font-size: 22px;
+  }
+  
+  .cupons-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 </style>
-
-
-
-
-
-
