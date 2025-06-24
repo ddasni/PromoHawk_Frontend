@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white py-16 px-6">
+  <div class="min-h-screen py-16 px-6 bg-gray-50">
     <div class="max-w-7xl mx-auto">
       <!-- Título -->
       <h1 class="text-5xl font-extrabold text-gray-900 mb-4 font-sans tracking-tight flex items-center gap-4">
@@ -76,14 +76,7 @@ const { data: categoriaData, error: categoriaError } = await useFetch(
 );
 
 const categoriaAtual = computed(() => {
-  try {
-    console.log("Estrutura da categoria:", JSON.stringify(categoriaData.value, null, 2));
-  } catch (e) {
-    console.warn("Erro ao mostrar categoria:", e);
-  }
-
   if (categoriaError.value) return "Erro ao carregar";
-
   return (
     categoriaData.value?.data?.nome ||
     categoriaData.value?.categoria?.nome ||
@@ -116,36 +109,36 @@ const produtosValidos = computed(() => {
   return produtos.value.filter((p) => p && p.id && p.nome);
 });
 
-// Sem filtro de marca
 const produtosFiltradosPorMarca = computed(() => produtosValidos.value);
 
-// Filtro por preço
 const produtosFiltradosPorPreco = computed(() => {
   return produtosFiltradosPorMarca.value.filter((p) => {
-    const preco = p.preco || p.precos?.[0]?.preco || 0;
+    const preco = parseFloat(
+      (p.preco || p.precos?.[0]?.preco || "0").toString().replace(",", ".")
+    );
     const dentroMin = precoMin.value ? preco >= precoMin.value : true;
     const dentroMax = precoMax.value ? preco <= precoMax.value : true;
     return dentroMin && dentroMax;
   });
 });
 
-// Ordenação
 const produtosFiltradosOrdenados = computed(() => {
   const lista = [...produtosFiltradosPorPreco.value];
 
   if (criterioOrdenacao.value === "preco-asc") {
-    return lista.sort(
-      (a, b) =>
-        (a.preco || a.precos?.[0]?.preco || 0) -
-        (b.preco || b.precos?.[0]?.preco || 0)
-    );
+    return lista.sort((a, b) => {
+      const precoA = parseFloat((a.preco || a.precos?.[0]?.preco || "0").toString().replace(",", "."));
+      const precoB = parseFloat((b.preco || b.precos?.[0]?.preco || "0").toString().replace(",", "."));
+      return precoA - precoB;
+    });
   }
+
   if (criterioOrdenacao.value === "preco-desc") {
-    return lista.sort(
-      (a, b) =>
-        (b.preco || b.precos?.[0]?.preco || 0) -
-        (a.preco || a.precos?.[0]?.preco || 0)
-    );
+    return lista.sort((a, b) => {
+      const precoA = parseFloat((a.preco || a.precos?.[0]?.preco || "0").toString().replace(",", "."));
+      const precoB = parseFloat((b.preco || b.precos?.[0]?.preco || "0").toString().replace(",", "."));
+      return precoB - precoA;
+    });
   }
 
   return lista.sort((a, b) => {
@@ -174,3 +167,4 @@ h1 {
   font-family: "Inter", sans-serif;
 }
 </style>
+

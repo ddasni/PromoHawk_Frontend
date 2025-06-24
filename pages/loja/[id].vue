@@ -1,45 +1,47 @@
 <template>
-  <!-- Template permanece EXATAMENTE o mesmo -->
   <section class="perfil-loja">
     <!-- Cabeçalho da loja -->
     <div class="cabecalho-loja">
       <div class="foto-loja">
-        <img :src="lojaAtual?.imagem" :alt="lojaAtual?.nome" />
+        <img :src="lojaAtual?.imagem || '/img/loja-placeholder.jpg'" :alt="lojaAtual?.nome" />
       </div>
       <h1 class="nome-loja">{{ lojaAtual?.nome }}</h1>
     </div>
 
-    <!-- Cupons da Loja -->
-    <Divisor title="Cupons Disponíveis" />
-    <div class="cupons-container">
-      <Cupom
-        v-for="cupom in cupons.slice(0, 12)"
-        :key="cupom.id"
-        :codigo="cupom.codigo"
-        :desconto="cupom.desconto"
-        :validade="cupom.validade"
-        :descricao="cupom.descricao"
-      />
-    </div>
+    <!-- Cupons -->
+    <section class="secao-loja">
+      <Divisor title="Cupons Disponíveis" />
+      <div class="cupons-container">
+        <Cupom
+          v-for="cupom in cupons.slice(0, 12)"
+          :key="cupom.id"
+          :codigo="cupom.codigo"
+          :desconto="cupom.desconto"
+          :validade="cupom.validade"
+          :descricao="cupom.descricao"
+        />
+      </div>
+    </section>
 
-    <!-- Produtos da Loja -->
-    <Divisor title="Produtos" />
-    <div class="produtos-container">
-      <Card_produto
-        v-for="produto in produtos.slice(0, 12)"
-        :key="produto.id"
-        :produto="produto"
-        :imagem="produto.imagens?.[0] || '/img/sem-imagem.png'"
-        :avaliacao="produto.media_nota || 0"
-        :totalAvaliacoes="produto.reviews?.length || 0"
-        :favoritado="false"
-      />
-    </div>
+    <!-- Produtos -->
+    <section class="secao-loja">
+      <Divisor title="Produtos" />
+      <div class="produtos-container">
+        <Card_produto
+          v-for="produto in produtos.slice(0, 12)"
+          :key="produto.id"
+          :produto="produto"
+          :imagem="produto.imagens?.[0] || '/img/produto-placeholder.jpg'"
+          :avaliacao="produto.media_nota || 0"
+          :totalAvaliacoes="produto.reviews?.length || 0"
+          :favoritado="false"
+        />
+      </div>
+    </section>
   </section>
 </template>
 
 <script setup>
-/* Script permanece EXATAMENTE o mesmo */
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -88,7 +90,7 @@ watch(lojaData, () => {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   margin-bottom: 20px;
   border: 2px solid #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
 }
 
 .foto-loja:hover {
@@ -99,9 +101,8 @@ watch(lojaData, () => {
 .foto-loja img {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
   object-fit: cover;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+  border-radius: 50%;
 }
 
 .nome-loja {
@@ -125,86 +126,63 @@ watch(lojaData, () => {
   border-radius: 3px;
 }
 
-/* Cupons */
-.cupons-container {
+/* Blocos */
+.secao-loja {
   width: 100%;
   max-width: 1200px;
+  margin-bottom: 64px;
+  padding: 0 16px;
+}
+
+/* Cupons */
+.cupons-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
-  margin: 32px 0 56px;
-  padding: 0 16px;
+  margin-top: 24px;
 }
 
 /* Produtos */
 .produtos-container {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 24px;
-  padding: 0 16px 56px;
-  scroll-snap-type: x mandatory;
-  scroll-padding: 16px;
+  margin-top: 24px;
 }
 
-.produtos-container::-webkit-scrollbar {
-  height: 6px;
-  background-color: #f1f5f9;
-}
-
-.produtos-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(90deg, #4f46e5, #7c3aed);
-  border-radius: 3px;
-}
-
-.produtos-container > * {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  margin-bottom: 8px;
-}
-
-@media (max-width: 768px) {
-  .perfil-loja {
-    padding: 32px 16px;
-  }
-  
-  .foto-loja {
-    width: 130px;
-    height: 130px;
-  }
-  
-  .nome-loja {
-    font-size: 24px;
-  }
-  
-  .cupons-container {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-  }
-  
+/* Responsividade */
+@media (max-width: 1200px) {
   .produtos-container {
-    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
   }
 }
-
-@media (max-width: 480px) {
-  .cabecalho-loja {
-    margin-bottom: 40px;
+@media (max-width: 900px) {
+  .produtos-container {
+    grid-template-columns: repeat(3, 1fr);
   }
-  
+}
+@media (max-width: 700px) {
+  .produtos-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .produtos-container,
+  .cupons-container {
+    grid-template-columns: 1fr;
+  }
+
   .foto-loja {
     width: 110px;
     height: 110px;
   }
-  
+
   .nome-loja {
     font-size: 22px;
   }
-  
-  .cupons-container {
-    grid-template-columns: 1fr;
-    gap: 16px;
+
+  .cabecalho-loja {
+    margin-bottom: 40px;
   }
 }
 </style>
