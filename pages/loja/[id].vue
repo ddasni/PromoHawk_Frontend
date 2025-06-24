@@ -28,7 +28,7 @@
       <Divisor title="Produtos" />
       <div class="produtos-container">
         <Card_produto
-          v-for="produto in produtos.slice(0, 12)"
+          v-for="produto in produtosCorrigidos.slice(0, 12)"
           :key="produto.id"
           :produto="produto"
           :imagem="produto.imagens?.[0] || '/img/produto-placeholder.jpg'"
@@ -57,6 +57,14 @@ const { data: lojaData } = await useFetch(`https://api.promohawk.com.br/api/loja
 const lojaAtual = computed(() => lojaData.value?.loja || {})
 const cupons = computed(() => lojaAtual.value?.cupons || [])
 const produtos = computed(() => lojaAtual.value?.produtos || [])
+
+// ✅ Correção: garantir que todos os produtos tenham `preco` (igual na categoria)
+const produtosCorrigidos = computed(() =>
+  produtos.value.map((p) => ({
+    ...p,
+    preco: p.preco || p.precos?.[0]?.preco || null,
+  }))
+)
 
 watch(lojaData, () => {
   console.log('Dados da loja recebidos:', lojaData.value)
@@ -126,7 +134,6 @@ watch(lojaData, () => {
   border-radius: 3px;
 }
 
-/* Blocos */
 .secao-loja {
   width: 100%;
   max-width: 1200px;
@@ -134,7 +141,6 @@ watch(lojaData, () => {
   padding: 0 16px;
 }
 
-/* Cupons */
 .cupons-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -142,7 +148,6 @@ watch(lojaData, () => {
   margin-top: 24px;
 }
 
-/* Produtos */
 .produtos-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -150,7 +155,6 @@ watch(lojaData, () => {
   margin-top: 24px;
 }
 
-/* Responsividade */
 @media (max-width: 1200px) {
   .produtos-container {
     grid-template-columns: repeat(4, 1fr);
@@ -186,3 +190,5 @@ watch(lojaData, () => {
   }
 }
 </style>
+
+
