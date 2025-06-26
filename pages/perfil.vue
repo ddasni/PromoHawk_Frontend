@@ -191,6 +191,7 @@ async function alterarFoto(event) {
   carregando.value = true
   
   try {
+    // Envia imagem para o backend
     const response = await fetch(
       `https://api.promohawk.com.br/api/users/${userData.id}/imagem`,
       {
@@ -208,11 +209,22 @@ async function alterarFoto(event) {
       throw new Error(data.message || 'Erro ao atualizar imagem')
     }
 
-    if (data.foto) {
-      fotoPerfil.value = getImagemUrl(data.foto)
-      const updatedUser = { ...userData, foto: data.foto }
-      user.value = JSON.stringify(updatedUser)
+    // Após enviar, busca os dados atualizados do usuário (incluindo a imagem)
+    const meResponse = await fetch('https://api.promohawk.com.br/api/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${token.value}`
+      }
+    })
+
+    const meData = await meResponse.json()
+
+    if (!meResponse.ok || !meData.user) {
+      throw new Error('Erro ao obter dados atualizados do usuário.')
     }
+
+    // Atualiza cookie e dados visuais
+    user.value = JSON.stringify(meData.user)
+    carregarDadosUsuario(meData.user)
 
     alert('Foto atualizada com sucesso!')
   } catch (error) {
@@ -223,6 +235,7 @@ async function alterarFoto(event) {
     carregando.value = false
   }
 }
+
 
 async function salvarAlteracoes() {
   // Verificar se há alteração de senha
