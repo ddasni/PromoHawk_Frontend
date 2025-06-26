@@ -49,6 +49,12 @@ const fetchData = async () => {
       to: `/categoria/${cat.slug || cat.id}` // Usa slug se existir, caso contrário usa id
     }))
 
+     // Adiciona o link "Ver mais"
+    categoriasFormatadas.push({
+      label: 'Ver mais',
+      to: '/lista?tipo=categoria',
+    })
+
     // Busca lojas
     const lojaRes = await fetch('https://api.promohawk.com.br/api/loja')
     const lojaJson = await lojaRes.json()
@@ -58,6 +64,11 @@ const fetchData = async () => {
       label: loja.nome,
       to: `/loja/${loja.slug || loja.id}` // Usa slug se existir, caso contrário usa id
     }))
+
+    lojasFormatadas.push({
+      label: 'Ver mais',
+      to: '/lista?tipo=loja',
+    })
 
     // Atualiza os itens do menu
     items.value = items.value.map(item => {
