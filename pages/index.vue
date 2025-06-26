@@ -17,7 +17,7 @@
   <Divisor title="Produtos" link="/lista?tipo=produto" />
   <div class="produtos-container">
     <Produto
-      v-for="produto in produtos.slice(0, 12)"
+      v-for="produto in produtos.slice(0, 16)"
       :key="produto.id"
       :produto="produto"
       :imagem="produto.imagens?.[0] || '/img/sem-imagem.png'"
